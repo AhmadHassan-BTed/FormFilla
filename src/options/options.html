@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobApplier - Profile Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">🚀</span>
+        <span class="brand-name">JobApplier</span>
+      </div>
+      <nav class="nav-menu">
+        <button class="nav-item active" data-section="personal">👤 Personal Info</button>
+        <button class="nav-item" data-section="education">🎓 Education</button>
+        <button class="nav-item" data-section="experience">💼 Experience</button>
+        <button class="nav-item" data-section="references">👥 References</button>
+        <button class="nav-item" data-section="documents">📄 Documents & files</button>
+        <button class="nav-item" data-section="settings">⚙️ Settings & Import</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="save-btn" class="save-button">Save Changes</button>
+        <span id="save-status" class="save-status"></span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <form id="profile-form" onsubmit="return false;">
+        
+        <!-- SECTION: Personal Info -->
+        <section id="section-personal" class="content-section active">
+          <h2 class="section-title">Personal Information</h2>
+          <div class="card grid-2">
+            <div class="form-group">
+              <label for="personal-firstName">First Name</label>
+              <input type="text" id="personal-firstName" required placeholder="John">
+            </div>
+            <div class="form-group">
+              <label for="personal-lastName">Last Name</label>
+              <input type="text" id="personal-lastName" required placeholder="Doe">
+            </div>
+            <div class="form-group">
+              <label for="personal-middleName">Middle Name</label>
+              <input type="text" id="personal-middleName" placeholder="Fitzgerald">
+            </div>
+            <div class="form-group">
+              <label for="personal-email">Email Address</label>
+              <input type="email" id="personal-email" required placeholder="john.doe@example.com">
+            </div>
+            <div class="form-group">
+              <label for="personal-phone">Phone Number</label>
+              <input type="tel" id="personal-phone" required placeholder="+1 (555) 019-2834">
+            </div>
+            <div class="form-group">
+              <label for="personal-nationalId">National ID (SSN / Passport)</label>
+              <input type="password" id="personal-nationalId" placeholder="🔒 Stored locally. Never auto-filled.">
+            </div>
+            <div class="form-group span-2">
+              <label for="personal-summary">Professional Summary</label>
+              <textarea id="personal-summary" rows="4" placeholder="Experienced software engineer specializing in..."></textarea>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Address</h3>
+          <div class="card grid-3">
+            <div class="form-group span-2">
+              <label for="address-street">Street Address</label>
+              <input type="text" id="address-street" placeholder="123 Main St, Apt 4B">
+            </div>
+            <div class="form-group">
+              <label for="address-city">City</label>
+              <input type="text" id="address-city" placeholder="New York">
+            </div>
+            <div class="form-group">
+              <label for="address-state">State / Province</label>
+              <input type="text" id="address-state" placeholder="NY">
+            </div>
+            <div class="form-group">
+              <label for="address-postalCode">Postal / ZIP Code</label>
+              <input type="text" id="address-postalCode" placeholder="10001">
+            </div>
+            <div class="form-group">
+              <label for="address-country">Country</label>
+              <input type="text" id="address-country" placeholder="United States">
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Links & Portfolios</h3>
+          <div class="card grid-3">
+            <div class="form-group">
+              <label for="links-linkedin">LinkedIn URL</label>
+              <input type="url" id="links-linkedin" placeholder="https://linkedin.com/in/johndoe">
+            </div>
+            <div class="form-group">
+              <label for="links-github">GitHub URL</label>
+              <input type="url" id="links-github" placeholder="https://github.com/johndoe">
+            </div>
+            <div class="form-group">
+              <label for="links-portfolio">Portfolio Website</label>
+              <input type="url" id="links-portfolio" placeholder="https://johndoe.dev">
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Work Authorization</h3>
+          <div class="card grid-2">
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="work-authorized">
+              <label for="work-authorized">Legally authorized to work in target country</label>
+            </div>
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="work-sponsorship">
+              <label for="work-sponsorship">Will require visa sponsorship now or in the future</label>
+            </div>
+            <div class="form-group">
+              <label for="work-visaType">Current Visa Type (if applicable)</label>
+              <input type="text" id="work-visaType" placeholder="F-1 STEM OPT, H-1B, etc.">
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: Education (Dynamic List) -->
+        <section id="section-education" class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">Education History</h2>
+            <button type="button" id="add-education-btn" class="secondary-btn">+ Add School</button>
+          </div>
+          <div id="education-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+        </section>
+
+        <!-- SECTION: Experience (Dynamic List) -->
+        <section id="section-experience" class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">Work Experience</h2>
+            <button type="button" id="add-experience-btn" class="secondary-btn">+ Add Job</button>
+          </div>
+          <div id="experience-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+        </section>
+
+        <!-- SECTION: References (Dynamic List) -->
+        <section id="section-references" class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">References</h2>
+            <button type="button" id="add-reference-btn" class="secondary-btn">+ Add Reference</button>
+          </div>
+          <div id="references-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+        </section>
+
+        <!-- SECTION: Documents -->
+        <section id="section-documents" class="content-section">
+          <h2 class="section-title">Documents & Uploads</h2>
+          <p class="section-subtitle">
+            Upload files here. These are stored locally in your browser's IndexedDB database and are never uploaded to any servers.
+          </p>
+          <div class="card grid-2">
+            <div class="file-upload-card">
+              <span class="file-icon">📄</span>
+              <h3>Resume / CV</h3>
+              <input type="file" id="file-resume" accept=".pdf,.doc,.docx">
+              <div class="file-details" id="resume-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <span class="file-icon">✉️</span>
+              <h3>Cover Letter</h3>
+              <input type="file" id="file-coverLetter" accept=".pdf,.doc,.docx,.txt">
+              <div class="file-details" id="coverLetter-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <span class="file-icon">🖼️</span>
+              <h3>Photo</h3>
+              <input type="file" id="file-photo" accept="image/*">
+              <div class="file-details" id="photo-details">No file chosen</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: Settings & Import/Export -->
+        <section id="section-settings" class="content-section">
+          <h2 class="section-title">Settings & Backup</h2>
+          
+          <h3 class="subsection-title">Matching Preferences</h3>
+          <div class="card">
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="settings-sensitiveEeo">
+              <label for="settings-sensitiveEeo">Enable auto-filling of sensitive EEO fields (Gender, Race, Veteran, Disability)</label>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Data Backup & Restore</h3>
+          <div class="card grid-2">
+            <div class="backup-card">
+              <h3>Export Profile</h3>
+              <p>Download your complete profile data as a JSON file to keep a backup.</p>
+              <button type="button" id="export-btn" class="secondary-btn">📥 Export to JSON</button>
+            </div>
+            <div class="backup-card">
+              <h3>Import Profile</h3>
+              <p>Load your profile data from a previously exported JSON backup file.</p>
+              <input type="file" id="import-file" accept=".json" style="display: none;">
+              <button type="button" id="import-btn" class="secondary-btn">📤 Import JSON File</button>
+            </div>
+          </div>
+        </section>
+
+      </form>
+    </main>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

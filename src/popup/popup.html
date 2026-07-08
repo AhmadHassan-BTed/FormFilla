@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobApplier</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="logo">
+        <span class="logo-icon">🚀</span>
+        <span class="logo-text">JobApplier</span>
+      </div>
+      <button id="options-btn" class="icon-btn" title="Open Settings">⚙️</button>
+    </div>
+
+    <div class="content">
+      <p class="description">
+        Local-first, deterministic form autofiller. No AI models or network requests.
+      </p>
+
+      <button id="fill-btn" class="primary-btn">
+        <span class="btn-text">Fill this page</span>
+        <span class="btn-shine"></span>
+      </button>
+
+      <div id="results-panel" class="results-panel hidden">
+        <h3 class="results-title">Analysis & Fill Summary</h3>
+        <div class="results-grid">
+          <div class="result-item confident">
+            <span class="result-val" id="count-confident">0</span>
+            <span class="result-lbl">Confident</span>
+          </div>
+          <div class="result-item review">
+            <span class="result-val" id="count-review">0</span>
+            <span class="result-lbl">Review</span>
+          </div>
+          <div class="result-item confirm">
+            <span class="result-val" id="count-confirm">0</span>
+            <span class="result-lbl">Needs Action</span>
+          </div>
+          <div class="result-item unmapped">
+            <span class="result-val" id="count-unmapped">0</span>
+            <span class="result-lbl">Unmapped</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span class="status-dot"></span>
+      <span id="status-text">Ready to fill</span>
+    </div>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

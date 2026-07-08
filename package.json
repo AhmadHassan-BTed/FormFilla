@@ -1,0 +1,19 @@
+{
+  "name": "job-applier",
+  "version": "0.1.0",
+  "description": "Fills job application forms from local JSON profile data. No AI, no network calls.",
+  "type": "module",
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.2.2",
+    "esbuild": "^0.20.2",
+    "jsdom": "^24.1.0",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}
