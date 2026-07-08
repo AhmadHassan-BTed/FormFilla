@@ -5,20 +5,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   try {
     const profile = await getProfile();
     if (!profile.personal.email) {
-      await saveProfile({
-        personal: {
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
-          middleName: '',
-          summary: '',
-          nationalId: ''
-        },
-        optIns: {
-          sensitiveEeo: false
-        }
-      });
+      await saveProfile(profile);
       console.log('Seeded default empty profile.');
     }
   } catch (err) {
