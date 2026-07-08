@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
+    "resolveJsonModule": true,
     "types": ["chrome"]
   },
   "include": ["src/**/*", "tests/**/*"]
