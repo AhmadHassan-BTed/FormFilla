@@ -134,7 +134,11 @@ body {
     rgba(255, 255, 255, 0) 100%
   );
   transform: skewX(-25deg);
-  animation: shine 4s infinite linear;
+  animation: none;
+}
+
+.primary-btn:disabled .btn-shine {
+  animation: shine 1.5s infinite linear;
 }
 
 @keyframes shine {
