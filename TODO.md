@@ -1,27 +1,23 @@
-Add suppprot for the dropdowns.
+# Completed Tasks
 
-To make the JSON template fully comprehensive, you would need to add the following arrays and fields:
+All items inside the previous TODO list have been fully implemented:
 
-### 1. New Top-Level Arrays & Objects to Add
-
-- **`projects` (Array):** Needed to capture your extensive "Open Source & Architectural Portfolio". This would include projects like _Fractal_, _B-Companion_, _Noria_, _ThreadRace_, and _Parchment_ along with their descriptions and tech stacks. Along with thier links
-
-- **`certifications` (Array):** Needed to capture your "Licenses & Certifications" and "Professional Qualifications". This would store your PMI Generative AI credentials, Microsoft Applied Skills (C#), Introduction to Six Sigma, and Smart Chatbot Engineering.
-
-- **`skills` (Object or Array):** Needed to capture your "Technical Expertise". You have highly categorized skills (Programming Languages, Machine Learning & AI, Markup/Scripting, Hardware, Architecture & Paradigms, Tools/IDEs) that the current JSON cannot store.
-
-- **`languages` (Array):** Needed to capture both the "Languages" listed on your CV (English, Urdu) and the "Foreign Languages" entry from your application form (French).
-
-- **`awardsAndAchievements` (Array):** Needed to capture your "Leadership & Achievements" section, including your role as Head Systems Architect at Air University SE Society, your 1st Place Titles in UI/UX and Logo Design, and your wins at GameZilla Fest. It could also house your "Silver Medalist" status.
-
-- **`coursework` (Array):** Needed to capture your "Relevant Coursework" (e.g., Software Design & Architecture, Data Structures & Algorithms, Natural Language Processing).
-
-### 2. Missing Fields Within Existing Objects
-
-- **Inside the `personal` object:**
-- **`title`:** The application form specifically asks for a Title (e.g., "Mr"), which is missing from the JSON's personal block.
-- **`dateOfBirth`:** The application form requires a Birth Date ("23 / Feb / 2004"), but the JSON template only asks for a National ID without a field for birth date.
-
-Also, My FYP too (which is the Fractal).
-
-Also, my CNIC number (if there's any rule that you don't have to autfofill it, remove that hardcoded, and make a toggle button, which will be on by default; so it'll fill these deatials too autmoatically.).
+- [x] **Dynamic Dropdown Support**: Ensured that the form-filling engine (`select-filler.ts` and `combobox-adapter.ts`) dynamically detects and fills both standard HTML `<select>` elements and custom ARIA-combobox components (e.g. Select2, React-Select, Ant Design, Tailwind).
+- [x] **Top-Level Profile Arrays**:
+  - [x] `projects` (Array) - fully configurable on options dashboard.
+  - [x] `certifications` (Array) - fully configurable on options dashboard.
+  - [x] `skills` (Array/Object) - tag-style list configurable on options dashboard.
+  - [x] `languages` (Array) - dynamic language entries list.
+  - [x] `awardsAndAchievements` (Array) - dynamic achievements list.
+  - [x] `coursework` (Array) - coursework comma-separated input list.
+- [x] **Missing Personal Details**:
+  - [x] Title / Prefix (`namePrefix`) - Mr/Mrs/Ms/Dr.
+  - [x] Date of Birth (`dateOfBirth`).
+  - [x] Pakistan CNIC Number (`cnicNumber`).
+  - [x] Passport Number (`passportNumber`).
+  - [x] Swapped the password-type National ID input field into a clear, visible text input field.
+  - [x] Autofill gating operates automatically if `settings-autoFillCritical` is enabled (active by default).
+- [x] **Emoji to Inline SVG Upgrades**:
+  - [x] Swapped all emoji markers inside the Options sidebar navigation menu with clean inline SVGs.
+  - [x] Swapped all document card icons (`📄`, `✉️`, `🖼️`, `✍️`, `🔬`, `🤝`, `💰`) with custom vector graphics in `options.html`.
+  - [x] Swapped the logo (`🚀`) and settings toggle button (`⚙️`) with inline SVGs in `popup.html`.

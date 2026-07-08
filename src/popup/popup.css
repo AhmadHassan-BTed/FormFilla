@@ -50,8 +50,17 @@ body {
   gap: 8px;
 }
 
-.logo-icon {
-  font-size: 20px;
+.logo-svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.options-svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  flex-shrink: 0;
 }
 
 .logo-text {
@@ -216,6 +225,25 @@ body {
   border-top: 1px solid var(--border-color);
   font-size: 11px;
   color: var(--text-secondary);
+}
+
+.footer-spacer {
+  flex: 1;
+}
+
+.credit-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 10px;
+  transition: color 0.2s ease;
+}
+
+.credit-link:hover {
+  color: var(--accent-purple);
+}
+
+.credit-link strong {
+  font-weight: 600;
 }
 
 .status-dot {

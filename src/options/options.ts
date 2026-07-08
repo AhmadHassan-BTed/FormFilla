@@ -258,11 +258,11 @@ function addEducationRow(container: HTMLElement, data?: EducationEntry) {
     </div>
     <div class="form-group">
       <label>Start Date</label>
-      <input type="month" class="edu-start" value="${data?.startDate || ''}">
+      <input type="text" class="edu-start" placeholder="yyyy-MM or Present" value="${data?.startDate || ''}">
     </div>
     <div class="form-group">
       <label>End/Graduation Date</label>
-      <input type="month" class="edu-end" value="${data?.endDate || ''}">
+      <input type="text" class="edu-end" placeholder="yyyy-MM or Present" value="${data?.endDate || ''}">
     </div>
     <div class="form-group">
       <label>GPA</label>
@@ -292,11 +292,11 @@ function addExperienceRow(container: HTMLElement, data?: ExperienceEntry) {
     </div>
     <div class="form-group">
       <label>Start Date</label>
-      <input type="month" class="exp-start" value="${data?.startDate || ''}">
+      <input type="text" class="exp-start" placeholder="yyyy-MM or Present" value="${data?.startDate || ''}">
     </div>
     <div class="form-group">
       <label>End Date</label>
-      <input type="month" class="exp-end" value="${data?.endDate || ''}">
+      <input type="text" class="exp-end" placeholder="yyyy-MM or Present" value="${data?.endDate || ''}">
     </div>
     <div class="form-group">
       <label>Role Description</label>

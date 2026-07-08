@@ -125,6 +125,23 @@ body {
   gap: 8px;
 }
 
+.credit-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 11px;
+  text-align: center;
+  padding: 4px 0;
+  transition: color 0.2s ease;
+}
+
+.credit-link:hover {
+  color: var(--accent-purple);
+}
+
+.credit-link strong {
+  font-weight: 600;
+}
+
 .save-button {
   background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
   border: none;
@@ -417,4 +434,12 @@ textarea:focus {
 
 .backup-card button {
   align-self: flex-start;
+}
+
+.file-card-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 12px;
+  fill: var(--accent-indigo);
+  display: block;
 }
