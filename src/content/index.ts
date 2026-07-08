@@ -13,9 +13,30 @@ import { tagField } from './overlay/review-highlighter.js';
 import { watch } from './dom/mutation-watcher.js';
 import { ScoredField, FieldSignals, FillResult } from '../shared/types.js';
 
+import { DEGREE_RANK } from '../shared/constants.js';
+
 // Helper to access nested property paths (e.g. "education[0].school" or "personal.firstName")
-function getValueByPath(obj: any, path: string): any {
+export function getValueByPath(obj: any, path: string): any {
   if (!obj || !path) return undefined;
+
+  // Handle highest education reducer path
+  if (path.startsWith('education.highest.')) {
+    const field = path.substring('education.highest.'.length);
+    const educationList = obj.education;
+    if (!Array.isArray(educationList) || educationList.length === 0) {
+      return undefined;
+    }
+
+    // Sort education items by degree rank descending
+    const sorted = [...educationList].sort((a, b) => {
+      const rankA = getDegreeRank(a.degree);
+      const rankB = getDegreeRank(b.degree);
+      return rankB - rankA;
+    });
+
+    return sorted[0][field as keyof typeof sorted[0]];
+  }
+
   const parts = path.replace(/\]/g, '').split(/[.\[]/);
   let current = obj;
   for (const part of parts) {
@@ -23,6 +44,24 @@ function getValueByPath(obj: any, path: string): any {
     current = current[part];
   }
   return current;
+}
+
+function getDegreeRank(degreeName: string): number {
+  if (!degreeName) return 0;
+  const norm = degreeName.toLowerCase().trim();
+
+  if (DEGREE_RANK[norm] !== undefined) {
+    return DEGREE_RANK[norm];
+  }
+
+  // Try substring checks (e.g. "Bachelor of Science" contains "bachelor")
+  for (const [key, val] of Object.entries(DEGREE_RANK)) {
+    if (norm.includes(key)) {
+      return val;
+    }
+  }
+
+  return 1; // Default minimum rank
 }
 
 // Perform form filling on a set of fields

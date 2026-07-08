@@ -1,10 +1,27 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
+
+// Mock chrome extension APIs for JSDOM test context
+globalThis.chrome = {
+  runtime: {
+    onMessage: {
+      addListener: () => {}
+    }
+  }
+} as any;
+
 import { scanForFields } from '../src/content/dom/field-scanner.js';
 import { detectRepeatedBlocks } from '../src/content/dom/repeated-block-detector.js';
 import { extractSignals } from '../src/content/dom/signal-extractor.js';
 import { resolveAllFields } from '../src/content/matching/scorer.js';
 import { Profile } from '../src/shared/types.js';
+
+let getValueByPath: any;
+
+beforeAll(async () => {
+  const mod = await import('../src/content/index.js');
+  getValueByPath = mod.getValueByPath;
+});
 
 const mockProfile: Profile = {
   personal: {
@@ -95,5 +112,42 @@ describe('ApplyEngine Scoring and Alignment Pipeline', () => {
     const degreeResult = results.find(r => r.element.id === 'degree');
     expect(degreeResult).toBeDefined();
     expect(degreeResult!.key).toBe('education.highest.degree');
+  });
+
+  it('correctly reduces to the highest-ranked education degree using getValueByPath', () => {
+    const testProfile: Profile = {
+      personal: {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        phone: '123'
+      },
+      education: [
+        {
+          school: 'State University',
+          degree: 'Bachelor of Science',
+          fieldOfStudy: 'Engineering'
+        },
+        {
+          school: 'Ivy College',
+          degree: 'Master of Science',
+          fieldOfStudy: 'Computer Science'
+        },
+        {
+          school: 'Local High',
+          degree: 'High School Diploma',
+          fieldOfStudy: 'General'
+        }
+      ],
+      optIns: {
+        sensitiveEeo: false
+      }
+    };
+
+    const highestDegree = getValueByPath(testProfile, 'education.highest.degree');
+    const highestSchool = getValueByPath(testProfile, 'education.highest.school');
+
+    expect(highestDegree).toBe('Master of Science');
+    expect(highestSchool).toBe('Ivy College');
   });
 });
