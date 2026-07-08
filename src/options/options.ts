@@ -390,8 +390,81 @@ function getCheckboxValue(id: string): boolean {
   return el ? el.checked : false;
 }
 
+const EXTENSIVE_PROFILE_TEMPLATE = {
+  personal: {
+    firstName: "John",
+    lastName: "Doe",
+    middleName: "Robert",
+    email: "john.doe@example.com",
+    phone: "+1 (555) 019-2834",
+    nationalId: "123-456-7890",
+    summary: "Experienced software engineer specializing in local-first client applications."
+  },
+  family: {
+    fatherName: "Robert Doe Sr.",
+    motherName: "Mary Doe"
+  },
+  address: {
+    street: "123 Main Street, Apt 4B",
+    city: "New York",
+    state: "NY",
+    postalCode: "10001",
+    country: "United States"
+  },
+  links: {
+    linkedin: "https://linkedin.com/in/johndoe",
+    github: "https://github.com/johndoe",
+    portfolio: "https://johndoe.dev"
+  },
+  workAuthorization: {
+    authorizedInUS: true,
+    requiresSponsorship: false,
+    visaType: ""
+  },
+  education: [
+    {
+      school: "State University",
+      degree: "Bachelor of Science",
+      fieldOfStudy: "Computer Science",
+      startDate: "2018-09",
+      endDate: "2022-05",
+      gpa: "3.8"
+    }
+  ],
+  experience: [
+    {
+      company: "Tech Corp",
+      title: "Software Engineer",
+      location: "New York, NY",
+      startDate: "2022-06",
+      endDate: "2025-12",
+      description: "Designed, built, and optimized high-performance local services."
+    }
+  ],
+  references: [
+    {
+      name: "Alice Smith",
+      relationship: "Manager",
+      company: "Tech Corp",
+      title: "Engineering Lead",
+      email: "alice.smith@techcorp.com",
+      phone: "+1 (555) 012-3456"
+    }
+  ],
+  eeo: {
+    gender: "Male",
+    race: "White",
+    veteranStatus: "No",
+    disabilityStatus: "No"
+  },
+  optIns: {
+    sensitiveEeo: false
+  }
+};
+
 function setupBackupRestore() {
   const exportBtn = document.getElementById('export-btn')!;
+  const templateBtn = document.getElementById('template-btn')!;
   const importBtn = document.getElementById('import-btn')!;
   const importFile = document.getElementById('import-file') as HTMLInputElement;
 
@@ -400,6 +473,14 @@ function setupBackupRestore() {
     const dlAnchorElem = document.createElement('a');
     dlAnchorElem.setAttribute('href', dataStr);
     dlAnchorElem.setAttribute('download', 'hired_profile.json');
+    dlAnchorElem.click();
+  });
+
+  templateBtn.addEventListener('click', () => {
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(EXTENSIVE_PROFILE_TEMPLATE, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute('href', dataStr);
+    dlAnchorElem.setAttribute('download', 'hired_extensive_template.json');
     dlAnchorElem.click();
   });
 
