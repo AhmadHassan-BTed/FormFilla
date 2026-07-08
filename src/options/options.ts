@@ -81,12 +81,64 @@ async function loadProfileData() {
     setInputValue('academics-researchInterests', currentProfile.academics.researchInterests);
     setInputValue('academics-annualHouseholdIncome', currentProfile.academics.annualHouseholdIncome);
     setCheckboxValue('academics-fundingRequired', currentProfile.academics.fundingRequired);
+
+    // GKS & Scholarship specific
+    setInputValue('academics-applicationTrack', currentProfile.academics.applicationTrack);
+    setInputValue('academics-recommendedEmbassy', currentProfile.academics.recommendedEmbassy);
+    setInputValue('academics-applicationProgram', currentProfile.academics.applicationProgram);
+    setInputValue('academics-degreeProgram', currentProfile.academics.degreeProgram);
+    setInputValue('academics-desiredFieldOfStudy', currentProfile.academics.desiredFieldOfStudy);
+    setInputValue('academics-koreanCitizenshipApplicant', currentProfile.academics.koreanCitizenshipApplicant);
+    setInputValue('academics-koreanCitizenshipParent', currentProfile.academics.koreanCitizenshipParent);
+    setInputValue('academics-topikLevel', currentProfile.academics.topikLevel);
+    setInputValue('academics-topikTestHeld', currentProfile.academics.topikTestHeld);
+    setInputValue('academics-topikTestDate', currentProfile.academics.topikTestDate);
+    setInputValue('academics-highSchoolName', currentProfile.academics.highSchoolName);
+    setInputValue('academics-highSchoolLocation', currentProfile.academics.highSchoolLocation);
+    setInputValue('academics-highSchoolGraduationYear', currentProfile.academics.highSchoolGraduationYear);
+    setInputValue('academics-bachelorsThesisTitle', currentProfile.academics.bachelorsThesisTitle);
+    setInputValue('academics-bachelorsPublications', currentProfile.academics.bachelorsPublications);
+    setInputValue('academics-mastersUniversityName', currentProfile.academics.mastersUniversityName);
+    setInputValue('academics-mastersLocation', currentProfile.academics.mastersLocation);
+    setInputValue('academics-mastersMajor', currentProfile.academics.mastersMajor);
+    setInputValue('academics-mastersGraduationDate', currentProfile.academics.mastersGraduationDate);
+    setInputValue('academics-mastersThesisTitle', currentProfile.academics.mastersThesisTitle);
+    setInputValue('academics-mastersPublications', currentProfile.academics.mastersPublications);
+    setInputValue('academics-doctoralUniversityName', currentProfile.academics.doctoralUniversityName);
+    setInputValue('academics-doctoralLocation', currentProfile.academics.doctoralLocation);
+    setInputValue('academics-doctoralMajor', currentProfile.academics.doctoralMajor);
+    setInputValue('academics-doctoralGraduationDate', currentProfile.academics.doctoralGraduationDate);
+    setInputValue('academics-doctoralDissertationTitle', currentProfile.academics.doctoralDissertationTitle);
+    setInputValue('academics-doctoralPublications', currentProfile.academics.doctoralPublications);
+    setInputValue('academics-cgpaScale', currentProfile.academics.cgpaScale);
+    setInputValue('academics-scorePercentile', currentProfile.academics.scorePercentile);
+    setInputValue('academics-personalStatement', currentProfile.academics.personalStatement);
+    setInputValue('academics-studyPlan', currentProfile.academics.studyPlan);
+    setInputValue('academics-futurePlanAfterStudy', currentProfile.academics.futurePlanAfterStudy);
+
+    // Medical Evaluations
+    setInputValue('academics-medicalInfectious', currentProfile.academics.medicalInfectious);
+    setInputValue('academics-medicalAllergies', currentProfile.academics.medicalAllergies);
+    setInputValue('academics-medicalHypertension', currentProfile.academics.medicalHypertension);
+    setInputValue('academics-medicalDiabetes', currentProfile.academics.medicalDiabetes);
+    setInputValue('academics-medicalHepatitis', currentProfile.academics.medicalHepatitis);
+    setInputValue('academics-medicalMental', currentProfile.academics.medicalMental);
+    setInputValue('academics-medicalAlcohol', currentProfile.academics.medicalAlcohol);
+    setInputValue('academics-medicalNarcotics', currentProfile.academics.medicalNarcotics);
+    setInputValue('academics-medicalHospitalized', currentProfile.academics.medicalHospitalized);
+    setInputValue('academics-medicalSeriousInjury', currentProfile.academics.medicalSeriousInjury);
+    setInputValue('academics-medicalVisualHearing', currentProfile.academics.medicalVisualHearing);
+    setInputValue('academics-medicalPhysicalDisability', currentProfile.academics.medicalPhysicalDisability);
+    setInputValue('academics-medicalCognitiveDisability', currentProfile.academics.medicalCognitiveDisability);
+    setInputValue('academics-medicalPrescribedMedication', currentProfile.academics.medicalPrescribedMedication);
+    setInputValue('academics-medicalSpecialDiet', currentProfile.academics.medicalSpecialDiet);
   }
 
   setCheckboxValue('settings-sensitiveEeo', currentProfile.optIns?.sensitiveEeo ?? true);
   setCheckboxValue('settings-autoFillCritical', currentProfile.optIns?.autoFillCritical ?? true);
   setCheckboxValue('settings-sensitiveFinancials', currentProfile.optIns?.sensitiveFinancials ?? true);
   setCheckboxValue('settings-sensitiveCompensation', currentProfile.optIns?.sensitiveCompensation ?? true);
+  setCheckboxValue('settings-sensitiveMedical', currentProfile.optIns?.sensitiveMedical ?? true);
 
   renderFileDetails('resume', currentProfile.documents?.['documents.resume']);
   renderFileDetails('coverLetter', currentProfile.documents?.['documents.coverLetter']);
@@ -98,7 +150,7 @@ async function loadProfileData() {
 }
 
 function setInputValue(id: string, value: any) {
-  const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement;
+  const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
   if (el) el.value = value || '';
 }
 
@@ -380,14 +432,66 @@ async function saveAllProfileData() {
       proposedAdvisor: getInputValue('academics-proposedAdvisor'),
       researchInterests: getInputValue('academics-researchInterests'),
       annualHouseholdIncome: getInputValue('academics-annualHouseholdIncome'),
-      fundingRequired: getCheckboxValue('academics-fundingRequired')
+      fundingRequired: getCheckboxValue('academics-fundingRequired'),
+
+      // GKS & Scholarship specific
+      applicationTrack: getInputValue('academics-applicationTrack'),
+      recommendedEmbassy: getInputValue('academics-recommendedEmbassy'),
+      applicationProgram: getInputValue('academics-applicationProgram'),
+      degreeProgram: getInputValue('academics-degreeProgram'),
+      desiredFieldOfStudy: getInputValue('academics-desiredFieldOfStudy'),
+      koreanCitizenshipApplicant: getInputValue('academics-koreanCitizenshipApplicant'),
+      koreanCitizenshipParent: getInputValue('academics-koreanCitizenshipParent'),
+      topikLevel: getInputValue('academics-topikLevel'),
+      topikTestHeld: getInputValue('academics-topikTestHeld'),
+      topikTestDate: getInputValue('academics-topikTestDate'),
+      highSchoolName: getInputValue('academics-highSchoolName'),
+      highSchoolLocation: getInputValue('academics-highSchoolLocation'),
+      highSchoolGraduationYear: getInputValue('academics-highSchoolGraduationYear'),
+      bachelorsThesisTitle: getInputValue('academics-bachelorsThesisTitle'),
+      bachelorsPublications: getInputValue('academics-bachelorsPublications'),
+      mastersUniversityName: getInputValue('academics-mastersUniversityName'),
+      mastersLocation: getInputValue('academics-mastersLocation'),
+      mastersMajor: getInputValue('academics-mastersMajor'),
+      mastersGraduationDate: getInputValue('academics-mastersGraduationDate'),
+      mastersThesisTitle: getInputValue('academics-mastersThesisTitle'),
+      mastersPublications: getInputValue('academics-mastersPublications'),
+      doctoralUniversityName: getInputValue('academics-doctoralUniversityName'),
+      doctoralLocation: getInputValue('academics-doctoralLocation'),
+      doctoralMajor: getInputValue('academics-doctoralMajor'),
+      doctoralGraduationDate: getInputValue('academics-doctoralGraduationDate'),
+      doctoralDissertationTitle: getInputValue('academics-doctoralDissertationTitle'),
+      doctoralPublications: getInputValue('academics-doctoralPublications'),
+      cgpaScale: getInputValue('academics-cgpaScale'),
+      scorePercentile: getInputValue('academics-scorePercentile'),
+      personalStatement: getInputValue('academics-personalStatement'),
+      studyPlan: getInputValue('academics-studyPlan'),
+      futurePlanAfterStudy: getInputValue('academics-futurePlanAfterStudy'),
+
+      // Medical Evaluations
+      medicalInfectious: getInputValue('academics-medicalInfectious'),
+      medicalAllergies: getInputValue('academics-medicalAllergies'),
+      medicalHypertension: getInputValue('academics-medicalHypertension'),
+      medicalDiabetes: getInputValue('academics-medicalDiabetes'),
+      medicalHepatitis: getInputValue('academics-medicalHepatitis'),
+      medicalMental: getInputValue('academics-medicalMental'),
+      medicalAlcohol: getInputValue('academics-medicalAlcohol'),
+      medicalNarcotics: getInputValue('academics-medicalNarcotics'),
+      medicalHospitalized: getInputValue('academics-medicalHospitalized'),
+      medicalSeriousInjury: getInputValue('academics-medicalSeriousInjury'),
+      medicalVisualHearing: getInputValue('academics-medicalVisualHearing'),
+      medicalPhysicalDisability: getInputValue('academics-medicalPhysicalDisability'),
+      medicalCognitiveDisability: getInputValue('academics-medicalCognitiveDisability'),
+      medicalPrescribedMedication: getInputValue('academics-medicalPrescribedMedication'),
+      medicalSpecialDiet: getInputValue('academics-medicalSpecialDiet')
     };
 
     const optIns = {
       sensitiveEeo: getCheckboxValue('settings-sensitiveEeo'),
       autoFillCritical: getCheckboxValue('settings-autoFillCritical'),
       sensitiveFinancials: getCheckboxValue('settings-sensitiveFinancials'),
-      sensitiveCompensation: getCheckboxValue('settings-sensitiveCompensation')
+      sensitiveCompensation: getCheckboxValue('settings-sensitiveCompensation'),
+      sensitiveMedical: getCheckboxValue('settings-sensitiveMedical')
     };
 
     const updatedProfile: Profile = {

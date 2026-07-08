@@ -157,6 +157,57 @@ export interface AcademicsInfo {
   proposedAdvisor?: string;
   fundingRequired?: boolean;
   annualHouseholdIncome?: string;
+
+  // GKS & Scholarship specific
+  applicationTrack?: string;
+  recommendedEmbassy?: string;
+  applicationProgram?: string;
+  degreeProgram?: string;
+  desiredFieldOfStudy?: string;
+  koreanCitizenshipApplicant?: string;
+  koreanCitizenshipParent?: string;
+  topikLevel?: string;
+  topikTestHeld?: string;
+  topikTestDate?: string;
+  highSchoolName?: string;
+  highSchoolLocation?: string;
+  highSchoolGraduationYear?: string;
+  bachelorsThesisTitle?: string;
+  bachelorsPublications?: string;
+  mastersUniversityName?: string;
+  mastersLocation?: string;
+  mastersMajor?: string;
+  mastersGraduationDate?: string;
+  mastersThesisTitle?: string;
+  mastersPublications?: string;
+  doctoralUniversityName?: string;
+  doctoralLocation?: string;
+  doctoralMajor?: string;
+  doctoralGraduationDate?: string;
+  doctoralDissertationTitle?: string;
+  doctoralPublications?: string;
+  cgpaScale?: string;
+  scorePercentile?: string;
+  personalStatement?: string;
+  studyPlan?: string;
+  futurePlanAfterStudy?: string;
+
+  // Medical Evaluations
+  medicalInfectious?: string;
+  medicalAllergies?: string;
+  medicalHypertension?: string;
+  medicalDiabetes?: string;
+  medicalHepatitis?: string;
+  medicalMental?: string;
+  medicalAlcohol?: string;
+  medicalNarcotics?: string;
+  medicalHospitalized?: string;
+  medicalSeriousInjury?: string;
+  medicalVisualHearing?: string;
+  medicalPhysicalDisability?: string;
+  medicalCognitiveDisability?: string;
+  medicalPrescribedMedication?: string;
+  medicalSpecialDiet?: string;
 }
 
 export interface Profile {
@@ -185,6 +236,7 @@ export interface Profile {
     autoFillCritical?: boolean;
     sensitiveFinancials?: boolean;
     sensitiveCompensation?: boolean;
+    sensitiveMedical?: boolean;
     [key: string]: boolean | undefined;
   };
 }

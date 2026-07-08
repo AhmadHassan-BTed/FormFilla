@@ -28,7 +28,12 @@
   "desc": "description",
   "pos": "position",
   "ref": "reference",
+  "rec": "reference",
   "rel": "relationship",
   "pwd": "password",
-  "passwd": "password"
+  "passwd": "password",
+  "sop": "statement of purpose",
+  "lor": "letter of recommendation",
+  "topik": "test of proficiency in korean",
+  "gks": "global korea scholarship"
 }

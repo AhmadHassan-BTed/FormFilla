@@ -1696,6 +1696,653 @@
       "bank\\s*statement"
     ]
   },
+  "academics.applicationTrack": {
+    "exactPhrases": [
+      "application track",
+      "track",
+      "apply track",
+      "gks track",
+      "embassy track",
+      "university track"
+    ],
+    "regexPatterns": [
+      "application\\s*track",
+      "track"
+    ]
+  },
+  "academics.recommendedEmbassy": {
+    "exactPhrases": [
+      "recommended embassy",
+      "embassy",
+      "embassy name",
+      "institution recommended"
+    ],
+    "regexPatterns": [
+      "embassy"
+    ]
+  },
+  "academics.applicationProgram": {
+    "exactPhrases": [
+      "application program",
+      "program",
+      "apply program",
+      "general program"
+    ],
+    "regexPatterns": [
+      "program"
+    ]
+  },
+  "academics.degreeProgram": {
+    "exactPhrases": [
+      "degree program to apply",
+      "degree program",
+      "applying degree",
+      "masters degree",
+      "doctoral degree"
+    ],
+    "regexPatterns": [
+      "degree\\s*program"
+    ]
+  },
+  "academics.desiredFieldOfStudy": {
+    "exactPhrases": [
+      "desired field of study",
+      "field of study",
+      "division",
+      "major field",
+      "desired field"
+    ],
+    "regexPatterns": [
+      "field\\s*of\\s*study",
+      "division"
+    ]
+  },
+  "academics.koreanCitizenshipApplicant": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "exactPhrases": [
+      "korean citizenship- applicant",
+      "korean citizenship applicant",
+      "applicant korean citizenship",
+      "do you hold korean citizenship"
+    ],
+    "regexPatterns": [
+      "korean\\s*citizenship.*applicant",
+      "applicant.*korean\\s*citizenship"
+    ]
+  },
+  "academics.koreanCitizenshipParent": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "exactPhrases": [
+      "korean citizenship- parent",
+      "korean citizenship parent",
+      "parent korean citizenship",
+      "do your parents hold korean citizenship"
+    ],
+    "regexPatterns": [
+      "korean\\s*citizenship.*parent",
+      "parent.*korean\\s*citizenship"
+    ]
+  },
+  "academics.topikLevel": {
+    "exactPhrases": [
+      "topik level",
+      "topik grade",
+      "topik proficiency"
+    ],
+    "regexPatterns": [
+      "topik\\s*level",
+      "topik\\s*grade"
+    ]
+  },
+  "academics.topikTestHeld": {
+    "exactPhrases": [
+      "topik test held",
+      "topik held",
+      "topik round"
+    ],
+    "regexPatterns": [
+      "topik\\s*test\\s*held",
+      "topik\\s*held"
+    ]
+  },
+  "academics.topikTestDate": {
+    "exactPhrases": [
+      "topik test date",
+      "topik date",
+      "date of topik"
+    ],
+    "regexPatterns": [
+      "topik\\s*test\\s*date",
+      "topik\\s*date"
+    ]
+  },
+  "academics.highSchoolName": {
+    "exactPhrases": [
+      "high school name",
+      "high school",
+      "secondary school name",
+      "school name"
+    ],
+    "regexPatterns": [
+      "high\\s*school\\s*name",
+      "high\\s*school"
+    ]
+  },
+  "academics.highSchoolLocation": {
+    "exactPhrases": [
+      "high school location",
+      "high school country",
+      "location of high school"
+    ],
+    "regexPatterns": [
+      "high\\s*school\\s*location",
+      "high\\s*school\\s*country"
+    ]
+  },
+  "academics.highSchoolGraduationYear": {
+    "exactPhrases": [
+      "high school year of graduation",
+      "high school graduation year",
+      "graduation year",
+      "year of graduation"
+    ],
+    "regexPatterns": [
+      "high\\s*school\\s*graduation\\s*year",
+      "year\\s*of\\s*graduation"
+    ]
+  },
+  "academics.bachelorsThesisTitle": {
+    "exactPhrases": [
+      "degree thesis title",
+      "thesis title",
+      "bachelor thesis title",
+      "undergraduate thesis"
+    ],
+    "regexPatterns": [
+      "thesis\\s*title",
+      "bachelor.*thesis"
+    ]
+  },
+  "academics.bachelorsPublications": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "published books & research papers",
+      "published papers",
+      "bachelor publications",
+      "list of publications"
+    ],
+    "regexPatterns": [
+      "published\\s*(books|papers|publications)"
+    ]
+  },
+  "academics.mastersUniversityName": {
+    "exactPhrases": [
+      "master university name",
+      "master school name",
+      "master institution"
+    ],
+    "regexPatterns": [
+      "master.*university",
+      "master.*school"
+    ]
+  },
+  "academics.mastersLocation": {
+    "exactPhrases": [
+      "master location",
+      "master country"
+    ],
+    "regexPatterns": [
+      "master.*location",
+      "master.*country"
+    ]
+  },
+  "academics.mastersMajor": {
+    "exactPhrases": [
+      "master major",
+      "master degree major",
+      "master field of study"
+    ],
+    "regexPatterns": [
+      "master.*major",
+      "master.*field"
+    ]
+  },
+  "academics.mastersGraduationDate": {
+    "exactPhrases": [
+      "master graduation date",
+      "master graduation",
+      "master degree awarded"
+    ],
+    "regexPatterns": [
+      "master.*graduation",
+      "master.*awarded"
+    ]
+  },
+  "academics.mastersThesisTitle": {
+    "exactPhrases": [
+      "master thesis title",
+      "masters degree thesis title"
+    ],
+    "regexPatterns": [
+      "master.*thesis"
+    ]
+  },
+  "academics.mastersPublications": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "master publications",
+      "master published papers"
+    ],
+    "regexPatterns": [
+      "master.*publi"
+    ]
+  },
+  "academics.doctoralUniversityName": {
+    "exactPhrases": [
+      "doctoral university name",
+      "doctoral school name",
+      "phd university"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*university"
+    ]
+  },
+  "academics.doctoralLocation": {
+    "exactPhrases": [
+      "doctoral location",
+      "doctoral country"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*location"
+    ]
+  },
+  "academics.doctoralMajor": {
+    "exactPhrases": [
+      "doctoral major",
+      "phd major"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*major"
+    ]
+  },
+  "academics.doctoralGraduationDate": {
+    "exactPhrases": [
+      "doctoral graduation date",
+      "phd graduation"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*graduation"
+    ]
+  },
+  "academics.doctoralDissertationTitle": {
+    "exactPhrases": [
+      "dissertation title",
+      "doctoral dissertation title"
+    ],
+    "regexPatterns": [
+      "dissertation.*title"
+    ]
+  },
+  "academics.doctoralPublications": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "doctoral publications",
+      "phd published papers"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*publi"
+    ]
+  },
+  "academics.cgpaScale": {
+    "exactPhrases": [
+      "cgpa indicated on your original transcript",
+      "converted cgpa",
+      "cgpa scale"
+    ],
+    "regexPatterns": [
+      "cgpa\\s*(indicated|scale|converted)"
+    ]
+  },
+  "academics.scorePercentile": {
+    "exactPhrases": [
+      "score percentile",
+      "percentile score",
+      "percentile",
+      "grade percentile"
+    ],
+    "regexPatterns": [
+      "score\\s*percentile",
+      "percentile"
+    ]
+  },
+  "academics.personalStatement": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "personal statement",
+      "statement of purpose",
+      "essay",
+      "introduce yourself",
+      "motivation letter"
+    ],
+    "regexPatterns": [
+      "personal\\s*statement",
+      "introduce\\s*yourself",
+      "motivation\\s*letter"
+    ]
+  },
+  "academics.studyPlan": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "study plan",
+      "goal of study",
+      "research proposal plan"
+    ],
+    "regexPatterns": [
+      "study\\s*plan",
+      "goal\\s*of\\s*study"
+    ]
+  },
+  "academics.futurePlanAfterStudy": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "future plan after study",
+      "future plan",
+      "plan after graduation",
+      "plans after study"
+    ],
+    "regexPatterns": [
+      "future\\s*plan",
+      "plan\\s*after"
+    ]
+  },
+  "academics.medicalInfectious": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "infectious disease",
+      "tuberculosis"
+    ],
+    "regexPatterns": [
+      "infectious",
+      "tuberculosis"
+    ]
+  },
+  "academics.medicalAllergies": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "allergies",
+      "allergic"
+    ],
+    "regexPatterns": [
+      "allerg(y|ies|ic)"
+    ]
+  },
+  "academics.medicalHypertension": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "hyper tension",
+      "hypertension",
+      "high blood pressure"
+    ],
+    "regexPatterns": [
+      "hypertension",
+      "blood\\s*pressure"
+    ]
+  },
+  "academics.medicalDiabetes": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "diabetes",
+      "diabetic"
+    ],
+    "regexPatterns": [
+      "diabet"
+    ]
+  },
+  "academics.medicalHepatitis": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "hepatitis",
+      "type of hepatitis"
+    ],
+    "regexPatterns": [
+      "hepatitis"
+    ]
+  },
+  "academics.medicalMental": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "depression",
+      "anxiety",
+      "mental or mood disorder"
+    ],
+    "regexPatterns": [
+      "depression",
+      "anxiety",
+      "mental\\s*or\\s*mood"
+    ]
+  },
+  "academics.medicalAlcohol": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "addicted to alcohol",
+      "alcoholism",
+      "alcohol abuse"
+    ],
+    "regexPatterns": [
+      "alcohol"
+    ]
+  },
+  "academics.medicalNarcotics": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "abused any narcotic",
+      "narcotics",
+      "drug abuse"
+    ],
+    "regexPatterns": [
+      "narcotic",
+      "drug\\s*abuse"
+    ]
+  },
+  "academics.medicalHospitalized": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "hospitalized",
+      "hospitalization"
+    ],
+    "regexPatterns": [
+      "hospitalized",
+      "hospitalization"
+    ]
+  },
+  "academics.medicalSeriousInjury": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "serious injury",
+      "ailment or sickness"
+    ],
+    "regexPatterns": [
+      "serious\\s*injury",
+      "ailment",
+      "sickness"
+    ]
+  },
+  "academics.medicalVisualHearing": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "visual or hearing impairment",
+      "impairment"
+    ],
+    "regexPatterns": [
+      "visual\\s*or\\s*hearing",
+      "impairment"
+    ]
+  },
+  "academics.medicalPhysicalDisability": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "physical disabilities",
+      "physical disability"
+    ],
+    "regexPatterns": [
+      "physical\\s*disabilit"
+    ]
+  },
+  "academics.medicalCognitiveDisability": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "cognitive/mental disabilities",
+      "cognitive disability"
+    ],
+    "regexPatterns": [
+      "cognitive\\s*disabilit"
+    ]
+  },
+  "academics.medicalPrescribedMedication": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "prescribed medication",
+      "taking medication"
+    ],
+    "regexPatterns": [
+      "prescribed\\s*medication",
+      "taking\\s*medication"
+    ]
+  },
+  "academics.medicalSpecialDiet": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "special diet"
+    ],
+    "regexPatterns": [
+      "special\\s*diet"
+    ]
+  },
   "__arrayShapeSignatures__": {
     "education": [
       "school",

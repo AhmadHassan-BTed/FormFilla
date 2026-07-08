@@ -14,17 +14,46 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="brand">
-        <span class="brand-icon">🚀</span>
+        <svg class="brand-logo-icon" viewBox="0 0 24 24" width="24" height="24">
+          <defs>
+            <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6366f1" />
+              <stop offset="100%" stop-color="#a855f7" />
+            </linearGradient>
+          </defs>
+          <path d="M12 2s-4 4.5-4 9.5c0 1 .5 2.5 1.5 3.5l1.5-1.5v-7l1 1 1-1v7l1.5 1.5c1-1 1.5-2.5 1.5-3.5C16 6.5 12 2 12 2zm-1.5 17c-.83 0-1.5.67-1.5 1.5v1.5h6v-1.5c0-.83-.67-1.5-1.5-1.5h-3z" fill="url(#brand-grad)" />
+        </svg>
         <span class="brand-name">Hired</span>
       </div>
       <nav class="nav-menu">
-        <button class="nav-item active" data-section="personal">👤 Personal Info</button>
-        <button class="nav-item" data-section="education">🎓 Education</button>
-        <button class="nav-item" data-section="experience">💼 Experience</button>
-        <button class="nav-item" data-section="references">👥 References</button>
-        <button class="nav-item" data-section="academics">🏫 Academics & Scholarships</button>
-        <button class="nav-item" data-section="documents">📄 Documents & files</button>
-        <button class="nav-item" data-section="settings">⚙️ Settings & Import</button>
+        <button class="nav-item active" data-section="personal">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          Personal Info
+        </button>
+        <button class="nav-item" data-section="education">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
+          Education
+        </button>
+        <button class="nav-item" data-section="experience">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z"/></svg>
+          Experience
+        </button>
+        <button class="nav-item" data-section="references">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          References
+        </button>
+        <button class="nav-item" data-section="academics">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 3L1 9h22L12 3zm1 10h-2v8h2v-8zm4 0h-2v8h2v-8zm4 0h-2v8h2v-8zM4 13H2v8h2v-8zm4 0H6v8h2v-8z"/></svg>
+          Academics & Scholarships
+        </button>
+        <button class="nav-item" data-section="documents">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.89-1.99 1.99L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.89 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+          Documents & Files
+        </button>
+        <button class="nav-item" data-section="settings">
+          <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          Settings & Import
+        </button>
       </nav>
       <div class="sidebar-footer">
         <button id="save-btn" class="save-button">Save Changes</button>
@@ -221,7 +250,45 @@
         <section id="section-academics" class="content-section">
           <h2 class="section-title">Academics & Scholarships</h2>
           
-          <h3 class="subsection-title">Standardized Test Scores</h3>
+          <h3 class="subsection-title">Application Track & Citizenship</h3>
+          <div class="card grid-3">
+            <div class="form-group">
+              <label for="academics-applicationTrack">Application Track</label>
+              <input type="text" id="academics-applicationTrack" placeholder="e.g. Embassy Track">
+            </div>
+            <div class="form-group span-2">
+              <label for="academics-recommendedEmbassy">Recommended Embassy</label>
+              <input type="text" id="academics-recommendedEmbassy" placeholder="e.g. Embassy of the Republic of Korea to Pakistan">
+            </div>
+            <div class="form-group">
+              <label for="academics-applicationProgram">Application Program</label>
+              <input type="text" id="academics-applicationProgram" placeholder="e.g. General">
+            </div>
+            <div class="form-group">
+              <label for="academics-degreeProgram">Degree Program to Apply</label>
+              <input type="text" id="academics-degreeProgram" placeholder="e.g. Master's Degree">
+            </div>
+            <div class="form-group">
+              <label for="academics-desiredFieldOfStudy">Desired Field of Study (Division)</label>
+              <input type="text" id="academics-desiredFieldOfStudy" placeholder="e.g. Engineering (Artificial Intelligence)">
+            </div>
+            <div class="form-group">
+              <label for="academics-koreanCitizenshipApplicant">Korean Citizenship (Applicant)</label>
+              <select id="academics-koreanCitizenshipApplicant">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-koreanCitizenshipParent">Korean Citizenship (Parent/s)</label>
+              <select id="academics-koreanCitizenshipParent">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Standardized Test Scores & TOPIK</h3>
           <div class="card grid-3">
             <div class="form-group">
               <label for="academics-greVerbal">GRE Verbal Score</label>
@@ -255,21 +322,136 @@
               <label for="academics-actTotal">ACT Total Score</label>
               <input type="text" id="academics-actTotal" placeholder="e.g. 34">
             </div>
+            <div class="form-group">
+              <label for="academics-topikLevel">TOPIK Level</label>
+              <input type="text" id="academics-topikLevel" placeholder="e.g. Level 5">
+            </div>
+            <div class="form-group">
+              <label for="academics-topikTestHeld">TOPIK Test Round</label>
+              <input type="text" id="academics-topikTestHeld" placeholder="e.g. 81st">
+            </div>
+            <div class="form-group">
+              <label for="academics-topikTestDate">TOPIK Test Date</label>
+              <input type="text" id="academics-topikTestDate" placeholder="e.g. 2026-07-06">
+            </div>
           </div>
 
-          <h3 class="subsection-title">Research & Academic Standing</h3>
+          <h3 class="subsection-title">High School & Degree History</h3>
+          <div class="card grid-3">
+            <!-- High School -->
+            <div class="form-group">
+              <label for="academics-highSchoolName">High School Name</label>
+              <input type="text" id="academics-highSchoolName" placeholder="Punjab Group of Colleges">
+            </div>
+            <div class="form-group">
+              <label for="academics-highSchoolLocation">Location (Country)</label>
+              <input type="text" id="academics-highSchoolLocation" placeholder="Pakistan">
+            </div>
+            <div class="form-group">
+              <label for="academics-highSchoolGraduationYear">Year of Graduation</label>
+              <input type="text" id="academics-highSchoolGraduationYear" placeholder="2022">
+            </div>
+            
+            <!-- Bachelors Thesis & Pubs -->
+            <div class="form-group span-2">
+              <label for="academics-bachelorsThesisTitle">Bachelor's Degree Thesis Title</label>
+              <input type="text" id="academics-bachelorsThesisTitle" placeholder="e.g. Fractal Framework">
+            </div>
+            <div class="form-group span-3">
+              <label for="academics-bachelorsPublications">Bachelor's Published Books & Research Papers</label>
+              <textarea id="academics-bachelorsPublications" rows="3" placeholder="List any publications during bachelor's degree..."></textarea>
+            </div>
+
+            <!-- Masters Degree -->
+            <div class="form-group">
+              <label for="academics-mastersUniversityName">Master's University Name</label>
+              <input type="text" id="academics-mastersUniversityName" placeholder="e.g. Air University">
+            </div>
+            <div class="form-group">
+              <label for="academics-mastersLocation">Location (Country)</label>
+              <input type="text" id="academics-mastersLocation" placeholder="e.g. Pakistan">
+            </div>
+            <div class="form-group">
+              <label for="academics-mastersMajor">Major</label>
+              <input type="text" id="academics-mastersMajor" placeholder="e.g. Software Engineering">
+            </div>
+            <div class="form-group">
+              <label for="academics-mastersGraduationDate">Graduation/Award Date</label>
+              <input type="text" id="academics-mastersGraduationDate" placeholder="e.g. 2026-07">
+            </div>
+            <div class="form-group span-2">
+              <label for="academics-mastersThesisTitle">Master's Degree Thesis Title</label>
+              <input type="text" id="academics-mastersThesisTitle" placeholder="e.g. Advanced Federated Architectures">
+            </div>
+            <div class="form-group span-3">
+              <label for="academics-mastersPublications">Master's Published Books & Research Papers</label>
+              <textarea id="academics-mastersPublications" rows="3" placeholder="List any publications during master's degree..."></textarea>
+            </div>
+
+            <!-- Doctoral Degree -->
+            <div class="form-group">
+              <label for="academics-doctoralUniversityName">Doctoral University Name</label>
+              <input type="text" id="academics-doctoralUniversityName" placeholder="e.g. KAIST">
+            </div>
+            <div class="form-group">
+              <label for="academics-doctoralLocation">Location (Country)</label>
+              <input type="text" id="academics-doctoralLocation" placeholder="e.g. South Korea">
+            </div>
+            <div class="form-group">
+              <label for="academics-doctoralMajor">Major</label>
+              <input type="text" id="academics-doctoralMajor" placeholder="e.g. Computing">
+            </div>
+            <div class="form-group">
+              <label for="academics-doctoralGraduationDate">Graduation/Award Date</label>
+              <input type="text" id="academics-doctoralGraduationDate" placeholder="e.g. 2030-07">
+            </div>
+            <div class="form-group span-2">
+              <label for="academics-doctoralDissertationTitle">Doctoral Dissertation Title</label>
+              <input type="text" id="academics-doctoralDissertationTitle" placeholder="e.g. Decentralized Edge Frameworks">
+            </div>
+            <div class="form-group span-3">
+              <label for="academics-doctoralPublications">Doctoral Published Books & Research Papers</label>
+              <textarea id="academics-doctoralPublications" rows="3" placeholder="List any publications during doctoral degree..."></textarea>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Academic Transcript & Grades</h3>
           <div class="card grid-2">
             <div class="form-group">
-              <label for="academics-classRank">Class Rank / Percentile</label>
-              <input type="text" id="academics-classRank" placeholder="e.g. 1st out of 50">
+              <label for="academics-cgpaScale">CGPA indicated on Transcript / scale</label>
+              <input type="text" id="academics-cgpaScale" placeholder="e.g. 3.67 / 4.00">
             </div>
+            <div class="form-group">
+              <label for="academics-scorePercentile">Score Percentile</label>
+              <input type="text" id="academics-scorePercentile" placeholder="e.g. 92.00 / 100">
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Personal Statement & Study Plans</h3>
+          <div class="card">
+            <div class="form-group">
+              <label for="academics-personalStatement">Personal Statement</label>
+              <textarea id="academics-personalStatement" rows="8" placeholder="Introduce yourself, your motivation, academic backgrounds, hobbies..."></textarea>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+              <label for="academics-studyPlan">Study Plan (Language Study & Research Goals)</label>
+              <textarea id="academics-studyPlan" rows="8" placeholder="Describe your language learning plan and master's/doctoral research objectives..."></textarea>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+              <label for="academics-futurePlanAfterStudy">Future Plan after Study</label>
+              <textarea id="academics-futurePlanAfterStudy" rows="6" placeholder="Detail your plans after graduation (job search, research, PhD)..."></textarea>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Research & Advising</h3>
+          <div class="card grid-2">
             <div class="form-group">
               <label for="academics-proposedAdvisor">Proposed Advisor / Supervisor</label>
               <input type="text" id="academics-proposedAdvisor" placeholder="e.g. Dr. Sarah Jenkins">
             </div>
             <div class="form-group span-2">
-              <label for="academics-researchInterests">Research Interests & Description</label>
-              <textarea id="academics-researchInterests" rows="4" placeholder="Describe your areas of interest, research goals, or publication summaries..."></textarea>
+              <label for="academics-researchInterests">Research Interests Topic</label>
+              <textarea id="academics-researchInterests" rows="3" placeholder="Describe your areas of interest, research goals, or publication summaries..."></textarea>
             </div>
           </div>
 
@@ -282,6 +464,70 @@
             <div class="form-group checkbox-group" style="margin-top: 30px;">
               <input type="checkbox" id="academics-fundingRequired">
               <label for="academics-fundingRequired">Funding / Scholarship Support Required</label>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Personal Medical Assessment</h3>
+          <div class="card grid-2">
+            <div class="form-group">
+              <label for="academics-medicalInfectious">Had infectious diseases? (e.g. tuberculosis)</label>
+              <select id="academics-medicalInfectious"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalAllergies">Have allergies?</label>
+              <select id="academics-medicalAllergies"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalHypertension">Have hypertension?</label>
+              <select id="academics-medicalHypertension"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalDiabetes">Have diabetes?</label>
+              <select id="academics-medicalDiabetes"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalHepatitis">Have any type of Hepatitis?</label>
+              <select id="academics-medicalHepatitis"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalMental">Treated for depression/anxiety/mood disorder?</label>
+              <select id="academics-medicalMental"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalAlcohol">Ever been addicted to alcohol?</label>
+              <select id="academics-medicalAlcohol"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalNarcotics">Abused narcotics/stimulants/hallucinogens?</label>
+              <select id="academics-medicalNarcotics"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalHospitalized">Hospitalized in the last 2 years?</label>
+              <select id="academics-medicalHospitalized"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalSeriousInjury">Serious injury/ailment/sickness in last 5 years?</label>
+              <select id="academics-medicalSeriousInjury"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalVisualHearing">Have visual or hearing impairment?</label>
+              <select id="academics-medicalVisualHearing"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalPhysicalDisability">Have physical disabilities?</label>
+              <select id="academics-medicalPhysicalDisability"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalCognitiveDisability">Have cognitive/mental disabilities?</label>
+              <select id="academics-medicalCognitiveDisability"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalPrescribedMedication">Taking any prescribed medication?</label>
+              <select id="academics-medicalPrescribedMedication"><option value="No">No</option><option value="Yes">Yes</option></select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalSpecialDiet">Are you on a special diet?</label>
+              <select id="academics-medicalSpecialDiet"><option value="No">No</option><option value="Yes">Yes</option></select>
             </div>
           </div>
         </section>
@@ -307,6 +553,10 @@
             <div class="form-group checkbox-group" style="margin-top: 15px;">
               <input type="checkbox" id="settings-sensitiveCompensation">
               <label for="settings-sensitiveCompensation">Enable auto-filling of sensitive compensation fields (Current Salary, Desired Salary)</label>
+            </div>
+            <div class="form-group checkbox-group" style="margin-top: 15px;">
+              <input type="checkbox" id="settings-sensitiveMedical">
+              <label for="settings-sensitiveMedical">Enable auto-filling of sensitive personal medical assessments (Infectious diseases, allergies, history)</label>
             </div>
           </div>
 

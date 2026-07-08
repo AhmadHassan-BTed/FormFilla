@@ -103,6 +103,21 @@ body {
   font-weight: 600;
 }
 
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 12px;
+  fill: currentColor;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.brand-logo-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
 .sidebar-footer {
   padding: 0 16px;
   display: flex;
