@@ -28,8 +28,6 @@ export function hungarianMaxWeightMatching(fieldsCandidates: FieldCandidates[]):
   if (n === 0 || m === 0) return [];
 
   const dim = Math.max(n, m);
-  
-  // Cost matrix: we want to maximize sum of weights, so we minimize (100 - Weight)
   const cost: number[][] = Array.from({ length: dim }, () => new Array(dim).fill(100));
 
   for (let i = 0; i < n; i++) {
@@ -47,7 +45,6 @@ export function hungarianMaxWeightMatching(fieldsCandidates: FieldCandidates[]):
   const matchByCol = new Array(dim).fill(-1);
   const matchByRow = new Array(dim).fill(-1);
 
-  // Initial labeling
   for (let i = 0; i < dim; i++) {
     labelByRow[i] = Math.min(...cost[i]);
   }
@@ -59,7 +56,6 @@ export function hungarianMaxWeightMatching(fieldsCandidates: FieldCandidates[]):
     let currentRow = i;
     let currentCol = -1;
 
-    // Search for augmenting path
     while (currentRow !== -1) {
       let markedRow = currentRow;
       let minDelta = Infinity;
@@ -102,7 +98,6 @@ export function hungarianMaxWeightMatching(fieldsCandidates: FieldCandidates[]):
       currentRow = matchedRow;
     }
 
-    // Augment matching
     while (currentCol !== -1) {
       const prevRow = links[currentCol];
       const prevCol = matchByRow[prevRow];
@@ -112,7 +107,6 @@ export function hungarianMaxWeightMatching(fieldsCandidates: FieldCandidates[]):
     }
   }
 
-  // Collect results
   const assignments: Assignment[] = [];
   for (let i = 0; i < n; i++) {
     const matchedCol = matchByRow[i];

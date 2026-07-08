@@ -1,14 +1,13 @@
-import { FieldSignals, ScoredField, Candidate, Profile, SensitivityTier, GateType } from '../../shared/types.js';
-import { FIELD_RULES } from './dictionary.js';
+import { FieldSignals, ScoredField, Candidate, Profile, SensitivityTier, GateType } from '../../shared/types/index.js';
+import { FIELD_RULES } from '../../shared/dictionary/rules.js';
 import { tokenize } from './normalizer.js';
 import { diceCoefficient, jaroWinkler } from './fuzzy.js';
 import { hungarianMaxWeightMatching, FieldCandidates } from './assignment.js';
-import { HIGH_THRESHOLD, LOW_THRESHOLD, CONFIRM_PATTERN } from '../../shared/constants.js';
+import { HIGH_THRESHOLD, LOW_THRESHOLD, CONFIRM_PATTERN } from '../../shared/constants/constants.js';
 
 export function scoreField(signals: FieldSignals, profile: Profile): Candidate[] {
   const candidates: Candidate[] = [];
 
-  // Group candidate signal text fields with their relevance weights
   const sources = [
     { text: signals.label || '', weight: 1.0 },
     { text: signals.placeholder || '', weight: 0.9 },
@@ -18,7 +17,6 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
   ].filter(s => s.text.trim() !== '');
 
   for (const [candidateKey, rule] of Object.entries(FIELD_RULES)) {
-    // 1. Sensitivity tier check
     if (rule.sensitivityTier === 'sensitive' && rule.requiresOptIn) {
       const optInKey = rule.optInKey || 'sensitiveEeo';
       if (!profile.optIns || !profile.optIns[optInKey]) {
@@ -26,12 +24,10 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
       }
     }
 
-    // 2. Type compatibility check
     if (!rule.typeCompatible(signals.type, signals.tagName)) {
       continue;
     }
 
-    // 3. Autocomplete match (direct field-level check)
     let autocompleteBonus = 0;
     if (signals.autocomplete && rule.autocompleteTokens.includes(signals.autocomplete.toLowerCase())) {
       autocompleteBonus = 45;
@@ -39,7 +35,6 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
 
     let bestSourceScore = 0;
 
-    // Score each text source and take the maximum weighted score
     for (const source of sources) {
       const tokens = tokenize(source.text);
       const tokensStr = tokens.join(' ');
@@ -47,19 +42,16 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
 
       let score = 0;
 
-      // A. Exact phrase matches
       const exactMatch = rule.exactPhrases.some(phrase => phrase.toLowerCase() === tokensStr);
       if (exactMatch) {
         score += 35;
       }
 
-      // B. Regex pattern matches
       const regexMatch = rule.regexPatterns.some(pattern => pattern.test(tokensStr));
       if (regexMatch) {
         score += 20;
       }
 
-      // C. Fuzzy string similarity
       let maxSimilarity = 0;
       for (const phrase of rule.exactPhrases) {
         const dice = diceCoefficient(tokensStr, phrase);
@@ -73,7 +65,6 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
         score += maxSimilarity * 15;
       }
 
-      // D. Negative patterns penalty
       if (rule.negativePatterns) {
         const negativeMatch = rule.negativePatterns.some(pattern => pattern.test(tokensStr));
         if (negativeMatch) {
@@ -89,7 +80,6 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
 
     let totalScore = bestSourceScore + autocompleteBonus;
 
-    // E. Context bonus
     totalScore += blockContextBonus(signals.blockIndex, signals.blockType, candidateKey);
 
     if (totalScore >= LOW_THRESHOLD) {
@@ -179,7 +169,6 @@ export function resolveAllFields(
     });
   }
 
-  // Handle email confirm patterns
   for (let i = 0; i < scoredFields.length; i++) {
     const f1 = scoredFields[i];
     if (f1.key === 'personal.email' && f1.gate === 'confident') {

@@ -37,6 +37,27 @@ function copyAssets() {
   }
 }
 
+function readDotEnv() {
+  const env = {};
+  if (fs.existsSync('.env')) {
+    const content = fs.readFileSync('.env', 'utf-8');
+    const lines = content.split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+      const index = trimmed.indexOf('=');
+      if (index !== -1) {
+        const key = trimmed.substring(0, index).trim();
+        const val = trimmed.substring(index + 1).trim().replace(/^['"]|['"]$/g, '');
+        env[key] = val;
+      }
+    }
+  }
+  return env;
+}
+
+const env = readDotEnv();
+
 const buildOptions = {
   entryPoints,
   bundle: true,
@@ -46,6 +67,11 @@ const buildOptions = {
   sourcemap: true,
   format: 'esm',
   logLevel: 'info',
+  define: {
+    'process.env.DEBUG_MODE': JSON.stringify(env.DEBUG_MODE || 'false'),
+    'process.env.MOCK_STORAGE': JSON.stringify(env.MOCK_STORAGE || 'false'),
+    'process.env.BYPASS_CONFIRMATIONS': JSON.stringify(env.BYPASS_CONFIRMATIONS || 'false')
+  }
 };
 
 async function run() {

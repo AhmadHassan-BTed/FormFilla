@@ -1,4 +1,4 @@
-import { FillResult } from '../shared/types.js';
+import { FillResult } from '../shared/types/index.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const fillBtn = document.getElementById('fill-btn') as HTMLButtonElement;
@@ -12,12 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const countConfirm = document.getElementById('count-confirm') as HTMLSpanElement;
   const countUnmapped = document.getElementById('count-unmapped') as HTMLSpanElement;
 
-  // Open Options page in new tab
   optionsBtn.addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
   });
 
-  // Action to fill page
   fillBtn.addEventListener('click', async () => {
     fillBtn.disabled = true;
     const btnText = fillBtn.querySelector('.btn-text');
@@ -34,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error('No active browser tab detected.');
       }
 
-      // Check if page protocol is supported
       if (tab.url && (tab.url.startsWith('chrome://') || tab.url.startsWith('edge://') || tab.url.startsWith('about:'))) {
         throw new Error('Cannot fill forms on system pages.');
       }

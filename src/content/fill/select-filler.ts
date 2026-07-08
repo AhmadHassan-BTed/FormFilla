@@ -4,12 +4,10 @@ export function fillSelect(el: HTMLSelectElement, value: string): boolean {
   const options = Array.from(el.options);
   if (options.length === 0) return false;
 
-  // 1. Exact match (case insensitive)
   let matchIndex = options.findIndex(
     opt => (opt.text || opt.value || '').trim().toLowerCase() === value.toLowerCase()
   );
 
-  // 2. Fuzzy match
   if (matchIndex === -1) {
     const optionTexts = options.map(opt => (opt.text || opt.value || '').trim());
     const matchRes = bestMatch(optionTexts, value);
@@ -21,7 +19,6 @@ export function fillSelect(el: HTMLSelectElement, value: string): boolean {
   if (matchIndex !== -1) {
     const matchedValue = options[matchIndex].value;
     
-    // Set native value on select
     const descriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
     const nativeSetter = descriptor?.set;
     

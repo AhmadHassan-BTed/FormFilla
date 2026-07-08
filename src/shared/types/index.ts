@@ -33,8 +33,8 @@ export interface EducationEntry {
   school: string;
   degree: string;
   fieldOfStudy: string;
-  startDate?: string; // YYYY-MM
-  endDate?: string;   // YYYY-MM
+  startDate?: string;
+  endDate?: string;
   gpa?: string;
 }
 
@@ -42,8 +42,8 @@ export interface ExperienceEntry {
   company: string;
   title: string;
   location?: string;
-  startDate?: string; // YYYY-MM
-  endDate?: string;   // YYYY-MM (or "Present")
+  startDate?: string;
+  endDate?: string;
   description?: string;
 }
 
@@ -95,13 +95,13 @@ export interface FieldSignals {
   tagName: string;
   label?: string;
   legend?: string;
-  options?: string[]; // For select dropdowns
-  blockIndex?: number; // In repeated blocks (0-indexed)
+  options?: string[];
+  blockIndex?: number;
   blockType?: 'education' | 'experience' | 'references';
 }
 
 export interface Candidate {
-  key: string; // e.g. "personal.firstName" or "education[0].school"
+  key: string;
   score: number;
   tier: 'standard' | 'sensitive' | 'critical';
 }

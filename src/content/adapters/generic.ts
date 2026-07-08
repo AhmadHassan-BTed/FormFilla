@@ -1,6 +1,6 @@
-import { PlatformAdapter } from '../../shared/types.js';
+import { IPlatformAdapter } from './adapter.interface.js';
 
-export class GenericAdapter implements PlatformAdapter {
+export class GenericAdapter implements IPlatformAdapter {
   matches(): boolean {
     return true;
   }

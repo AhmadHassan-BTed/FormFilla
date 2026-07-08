@@ -1,33 +1,43 @@
-# Dependencies
+# Dependency directories
 node_modules/
+jspm_packages/
+web_modules/
 
-# Build outputs
+# Build and distribution outputs
 dist/
 build/
 out/
+*.zip
 
-# IDE and System files
-.idea/
-.vscode/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.DS_Store
-Thumbs.db
-
-# Environment variables
+# Local environment variables
 .env
 .env.local
 .env.*.local
 
-# Logs
+# Log files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Testing
+# Diagnostic / testing reports
 coverage/
+.nyc_output/
+html-report/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.classpath
+.settings/

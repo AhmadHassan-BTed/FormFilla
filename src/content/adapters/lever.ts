@@ -1,6 +1,6 @@
-import { PlatformAdapter } from '../../shared/types.js';
+import { IPlatformAdapter } from './adapter.interface.js';
 
-export class LeverAdapter implements PlatformAdapter {
+export class LeverAdapter implements IPlatformAdapter {
   matches(): boolean {
     return (
       window.location.hostname.includes('lever.co') ||

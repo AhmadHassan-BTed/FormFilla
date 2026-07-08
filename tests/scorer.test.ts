@@ -1,27 +1,10 @@
-// @vitest-environment jsdom
-import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
-
-// Mock chrome extension APIs for JSDOM test context
-globalThis.chrome = {
-  runtime: {
-    onMessage: {
-      addListener: () => {}
-    }
-  }
-} as any;
-
+import { describe, it, expect, beforeEach } from 'vitest';
 import { scanForFields } from '../src/content/dom/field-scanner.js';
-import { detectRepeatedBlocks } from '../src/content/dom/repeated-block-detector.js';
+import { detectRepeatedBlocks } from '../src/content/dom/repeated-block.js';
 import { extractSignals } from '../src/content/dom/signal-extractor.js';
 import { resolveAllFields } from '../src/content/matching/scorer.js';
-import { Profile } from '../src/shared/types.js';
-
-let getValueByPath: any;
-
-beforeAll(async () => {
-  const mod = await import('../src/content/index.js');
-  getValueByPath = mod.getValueByPath;
-});
+import { getValueByPath } from '../src/content/core/orchestrator.js';
+import { Profile } from '../src/shared/types/index.js';
 
 const mockProfile: Profile = {
   personal: {
@@ -90,25 +73,21 @@ describe('ApplyEngine Scoring and Alignment Pipeline', () => {
 
     const results = resolveAllFields(fieldsWithSignals, mockProfile);
 
-    // 1. Assert First Name maps to personal.firstName
     const firstNameResult = results.find(r => r.element.id === 'first_name');
     expect(firstNameResult).toBeDefined();
     expect(firstNameResult!.key).toBe('personal.firstName');
     expect(firstNameResult!.gate).toBe('confident');
 
-    // 2. Assert Email maps to personal.email
     const emailResult = results.find(r => r.element.id === 'email');
     expect(emailResult).toBeDefined();
     expect(emailResult!.key).toBe('personal.email');
     expect(emailResult!.gate).toBe('confident');
 
-    // 3. Assert SSN/National ID maps to personal.nationalId and triggers needs-confirm
     const ssnResult = results.find(r => r.element.id === 'ssn');
     expect(ssnResult).toBeDefined();
     expect(ssnResult!.key).toBe('personal.nationalId');
     expect(ssnResult!.gate).toBe('needs-confirm');
 
-    // 4. Assert Degree dropdown maps to education.highest.degree (due to highest context bonus)
     const degreeResult = results.find(r => r.element.id === 'degree');
     expect(degreeResult).toBeDefined();
     expect(degreeResult!.key).toBe('education.highest.degree');

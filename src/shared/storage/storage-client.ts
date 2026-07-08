@@ -1,16 +1,13 @@
-import { Profile } from './types.js';
+import { Profile } from '../types/index.js';
 
-// Fallback memory storage for environments without chrome.storage.local (like Vitest)
 let memoryProfile: Profile | null = null;
 const memoryLearnedMappings: Record<string, Record<string, string>> = {};
 const memoryFiles: Record<string, ArrayBuffer> = {};
 
-// Helper to check if chrome extension storage is available
 function isChromeStorageAvailable(): boolean {
   return typeof chrome !== 'undefined' && chrome.storage !== undefined && chrome.storage.local !== undefined;
 }
 
-// --- IndexedDB Helper for Binary Blobs ---
 const DB_NAME = 'JobApplierFiles';
 const STORE_NAME = 'files';
 const DB_VERSION = 1;
@@ -33,8 +30,6 @@ function openDB(): Promise<IDBDatabase> {
   });
 }
 
-// --- Storage Client Functions ---
-
 export async function getProfile(): Promise<Profile> {
   if (isChromeStorageAvailable()) {
     const data = await chrome.storage.local.get('profile');
@@ -47,7 +42,7 @@ export async function saveProfile(profile: Profile): Promise<void> {
   if (isChromeStorageAvailable()) {
     await chrome.storage.local.set({ profile });
   } else {
-    memoryProfile = JSON.parse(JSON.stringify(profile)); // Deep copy
+    memoryProfile = JSON.parse(JSON.stringify(profile));
   }
 }
 
@@ -80,7 +75,6 @@ export async function getFileBlob(key: string): Promise<ArrayBuffer> {
         if (request.result instanceof ArrayBuffer) {
           resolve(request.result);
         } else if (request.result && request.result.data instanceof ArrayBuffer) {
-          // In case we saved it wrapped
           resolve(request.result.data);
         } else {
           reject(new Error(`File not found or invalid type for key: ${key}`));

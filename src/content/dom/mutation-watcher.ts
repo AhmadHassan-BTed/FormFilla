@@ -1,6 +1,6 @@
-import { DEBOUNCE_MS } from '../../shared/constants.js';
+import { DEBOUNCE_MS } from '../../shared/constants/constants.js';
 import { scanForFields } from './field-scanner.js';
-import { DateFieldGroup } from '../../shared/types.js';
+import { DateFieldGroup } from '../../shared/types/index.js';
 
 export function watch(
   root: Node,
@@ -16,7 +16,6 @@ export function watch(
 
     const newFields: (Element | DateFieldGroup)[] = [];
     for (const node of nodes) {
-      // Find all fillable descendants under this added node
       const fields = scanForFields(node);
       newFields.push(...fields);
     }

@@ -7,7 +7,6 @@ export function fillChoiceGroup(elements: Element[], value: string): boolean {
     const htmlEl = el as HTMLInputElement;
     let labelText = '';
 
-    // Try finding label via "for" attribute
     if (htmlEl.id) {
       const label = document.querySelector(`label[for="${htmlEl.id}"]`);
       if (label && label.textContent) {
@@ -15,7 +14,6 @@ export function fillChoiceGroup(elements: Element[], value: string): boolean {
       }
     }
 
-    // Try finding wrapping label
     if (!labelText) {
       let parent = htmlEl.parentElement;
       while (parent) {
@@ -27,7 +25,6 @@ export function fillChoiceGroup(elements: Element[], value: string): boolean {
       }
     }
 
-    // Fallback to value or name
     if (!labelText) {
       labelText = htmlEl.value || htmlEl.name || '';
     }
@@ -39,7 +36,6 @@ export function fillChoiceGroup(elements: Element[], value: string): boolean {
   const isTrueVal = ['true', 'yes', 'y', '1'].includes(lowerVal);
   const isFalseVal = ['false', 'no', 'n', '0'].includes(lowerVal);
 
-  // Special handling for boolean fields (Yes/No prompts)
   if (isTrueVal || isFalseVal) {
     for (const opt of optionsInfo) {
       const optText = opt.labelText.toLowerCase();
@@ -54,7 +50,6 @@ export function fillChoiceGroup(elements: Element[], value: string): boolean {
     }
   }
 
-  // Normal matching
   const texts = optionsInfo.map(o => o.labelText);
   const matchRes = bestMatch(texts, value);
 

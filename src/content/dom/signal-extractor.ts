@@ -1,24 +1,19 @@
-import { FieldSignals, RepeatedBlock } from '../../shared/types.js';
+import { FieldSignals, RepeatedBlock } from '../../shared/types/index.js';
 
 export function extractSignals(el: Element, blocks: RepeatedBlock[]): FieldSignals {
   const htmlEl = el as HTMLElement;
   const tagName = el.tagName.toUpperCase();
   const type = (el.getAttribute('type') || '').toLowerCase();
   
-  // 1. Resolve label text
   let label = findLabel(htmlEl);
-
-  // 2. Resolve fieldset legend
   let legend = findLegend(el);
 
-  // 3. Resolve select options if select element
   let options: string[] = [];
   if (tagName === 'SELECT') {
     const select = el as HTMLSelectElement;
     options = Array.from(select.options).map(opt => (opt.text || opt.value || '').trim());
   }
 
-  // 4. Find if element is part of a repeated block
   let blockIndex: number | undefined;
   let blockType: 'education' | 'experience' | 'references' | undefined;
 
@@ -46,7 +41,6 @@ export function extractSignals(el: Element, blocks: RepeatedBlock[]): FieldSigna
 }
 
 function findLabel(el: HTMLElement): string | null {
-  // A. Try label[for="id"]
   if (el.id) {
     const doc = el.ownerDocument || document;
     const label = doc.querySelector(`label[for="${el.id}"]`);
@@ -55,7 +49,6 @@ function findLabel(el: HTMLElement): string | null {
     }
   }
 
-  // B. Try wrapping <label>
   let parent = el.parentElement;
   while (parent) {
     if (parent.tagName === 'LABEL') {
@@ -64,13 +57,11 @@ function findLabel(el: HTMLElement): string | null {
     parent = parent.parentElement;
   }
 
-  // C. Try aria-label
   const ariaLabel = el.getAttribute('aria-label');
   if (ariaLabel) {
     return ariaLabel.trim();
   }
 
-  // D. Try aria-labelledby
   const ariaLabelledBy = el.getAttribute('aria-labelledby');
   if (ariaLabelledBy) {
     const doc = el.ownerDocument || document;
@@ -80,8 +71,6 @@ function findLabel(el: HTMLElement): string | null {
     }
   }
 
-  // E. Proximity fallback
-  // Look at the text content of the immediately preceding sibling or parent text node
   let prev = el.previousElementSibling;
   if (prev && (prev.tagName === 'SPAN' || prev.tagName === 'LABEL' || prev.tagName === 'DIV')) {
     const text = prev.textContent?.trim();

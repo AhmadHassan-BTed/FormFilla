@@ -5,19 +5,15 @@ export async function fillCombobox(triggerEl: Element, value: string): Promise<b
     const htmlTrigger = triggerEl as HTMLElement;
     htmlTrigger.click();
 
-    // Yield to let layout updates propagate
     await new Promise(requestAnimationFrame);
 
-    // Find input element inside trigger or default to trigger itself
     const proxyInput = (triggerEl.querySelector('input') || triggerEl) as HTMLElement;
 
-    // Direct value assignment to proxy input to speed up or clear if possible
     if (proxyInput instanceof HTMLInputElement) {
       proxyInput.value = '';
       proxyInput.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
-    // Dispatch key events character-by-character to trigger search scripts
     for (const char of value) {
       dispatchKeyEvent(proxyInput, 'keydown', char);
       dispatchKeyEvent(proxyInput, 'keypress', char);
@@ -28,10 +24,9 @@ export async function fillCombobox(triggerEl: Element, value: string): Promise<b
       }
       
       dispatchKeyEvent(proxyInput, 'keyup', char);
-      await new Promise(resolve => setTimeout(resolve, 10)); // 10ms pause between characters
+      await new Promise(resolve => setTimeout(resolve, 10));
     }
 
-    // Wait for options list to render (up to 1500ms)
     const options = await waitForElements('[role="option"], li[data-option], .select2-results__option, .autocomplete-suggestion', 1500);
     
     if (options.length > 0) {
@@ -45,7 +40,6 @@ export async function fillCombobox(triggerEl: Element, value: string): Promise<b
       }
     }
 
-    // If matching failed, press Escape to close dropdown safely
     dispatchKeyEvent(proxyInput, 'keydown', 'Escape');
     dispatchKeyEvent(proxyInput, 'keyup', 'Escape');
     return false;

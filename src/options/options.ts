@@ -1,7 +1,6 @@
-import { getProfile, saveProfile, saveFileBlob, getFileBlob } from '../shared/storage-client.js';
-import { Profile, EducationEntry, ExperienceEntry, ReferenceEntry, DocumentFile } from '../shared/types.js';
+import { getProfile, saveProfile, saveFileBlob } from '../shared/storage/storage-client.js';
+import { Profile, EducationEntry, ExperienceEntry, ReferenceEntry, DocumentFile } from '../shared/types/index.js';
 
-// Global state holding profile JSON and binary files
 let currentProfile: Profile;
 const uploadedFiles: Record<string, { file: File; buffer: ArrayBuffer }> = {};
 
@@ -16,7 +15,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   saveBtn.addEventListener('click', saveAllProfileData);
 });
 
-// --- 1. Navigation Menu ---
 function setupNavigation() {
   const navItems = document.querySelectorAll('.nav-item');
   const sections = document.querySelectorAll('.content-section');
@@ -37,11 +35,9 @@ function setupNavigation() {
   });
 }
 
-// --- 2. Load Profile from Storage ---
 async function loadProfileData() {
   currentProfile = await getProfile();
 
-  // Populate Personal Details
   setInputValue('personal-firstName', currentProfile.personal.firstName);
   setInputValue('personal-lastName', currentProfile.personal.lastName);
   setInputValue('personal-middleName', currentProfile.personal.middleName);
@@ -50,7 +46,6 @@ async function loadProfileData() {
   setInputValue('personal-nationalId', currentProfile.personal.nationalId);
   setInputValue('personal-summary', currentProfile.personal.summary);
 
-  // Populate Address
   if (currentProfile.address) {
     setInputValue('address-street', currentProfile.address.street);
     setInputValue('address-city', currentProfile.address.city);
@@ -59,24 +54,20 @@ async function loadProfileData() {
     setInputValue('address-country', currentProfile.address.country);
   }
 
-  // Populate Links
   if (currentProfile.links) {
     setInputValue('links-linkedin', currentProfile.links.linkedin);
     setInputValue('links-github', currentProfile.links.github);
     setInputValue('links-portfolio', currentProfile.links.portfolio);
   }
 
-  // Populate Work Auth
   if (currentProfile.workAuthorization) {
     setCheckboxValue('work-authorized', currentProfile.workAuthorization.authorizedInUS);
     setCheckboxValue('work-sponsorship', currentProfile.workAuthorization.requiresSponsorship);
     setInputValue('work-visaType', currentProfile.workAuthorization.visaType);
   }
 
-  // Populate Sensitive Settings
   setCheckboxValue('settings-sensitiveEeo', currentProfile.optIns?.sensitiveEeo);
 
-  // Render file metadata names
   renderFileDetails('resume', currentProfile.documents?.['documents.resume']);
   renderFileDetails('coverLetter', currentProfile.documents?.['documents.coverLetter']);
   renderFileDetails('photo', currentProfile.documents?.['documents.photo']);
@@ -98,7 +89,7 @@ function renderFileDetails(key: string, fileInfo: DocumentFile | undefined) {
     if (fileInfo) {
       const sizeKB = Math.round(fileInfo.size / 1024);
       detailsEl.textContent = `Uploaded: ${fileInfo.name} (${sizeKB} KB)`;
-      detailsEl.style.color = '#10b981'; // Green
+      detailsEl.style.color = '#10b981';
     } else {
       detailsEl.textContent = 'No file uploaded';
       detailsEl.style.color = '';
@@ -106,7 +97,6 @@ function renderFileDetails(key: string, fileInfo: DocumentFile | undefined) {
   }
 }
 
-// --- 3. Dynamic Lists (Education, Experience, References) ---
 function setupDynamicLists() {
   const eduContainer = document.getElementById('education-list')!;
   const addEduBtn = document.getElementById('add-education-btn')!;
@@ -117,7 +107,6 @@ function setupDynamicLists() {
   const refContainer = document.getElementById('references-list')!;
   const addRefBtn = document.getElementById('add-reference-btn')!;
 
-  // Initial loads
   if (currentProfile.education) {
     currentProfile.education.forEach(entry => addEducationRow(eduContainer, entry));
   }
@@ -128,7 +117,6 @@ function setupDynamicLists() {
     currentProfile.references.forEach(entry => addReferenceRow(refContainer, entry));
   }
 
-  // Dynamic Add handlers
   addEduBtn.addEventListener('click', () => addEducationRow(eduContainer));
   addExpBtn.addEventListener('click', () => addExperienceRow(expContainer));
   addRefBtn.addEventListener('click', () => addReferenceRow(refContainer));
@@ -236,13 +224,12 @@ function addReferenceRow(container: HTMLElement, data?: ReferenceEntry) {
   container.appendChild(card);
 }
 
-// --- 4. File Upload Pickers ---
 function setupFilePickers() {
   const filesList = ['resume', 'coverLetter', 'photo'];
   filesList.forEach(key => {
     const picker = document.getElementById(`file-${key}`) as HTMLInputElement;
     if (picker) {
-      picker.addEventListener('change', (e) => {
+      picker.addEventListener('change', () => {
         const file = picker.files?.[0];
         if (file) {
           const reader = new FileReader();
@@ -267,14 +254,13 @@ function setupFilePickers() {
   });
 }
 
-// --- 5. Save All Profile Form Details ---
 async function saveAllProfileData() {
   const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
   const statusEl = document.getElementById('save-status')!;
   
   saveBtn.disabled = true;
   statusEl.textContent = 'Saving...';
-  statusEl.style.color = '#f59e0b'; // Amber
+  statusEl.style.color = '#f59e0b';
 
   try {
     const personal: any = {
@@ -307,7 +293,6 @@ async function saveAllProfileData() {
       visaType: getInputValue('work-visaType')
     };
 
-    // Gather dynamic arrays
     const education: EducationEntry[] = [];
     const eduCards = document.querySelectorAll('#education-list .list-item-card');
     eduCards.forEach(card => {
@@ -347,7 +332,6 @@ async function saveAllProfileData() {
       });
     });
 
-    // Write binary blobs to IndexedDB
     const documentsMetadata: Record<string, DocumentFile> = currentProfile.documents || {};
     for (const [key, upload] of Object.entries(uploadedFiles)) {
       await saveFileBlob(key, upload.buffer);
@@ -375,21 +359,19 @@ async function saveAllProfileData() {
       optIns
     };
 
-    // Save profile object in chrome storage
     await saveProfile(updatedProfile);
     currentProfile = updatedProfile;
 
-    // Reset temporary file cache
     for (const key of Object.keys(uploadedFiles)) {
       delete uploadedFiles[key];
     }
 
     statusEl.textContent = 'Changes saved successfully!';
-    statusEl.style.color = '#10b981'; // Green
+    statusEl.style.color = '#10b981';
   } catch (err) {
     console.error(err);
     statusEl.textContent = 'Failed to save.';
-    statusEl.style.color = '#ef4444'; // Red
+    statusEl.style.color = '#ef4444';
   } finally {
     saveBtn.disabled = false;
     setTimeout(() => {
@@ -408,13 +390,11 @@ function getCheckboxValue(id: string): boolean {
   return el ? el.checked : false;
 }
 
-// --- 6. Backup & Restore (JSON Export/Import) ---
 function setupBackupRestore() {
   const exportBtn = document.getElementById('export-btn')!;
   const importBtn = document.getElementById('import-btn')!;
   const importFile = document.getElementById('import-file') as HTMLInputElement;
 
-  // Export JSON
   exportBtn.addEventListener('click', () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(currentProfile, null, 2));
     const dlAnchorElem = document.createElement('a');
@@ -423,12 +403,10 @@ function setupBackupRestore() {
     dlAnchorElem.click();
   });
 
-  // Trigger file click
   importBtn.addEventListener('click', () => {
     importFile.click();
   });
 
-  // Load imported JSON file
   importFile.addEventListener('change', () => {
     const file = importFile.files?.[0];
     if (file) {
@@ -437,7 +415,6 @@ function setupBackupRestore() {
         try {
           const parsed = JSON.parse(reader.result as string);
           if (parsed && parsed.personal && parsed.personal.email) {
-            // Merge with existing documents keys if present
             if (currentProfile.documents) {
               parsed.documents = { ...currentProfile.documents, ...parsed.documents };
             }

@@ -1,4 +1,4 @@
-import { FillResult } from './types.js';
+import { FillResult } from '../types/index.js';
 
 export type MessageType = 'START_FILL' | 'FILL_RESULT' | 'PERMISSION_NEEDED' | 'CONFIRM_FIELD';
 

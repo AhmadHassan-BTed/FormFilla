@@ -1,4 +1,4 @@
-import { getProfile, saveProfile } from '../shared/storage-client.js';
+import { getProfile, saveProfile } from '../shared/storage/storage-client.js';
 
 chrome.runtime.onInstalled.addListener(async () => {
   console.log('JobApplier extension installed.');

@@ -9,15 +9,12 @@ export async function fillFileInput(
     const dt = new DataTransfer();
     dt.items.add(file);
 
-    // Try direct assignment
     el.files = dt.files;
     el.dispatchEvent(new Event('input', { bubbles: true }));
     el.dispatchEvent(new Event('change', { bubbles: true }));
 
-    // Await animation frame
     await new Promise(requestAnimationFrame);
 
-    // Check if direct assignment worked
     if (!el.files || el.files.length === 0) {
       const dropZone = findClosestDropZone(el);
       if (dropZone) {

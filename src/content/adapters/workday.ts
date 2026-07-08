@@ -1,6 +1,6 @@
-import { PlatformAdapter } from '../../shared/types.js';
+import { IPlatformAdapter } from './adapter.interface.js';
 
-export class WorkdayAdapter implements PlatformAdapter {
+export class WorkdayAdapter implements IPlatformAdapter {
   matches(): boolean {
     return (
       window.location.hostname.includes('workday') ||
@@ -10,8 +10,6 @@ export class WorkdayAdapter implements PlatformAdapter {
   }
 
   beforeScan(): void {
-    // Workday sometimes wraps inputs in shadow DOMs or frames.
-    // Ensure styles are set so our overlays draw nicely.
     console.log('WorkdayAdapter matched and preparing layout...');
   }
 }

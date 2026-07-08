@@ -1,4 +1,4 @@
-import { GateType } from '../../shared/types.js';
+import { GateType } from '../../shared/types/index.js';
 
 export function tagField(
   el: Element,
@@ -7,23 +7,21 @@ export function tagField(
 ): void {
   const htmlEl = el as HTMLElement;
 
-  // Clear existing tags/outlines on this element
   removeExistingTags(htmlEl);
 
-  // Setup styles based on gate status
   let color = '';
   switch (gate) {
     case 'confident':
-      color = '#22c55e'; // Green
+      color = '#22c55e';
       break;
     case 'review':
-      color = '#f59e0b'; // Amber
+      color = '#f59e0b';
       break;
     case 'unmapped':
-      color = '#9ca3af'; // Gray
+      color = '#9ca3af';
       break;
     case 'needs-confirm':
-      color = '#e11d48'; // Rose/Red for attention
+      color = '#e11d48';
       break;
   }
 
@@ -32,7 +30,6 @@ export function tagField(
     return;
   }
 
-  // Draw outline/glow
   const originalOutline = htmlEl.style.outline;
   const originalBoxShadow = htmlEl.style.boxShadow;
   const originalTransition = htmlEl.style.transition;
@@ -41,13 +38,11 @@ export function tagField(
   htmlEl.style.outline = `3px solid ${color}`;
   htmlEl.style.boxShadow = `0 0 8px ${color}`;
 
-  // Fade out effect after 6 seconds
   const fadeTimeout = setTimeout(() => {
     htmlEl.style.transition = 'outline 6s ease-out, box-shadow 6s ease-out';
     htmlEl.style.outline = '3px solid transparent';
     htmlEl.style.boxShadow = '0 0 8px transparent';
     
-    // Clean up inline styles once faded
     setTimeout(() => {
       htmlEl.style.outline = originalOutline;
       htmlEl.style.boxShadow = originalBoxShadow;
@@ -55,7 +50,6 @@ export function tagField(
     }, 6000);
   }, 1000);
 
-  // Instantly clear outline on user focus
   const focusHandler = () => {
     clearTimeout(fadeTimeout);
     htmlEl.style.outline = originalOutline;
@@ -71,12 +65,10 @@ function createConfirmBadge(el: HTMLElement, onConfirm?: () => void) {
   const rect = el.getBoundingClientRect();
   const badgeId = `applyengine-badge-${Math.random().toString(36).substr(2, 9)}`;
 
-  // Create badge wrapper
   const badge = doc.createElement('div');
   badge.id = badgeId;
   badge.setAttribute('data-applyengine-element', 'true');
   
-  // Exclude from scanning/interfering with page layout
   Object.assign(badge.style, {
     position: 'absolute',
     top: `${window.scrollY + rect.top}px`,
@@ -98,7 +90,6 @@ function createConfirmBadge(el: HTMLElement, onConfirm?: () => void) {
     animation: 'applyengine-bounce 1s infinite alternate'
   });
 
-  // Inject animation keyframes if not present
   if (!doc.getElementById('applyengine-styles')) {
     const style = doc.createElement('style');
     style.id = 'applyengine-styles';
@@ -111,17 +102,14 @@ function createConfirmBadge(el: HTMLElement, onConfirm?: () => void) {
     doc.head.appendChild(style);
   }
 
-  // Set element outline
   el.style.outline = '2px dashed #f59e0b';
   el.setAttribute('data-applyengine-badge-id', badgeId);
 
-  // Text label
   const text = doc.createElement('span');
   text.textContent = '🔒 National ID';
   text.style.fontWeight = '600';
   badge.appendChild(text);
 
-  // Confirm Button
   const btn = doc.createElement('button');
   btn.textContent = 'Confirm';
   Object.assign(btn.style, {
@@ -145,7 +133,6 @@ function createConfirmBadge(el: HTMLElement, onConfirm?: () => void) {
     
     if (onConfirm) onConfirm();
     
-    // Success feedback
     el.style.outline = '2px solid #22c55e';
     setTimeout(() => {
       el.style.outline = '';
@@ -158,7 +145,6 @@ function createConfirmBadge(el: HTMLElement, onConfirm?: () => void) {
   badge.appendChild(btn);
   doc.body.appendChild(badge);
 
-  // Update badge position on window resize/scroll
   const reposition = () => {
     const freshRect = el.getBoundingClientRect();
     badge.style.top = `${window.scrollY + freshRect.top}px`;
@@ -167,7 +153,6 @@ function createConfirmBadge(el: HTMLElement, onConfirm?: () => void) {
   window.addEventListener('resize', reposition);
   window.addEventListener('scroll', reposition);
 
-  // Clean up reposition handlers when badge is removed
   const observer = new MutationObserver((mutations) => {
     for (const m of mutations) {
       if (Array.from(m.removedNodes).includes(badge)) {

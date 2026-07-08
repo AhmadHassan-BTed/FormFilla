@@ -1,4 +1,4 @@
-import { SensitivityTier } from '../../shared/types.js';
+import { SensitivityTier } from '../types/index.js';
 
 export interface FieldRule {
   sensitivityTier: SensitivityTier;
@@ -28,7 +28,6 @@ function defaultTypeCompatible(type: string, tagName: string, allowedTypes?: str
   }
 
   if (allowedTypes && !allowedTypes.includes(normType)) {
-    // Treat standard text input types compatibly
     const isTextLikeInput = ['text', 'email', 'tel', 'url', 'number', 'date', 'password'].includes(normType) && normTag === 'INPUT';
     const isTextLikeAllowed = allowedTypes.some(t => ['text', 'email', 'tel', 'url', 'number', 'date', 'password'].includes(t));
     if (isTextLikeInput && isTextLikeAllowed) {
