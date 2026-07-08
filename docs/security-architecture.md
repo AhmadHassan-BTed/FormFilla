@@ -36,3 +36,12 @@ Recruitment portals often render form parts inside nested `<iframe>` containers.
 To protect sensitive candidate information, the matching rules dictate strict access tiers:
 * **EEO Protections:** Sensitive EEO rules (Race, Gender, Veteran, Disability) are protected by a strict opt-in flag. Unless the candidate toggles EEO support on the options dashboard, EEO match rules are completely skipped.
 * **Critical Gates:** Highly sensitive credentials (such as Social Security Numbers, National IDs, and Passport IDs) are marked as `critical`. The value is never auto-filled. The review highlighter overlays a persistent golden badge next to the element, requiring the user to explicitly click the "Confirm" action button to inject the value on each run.
+
+---
+
+## 5. Security Scopes of JSON Configurations
+
+Hired uses isolated JSON databases (`rules.json`, `profile-template.json`, `abbreviations.json`, `degrees.json`) to drive the parsing logic:
+* **No Code Execution:** Because these files are static JSON structures, they cannot execute scripts, preventing malicious modifications or prototype pollution from externalized dictionary entries.
+* **Metadata Stripping:** Prompt-engineering metadata (`__meta__`) and developer instructions are automatically deleted during options download operations, keeping the candidate's exported profile files clean of instructions and telemetry.
+

@@ -71,3 +71,17 @@ By participating in this project, agreement to abide by the [Code of Conduct](CO
    ```
 5. Commit the changes using descriptive commit messages.
 6. Push to the branch and open a Pull Request against the `main` branch.
+
+---
+
+## Contributing to JSON Databases (Expandable Configurations)
+
+To scale up Hired's parser and matching accuracy, contributions can be made directly to the **4 JSON Configuration Databases** without modifying TypeScript source code:
+
+1. **`src/shared/dictionary/rules.json`:** Expand input exact phrases, regex patterns, or repeated block signatures.
+2. **`src/options/profile-template.json`:** Add new default parameters matching the profile schema.
+3. **`src/shared/constants/abbreviations.json`:** Add acronym expansions.
+4. **`src/shared/constants/degrees.json`:** Add international degree ranks.
+
+*Each file includes a `"__meta__"` key outlining developer prompt instructions. You can load these files directly into advanced AI models to expand and validate matching scopes securely.*
+

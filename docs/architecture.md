@@ -83,3 +83,21 @@ Once assigned, scored fields are classified into gate behaviors based on their r
 1. **`standard` (e.g. Job Title, Name):** Auto-filled directly at high (score $\ge 70$) or medium (score $\ge 40$) confidence.
 2. **`sensitive` (e.g. Reference details, EEO data):** Auto-filled only at high confidence. Requires explicit user opt-in settings.
 3. **`critical` (e.g. Passport/SSN):** Never auto-filled. The review highlighter overlays a persistent floating badge requiring a manual click to confirm injection.
+
+---
+
+## 5. AI Dictionary Expansion & Accuracy Performance
+
+The scoring engine evaluates elements against raw data loaded from external JSON files. Making these dictionaries larger and more comprehensive directly enhances Hired's matching performance. The 4 target JSON databases to feed to AI models for expansion are:
+
+1. **`src/shared/dictionary/rules.json` (Field Selectors):**
+   Stores mapping directives. Expand the `exactPhrases` and `regexPatterns` to handle custom form inputs. Also contains `__arrayShapeSignatures__` which defines container mapping tags.
+2. **`src/options/profile-template.json` (Profile Schema):**
+   Stores export structures. Expand to support new candidate profile parameters.
+3. **`src/shared/constants/abbreviations.json` (Acronym Mappings):**
+   Stores normalization dictionaries. Expand to map short labels to full phrases.
+4. **`src/shared/constants/degrees.json` (Degree Rankings):**
+   Stores comparison rankings. Expand to compare international academic ranks.
+
+*Each file includes a `__meta__` JSON block containing structured prompt engineering guidelines for AI models.*
+
