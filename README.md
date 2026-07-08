@@ -114,7 +114,7 @@ Hired's matching engine relies entirely on externalized JSON databases rather th
 
 1. **[rules.json](file:///p:/JobApplier/src/shared/dictionary/rules.json) (Field Selectors & Signatures):**
    Defines document guidelines, repeated blocks, and input selectors. Expanding its `exactPhrases` and `regexPatterns` allows Hired to map highly customized inputs.
-2. **[profile-template.json](file:///p:/JobApplier/src/options/profile-template.json) (Profile Schema Layout):**
+2. **[profile-template.json](file:///p:/JobApplier/src/shared/dictionary/profile-template.json) (Profile Schema Layout):**
    Defines the export template schema. Expand this to align with new fields in `rules.json` to allow user pre-configurations.
 3. **[abbreviations.json](file:///p:/JobApplier/src/shared/constants/abbreviations.json) (Acronym maps):**
    Maps common input acronyms (e.g. `emp` -> `employer`). Expanding this prevents tokenization failures on short names.

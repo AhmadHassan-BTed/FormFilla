@@ -64,7 +64,7 @@ For custom selection elements (which are stylized divs without standard selects)
 Hired separates execution logic from semantic data. The matching algorithms are immutable, while all semantic mapping logic is stored in 4 decoupled, human-readable JSON files designed for independent AI scaling:
 
 * **`src/shared/dictionary/rules.json`:** Holds the selectors, regexes, and container signatures.
-* **`src/options/profile-template.json`:** Holds the candidate JSON profile structure.
+* **`src/shared/dictionary/profile-template.json`:** Holds the candidate JSON profile structure.
 * **`src/shared/constants/abbreviations.json`:** Holds text normalizer acronym mappings.
 * **`src/shared/constants/degrees.json`:** Holds comparative academic hierarchy ranks.
 

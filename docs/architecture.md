@@ -92,7 +92,7 @@ The scoring engine evaluates elements against raw data loaded from external JSON
 
 1. **`src/shared/dictionary/rules.json` (Field Selectors):**
    Stores mapping directives. Expand the `exactPhrases` and `regexPatterns` to handle custom form inputs. Also contains `__arrayShapeSignatures__` which defines container mapping tags.
-2. **`src/options/profile-template.json` (Profile Schema):**
+2. **`src/shared/dictionary/profile-template.json` (Profile Schema):**
    Stores export structures. Expand to support new candidate profile parameters.
 3. **`src/shared/constants/abbreviations.json` (Acronym Mappings):**
    Stores normalization dictionaries. Expand to map short labels to full phrases.

@@ -79,7 +79,7 @@ By participating in this project, agreement to abide by the [Code of Conduct](CO
 To scale up Hired's parser and matching accuracy, contributions can be made directly to the **4 JSON Configuration Databases** without modifying TypeScript source code:
 
 1. **`src/shared/dictionary/rules.json`:** Expand input exact phrases, regex patterns, or repeated block signatures.
-2. **`src/options/profile-template.json`:** Add new default parameters matching the profile schema.
+2. **`src/shared/dictionary/profile-template.json`:** Add new default parameters matching the profile schema.
 3. **`src/shared/constants/abbreviations.json`:** Add acronym expansions.
 4. **`src/shared/constants/degrees.json`:** Add international degree ranks.
 
