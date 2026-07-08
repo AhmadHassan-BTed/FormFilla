@@ -5,10 +5,6 @@
   "description": "Fills job application forms from local JSON profile data. No AI, no network calls.",
   "author": "AhmadHassan-BTed (https://github.com/AhmadHassan-BTed)",
   "homepage_url": "https://github.com/AhmadHassan-BTed/Hired",
-  "developer": {
-    "name": "AhmadHassan-BTed",
-    "url": "https://github.com/AhmadHassan-BTed"
-  },
   "permissions": ["storage", "scripting", "activeTab"],
   "optional_host_permissions": ["<all_urls>"],
   "background": {

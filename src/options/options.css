@@ -358,10 +358,20 @@ textarea:focus {
   padding: 10px 16px;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .secondary-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: inline-block;
 }
 
 /* File Upload cards */
