@@ -1,6 +1,6 @@
 # System Design - Data Flow and State Synchronization
 
-This document explains the data flow, persistence layout, and DOM writing abstractions used in JobApplier.
+This document explains the data flow, persistence layout, and DOM writing abstractions used in Hired.
 
 ---
 
@@ -20,7 +20,7 @@ This document explains the data flow, persistence layout, and DOM writing abstra
                                         +---------------------+
 ```
 
-* **Options Dashboard:** The primary setup interface. All textual configuration is written directly to `chrome.storage.local`. Large files (like resumes, cover letters, and pictures) are converted to `ArrayBuffer` objects and persisted inside browser-level **IndexedDB** sandboxes under the database name `JobApplierFiles`.
+* **Options Dashboard:** The primary setup interface. All textual configuration is written directly to `chrome.storage.local`. Large files (like resumes, cover letters, and pictures) are converted to `ArrayBuffer` objects and persisted inside browser-level **IndexedDB** sandboxes under the database name `HiredFiles`.
 * **Popup Controller:** A simple control panel. It queries the active tab window, triggers the content script, and outputs match count statistics.
 * **Content Script Core:** The central execution worker. It reads data from local sandbox storage, runs the scanners, scores matches, and mutates the form elements.
 
@@ -36,9 +36,9 @@ This document explains the data flow, persistence layout, and DOM writing abstra
 
 ## 3. Framework-Safe DOM Writing
 
-JobApplier implements a specialized value injector to bypass virtual DOM state overrides. Setting `element.value = "..."` directly on React, Angular, or Vue inputs only updates the visible DOM without syncing the framework's internal store.
+Hired implements a specialized value injector to bypass virtual DOM state overrides. Setting `element.value = "..."` directly on React, Angular, or Vue inputs only updates the visible DOM without syncing the framework's internal store.
 
-Our injector solves this by:
+The injector solves this by:
 1. Fetching the native element prototype descriptor setter (`HTMLInputElement.prototype` or `HTMLTextAreaElement.prototype`).
 2. Calling the native setter, bypassing the framework's overridden wrapper:
    ```typescript

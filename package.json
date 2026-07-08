@@ -1,5 +1,5 @@
 {
-  "name": "job-applier",
+  "name": "hired",
   "version": "0.1.0",
   "description": "Fills job application forms from local JSON profile data. No AI, no network calls.",
   "type": "module",

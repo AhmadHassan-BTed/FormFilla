@@ -1,12 +1,12 @@
-# Contributing to JobApplier
+# Contributing to Hired
 
-First off, thank you for taking the time to contribute! Contributions make the open-source community an amazing place to learn, inspire, and create.
+Thank you for taking the time to contribute. Contributions make the open-source community an amazing place to learn, inspire, and create.
 
-This guide outlines our development workflow and standards.
+This guide outlines the development workflow and standards.
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
+By participating in this project, agreement to abide by the [Code of Conduct](CODE_OF_CONDUCT.md) is expected.
 
 ## Getting Started
 
@@ -21,14 +21,14 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 1. Fork the repository on GitHub.
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/JobApplier.git
-   cd JobApplier
+   git clone https://github.com/YOUR_USERNAME/Hired.git
+   cd Hired
    ```
 3. Install dependencies:
    ```bash
    npm install
    ```
-4. Copy the environment template and set up your overrides:
+4. Copy the environment template and set up overrides:
    ```bash
    cp .env.example .env
    ```
@@ -42,7 +42,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 1. Open Chrome and navigate to `chrome://extensions/`.
 2. Enable **Developer mode** (toggle in the top-right corner).
 3. Click **Load unpacked** in the top-left.
-4. Select the `dist/` directory inside your cloned repository.
+4. Select the `dist/` directory inside the cloned repository.
 
 ---
 
@@ -54,7 +54,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 
 ## Pull Request Guidelines
 
-1. Create a branch for your changes:
+1. Create a branch for the changes:
    ```bash
    git checkout -b feature/your-feature-name
    # or
@@ -65,9 +65,9 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
    ```bash
    npm run test
    ```
-4. Format and lint your code:
+4. Format and lint the code:
    ```bash
    npm run build
    ```
-5. Commit your changes using descriptive commit messages.
-6. Push to your branch and open a Pull Request against the `main` branch.
+5. Commit the changes using descriptive commit messages.
+6. Push to the branch and open a Pull Request against the `main` branch.

@@ -1,11 +1,11 @@
 # Security Policy
 
-We take the security of this project seriously. Because JobApplier operates locally on personal candidate profile data, including documents, protecting your privacy is our primary focus.
+Security is prioritized in this project. Because Hired operates locally on personal candidate profile data, including documents, protecting candidate privacy is the primary focus.
 
 ## Local-First Security Design
 
-* **No Server Connectivity:** JobApplier does not communicate with external APIs, tracking services, or remote machine models. All data matching calculations are performed locally in memory.
-* **Storage Encryption:** Credentials and files are stored inside your browser's private local client sandboxes (`chrome.storage.local` and `IndexedDB`), protected by the browser's own filesystem sandbox.
+* **No Server Connectivity:** Hired does not communicate with external APIs, tracking services, or remote machine models. All data matching calculations are performed locally in memory.
+* **Storage Encryption:** Credentials and files are stored inside private local client sandboxes (`chrome.storage.local` and `IndexedDB`), protected by the browser's own filesystem sandbox.
 
 ## Supported Versions
 
@@ -18,7 +18,7 @@ Only the latest release version receives security updates.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability, please do not open a public GitHub issue. Instead, report it privately to our security team:
+If a security vulnerability is discovered, please do not open a public GitHub issue. Instead, report it privately to:
 
 * Email: **ahmadhassan.bted@gmail.com**
 
@@ -28,4 +28,4 @@ Please include:
 * Steps to reproduce the issue.
 * Any impact analysis.
 
-We will review your submission and respond within 48 hours to coordinate a security patch.
+Submissions will be reviewed and responded to within 48 hours to coordinate a security patch.

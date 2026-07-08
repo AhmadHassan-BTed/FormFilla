@@ -242,6 +242,6 @@ export function startOrchestrator() {
     }
   });
 
-  console.log('JobApplier content script active.');
+  console.log('Hired content script active.');
 }
 export { getValueByPath };

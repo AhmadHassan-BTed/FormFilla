@@ -1,12 +1,12 @@
 # Security & Sandbox Architecture
 
-This document describes the security controls and sandbox protections implemented in JobApplier.
+This document describes the security controls and sandbox protections implemented in Hired.
 
 ---
 
 ## 1. Local-First Security Design
 
-JobApplier operates under a strict **Zero-Trust, Zero-Network** security boundary:
+Hired operates under a strict **Zero-Trust, Zero-Network** security boundary:
 * **Zero Network Requests:** The extension codebase does not contain any calls to `fetch()`, `XMLHttpRequest`, or third-party tracking APIs.
 * **No Remote Processing:** All scoring, tokenization, normalizations, and Hungarian assignments are executed completely within the active browser tab's local context.
 * **No Telemetry Leakage:** Execution summary metrics (confident, review, unmapped, confirm counts) are sent back to the popup panel for display, but no actual profile values or field structures ever leave the browser tab boundaries.
@@ -15,9 +15,9 @@ JobApplier operates under a strict **Zero-Trust, Zero-Network** security boundar
 
 ## 2. Storage Sandbox Boundaries
 
-To prevent cross-site scripting (XSS) attacks from compromising candidate profiles, JobApplier isolates data storage:
+To prevent cross-site scripting (XSS) attacks from compromising candidate profiles, Hired isolates data storage:
 * **JSON Profile Store:** Textual profiles are saved inside `chrome.storage.local`. This store is isolated at the extension level, making it inaccessible to standard web pages.
-* **IndexedDB Binary Store:** Binary resumes, cover letters, and photo data are kept in the extension's local sandboxed IndexedDB database (`JobApplierFiles`). It is inaccessible to any client website script.
+* **IndexedDB Binary Store:** Binary resumes, cover letters, and photo data are kept in the extension's local sandboxed IndexedDB database (`HiredFiles`). It is inaccessible to any client website script.
 * **No Page-Context Exposure:** Content scripts run in an isolated execution sandbox. While they have access to the page's DOM, they do not share global namespace variables or window variables with the site's scripts, preventing page-level scripts from reading the extension's storage.
 
 ---

@@ -1,8 +1,8 @@
-<h1 align="center">JobApplier</h1>
+<h1 align="center">Hired</h1>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
-  <a href="https://github.com/AhmadHassan-BTed/JobApplier/actions"><img src="https://github.com/AhmadHassan-BTed/JobApplier/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
+  <a href="https://github.com/AhmadHassan-BTed/Hired/actions"><img src="https://github.com/AhmadHassan-BTed/Hired/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
   <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Version-0.1.0-purple.svg" alt="Version"></a>
   <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Language-TypeScript-blue.svg" alt="TypeScript"></a>
 </p>
@@ -17,13 +17,13 @@
 
 Job hunting is exhausting, repetitive, and increasingly dehumanizing. Candidates spend hours copy-pasting their professional profiles into applicant tracking systems (ATS) that often parse records inaccurately. 
 
-JobApplier was created by **Ahmad Hassan (B-Ted)** to reclaim candidate time. Built as a local-first browser extension, it processes all data in memory, ensuring that personal details (such as contact information, references, and resumes) never leave the local environment.
+Hired was created by **Ahmad Hassan (B-Ted)** to reclaim candidate time. Built as a local-first browser extension, it processes all data in memory, ensuring that personal details (such as contact information, references, and resumes) never leave the local environment.
 
 ---
 
 ## Technical Architecture
 
-JobApplier runs a structured analysis and injection pipeline inside the browser. It avoids fragile heuristics by utilizing classical bipartite graph matching.
+Hired runs a structured analysis and injection pipeline inside the browser. It avoids fragile heuristics by utilizing classical bipartite graph matching.
 
 ### 1. Element Scanning & Normalization
 
@@ -40,7 +40,7 @@ flowchart TD
 
 ### 2. Kuhn-Munkres (Hungarian) Scoring Engine
 
-Rather than using a greedy best-match strategy (which often leads to field misalignments), JobApplier models form filling as a **Maximum Weight Bipartite Matching** problem. The Kuhn-Munkres algorithm solves this globally, maximizing the overall score confidence across the form.
+Rather than using a greedy best-match strategy (which often leads to field misalignments), Hired models form filling as a **Maximum Weight Bipartite Matching** problem. The Kuhn-Munkres algorithm solves this globally, maximizing the overall score confidence across the form.
 
 ```mermaid
 flowchart TD
@@ -53,7 +53,7 @@ flowchart TD
 
 ### 3. Framework-Safe DOM Writing
 
-Standard value assignment fails on websites built with modern frameworks (React, Vue, Angular) because virtual DOM trees override standard property setters. JobApplier retrieves the browser's native property setter descriptors and dispatches bubbling events to trigger state updates.
+Standard value assignment fails on websites built with modern frameworks (React, Vue, Angular) because virtual DOM trees override standard property setters. Hired retrieves the browser's native property setter descriptors and dispatches bubbling events to trigger state updates.
 
 ```mermaid
 sequenceDiagram
@@ -87,7 +87,7 @@ sequenceDiagram
 ## Directory Structure
 
 ```
-JobApplier/
+Hired/
 ├── .github/               # CI/CD Workflows & Templates
 ├── docs/                  # Detailed System and Security Guides
 ├── src/
@@ -116,8 +116,8 @@ Install project dependencies and build the extension:
 
 ```bash
 # Clone the repository
-git clone https://github.com/AhmadHassan-BTed/JobApplier.git
-cd JobApplier
+git clone https://github.com/AhmadHassan-BTed/Hired.git
+cd Hired
 
 # Install local dependencies
 npm install

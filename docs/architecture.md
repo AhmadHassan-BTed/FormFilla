@@ -1,6 +1,6 @@
 # Architectural Blueprint - Matching Engine
 
-This document provides a technical breakdown of the matching and scoring subsystems in JobApplier.
+This document provides a technical breakdown of the matching and scoring subsystems in Hired.
 
 ---
 
@@ -48,15 +48,15 @@ If the element defines an `autocomplete` property that exactly matches a token l
 $$\text{Score}_{\text{autocomplete}} = 45$$
 
 ### B. Exact Phrase Match
-We check if any exact phrase listed in the rule's `exactPhrases` matches the tokenized input signal:
+The engine checks if any exact phrase listed in the rule's `exactPhrases` matches the tokenized input signal:
 $$\text{Score}_{\text{exact}} = 35$$
 
 ### C. Regular Expression Matches
-We evaluate the regex patterns against the signal tokens:
+The engine evaluates the regex patterns against the signal tokens:
 $$\text{Score}_{\text{regex}} = 20$$
 
 ### D. Fuzzy Similarity
-We calculate fuzzy similarity using the Jaro-Winkler metric and Dice's Coefficient, taking the maximum of the two:
+Fuzzy similarity is calculated using the Jaro-Winkler metric and Dice's Coefficient, taking the maximum of the two:
 $$\text{Similarity} = \max(\text{Dice}(A, B), \text{Jaro-Winkler}(A, B))$$
 If the similarity exceeds `0.6`, it receives a scaled boost:
 $$\text{Score}_{\text{similarity}} = \text{Similarity} \times 15$$
@@ -65,12 +65,12 @@ $$\text{Score}_{\text{similarity}} = \text{Similarity} \times 15$$
 
 ## 3. The Kuhn-Munkres (Hungarian) Resolver
 
-To avoid greedy misassignments, JobApplier models the matching problem as a **Maximum Weight Bipartite Matching** problem:
+To avoid greedy misassignments, Hired models the matching problem as a **Maximum Weight Bipartite Matching** problem:
 * **Vertices (Left):** Candidate input fields on the active DOM subtree.
 * **Vertices (Right):** Non-array keys defined in the candidate profile schema.
 * **Edges:** Plausible assignments between fields and keys, with edge weights representing the calculated matching score.
 
-We transform this into a minimization problem by defining the edge cost as:
+The assignment is transformed into a minimization problem by defining the edge cost as:
 $$\text{Cost}_{i,j} = 100 - \text{Score}_{i,j}$$
 
 The Hungarian algorithm runs in $\mathcal{O}(V^3)$ time, where $V$ is the dimension of the padded square matrix. It calculates the assignment that maximizes the sum of matched weights across the entire page, ensuring globally optimal accuracy.

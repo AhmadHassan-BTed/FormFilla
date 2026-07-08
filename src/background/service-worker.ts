@@ -1,7 +1,7 @@
 import { getProfile, saveProfile } from '../shared/storage/storage-client.js';
 
 chrome.runtime.onInstalled.addListener(async () => {
-  console.log('JobApplier extension installed.');
+  console.log('Hired extension installed.');
   try {
     const profile = await getProfile();
     if (!profile.personal.email) {

@@ -28,14 +28,14 @@ jobs:
     - name: Package Extension ZIP
       run: |
         cd dist
-        zip -r ../jobapplier-extension.zip .
+        zip -r ../hired-extension.zip .
         cd ..
 
     - name: Create GitHub Release
       id: create_release
       uses: softprops/action-gh-release@v2
       with:
-        files: jobapplier-extension.zip
+        files: hired-extension.zip
         draft: false
         prerelease: false
       env:

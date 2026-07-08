@@ -399,7 +399,7 @@ function setupBackupRestore() {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(currentProfile, null, 2));
     const dlAnchorElem = document.createElement('a');
     dlAnchorElem.setAttribute('href', dataStr);
-    dlAnchorElem.setAttribute('download', 'jobapplier_profile.json');
+    dlAnchorElem.setAttribute('download', 'hired_profile.json');
     dlAnchorElem.click();
   });
 

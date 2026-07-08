@@ -1,6 +1,6 @@
 # Support Guide
 
-Need assistance or have questions about JobApplier? Here's how you can find help.
+Need assistance or have questions about Hired? Here's how you can find help.
 
 ## Documentation
 

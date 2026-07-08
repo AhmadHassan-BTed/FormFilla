@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "JobApplier",
+  "name": "Hired",
   "version": "0.1.0",
   "description": "Fills job application forms from local JSON profile data. No AI, no network calls.",
   "permissions": ["storage", "scripting", "activeTab"],

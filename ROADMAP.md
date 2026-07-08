@@ -1,6 +1,6 @@
-# JobApplier Roadmap
+# Hired Roadmap
 
-Our vision is to build the ultimate local-first, privacy-respecting form engine for job hunters. Below is our development timeline.
+The objective is to build the ultimate local-first, privacy-respecting form engine for job hunters. Below is the development timeline.
 
 ## Phase 1: Core Scaffolder & Stability (Current)
 * [x] Manifest V3 standard compliance.
@@ -20,4 +20,4 @@ Our vision is to build the ultimate local-first, privacy-respecting form engine 
 
 ## Phase 4: Encryption & Privacy (Q1 2027)
 * [ ] **Encrypted Backup Files:** Password-protect JSON profile backups on export using client-side AES-GCM.
-* [ ] **Sandbox Sandbox Constraints:** Fully test browser permission scoping to ensure third-party frame isolation.
+* [ ] **Sandbox Constraints:** Fully test browser permission scoping to ensure third-party frame isolation.
