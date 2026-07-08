@@ -1,124 +1,187 @@
-# JobApplier
+<h1 align="center">JobApplier</h1>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Continuous Integration](https://github.com/AhmadHassan-BTed/JobApplier/actions/workflows/ci.yml/badge.svg)](https://github.com/AhmadHassan-BTed/JobApplier/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/Version-0.1.0-purple.svg)](CHANGELOG.md)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
+  <a href="https://github.com/AhmadHassan-BTed/JobApplier/actions"><img src="https://github.com/AhmadHassan-BTed/JobApplier/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Version-0.1.0-purple.svg" alt="Version"></a>
+  <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Language-TypeScript-blue.svg" alt="TypeScript"></a>
+</p>
 
-JobApplier is a local-first, privacy-respecting browser extension designed to fill job application forms using your local JSON profile data and documents. By operating entirely within your browser sandbox, it performs all analysis and autofilling local-first, executing no AI API calls, zero network calls, and ensuring no data leakage.
+<p align="center">
+  <strong>A local-first, privacy-respecting form engine designed to restore candidate dignity and speed in the modern job hunt.</strong>
+</p>
+
+<hr />
+
+## The Philosophy
+
+Job hunting is exhausting, repetitive, and increasingly dehumanizing. Candidates spend hours copy-pasting their professional profiles into applicant tracking systems (ATS) that often parse records inaccurately. 
+
+JobApplier was created by **Ahmad Hassan (B-Ted)** to reclaim candidate time. Built as a local-first browser extension, it processes all data in memory, ensuring that personal details (such as contact information, references, and resumes) never leave the local environment.
 
 ---
 
-## Technical Highlights
+## Technical Architecture
 
-* **Kuhn-Munkres (Hungarian) Resolver:** Models form filling as a Maximum Weight Bipartite Matching problem to globally resolve field assignments.
-* **Fuzzy Signal Scorer:** Uses custom implementations of Jaro-Winkler distance and Dice's Coefficient to evaluate element attributes (labels, placeholders, names, IDs).
-* **Framework-Safe Injector:** Bypasses virtual DOM frameworks (React, Angular, Vue) by invoking native prototype setters and dispatching bubbling change events.
-* **Sibling Fingerprinting:** Group sibling containers into repeated blocks to index entries (Work Experience #1, Education #2) before scoring.
-* **Drag-and-Drop Mocking:** Simulates synthetic `DataTransfer` file drops to bypass strict HTML5 file input constraints.
-* **Isolated Security Boundaries:** Critical items (e.g. SSNs, National IDs) require manual confirmation buttons.
+JobApplier runs a structured analysis and injection pipeline inside the browser. It avoids fragile heuristics by utilizing classical bipartite graph matching.
+
+### 1. Element Scanning & Normalization
+
+The system recursively scans the active DOM (including same-origin frame nodes) to locate target inputs. Elements undergo signal normalization (tokenization, case conversions, and abbreviation expansions) before scoring.
+
+```mermaid
+flowchart TD
+    DOM[Active DOM Subtree] --> Scan[Scanner: Find Inputs, Selects, & Textareas]
+    Scan --> Blocks[Repeated Block Detector: Identify School/Work Cards]
+    Blocks --> Extract[Signal Extractor: Read Label, Placeholder, ID, Name]
+    Extract --> Normalizer[Normalizer: Tokenize & Expand Abbreviations]
+    Normalizer --> Tokens[Normalized Tokens]
+```
+
+### 2. Kuhn-Munkres (Hungarian) Scoring Engine
+
+Rather than using a greedy best-match strategy (which often leads to field misalignments), JobApplier models form filling as a **Maximum Weight Bipartite Matching** problem. The Kuhn-Munkres algorithm solves this globally, maximizing the overall score confidence across the form.
+
+```mermaid
+flowchart TD
+    Tokens[Normalized Field Tokens] --> Scorer[Signal Scorer: Fuzzy Sim + Regex]
+    Profile[Candidate Profile JSON] --> Scorer
+    Scorer --> CostMatrix[Build Cost Matrix: 100 - Score]
+    CostMatrix --> Hungarian[Hungarian Minimization Algorithm]
+    Hungarian --> GlobalMatching[Globally Optimal Field-to-Key Mapping]
+```
+
+### 3. Framework-Safe DOM Writing
+
+Standard value assignment fails on websites built with modern frameworks (React, Vue, Angular) because virtual DOM trees override standard property setters. JobApplier retrieves the browser's native property setter descriptors and dispatches bubbling events to trigger state updates.
+
+```mermaid
+sequenceDiagram
+    participant E as Core Orchestrator
+    participant D as Target DOM Element
+    participant F as Web Framework (React/Vue/JS)
+    
+    E->>D: Resolve Value Assignment
+    E->>D: Call native prototype setter (bypass wrapper)
+    D-->>F: Update element value
+    E->>D: Dispatch event: 'input' (bubbling: true)
+    E->>D: Dispatch event: 'change' (bubbling: true)
+    F-->>F: Sync internal state store
+    Note over D,F: Element highlighted green/amber for review
+```
 
 ---
 
-## Directory Architecture
+## Features & Gates
+
+* **Zero Network Requests:** Data is stored locally using `chrome.storage.local` and IndexedDB. There are no tracking scripts or server APIs.
+* **Repeated Block Fingerprinting:** Correctly groups and indexes repeated lists (e.g. multiple jobs or degrees) by checking element layouts.
+* **Unified File Transfers:** Simulates drag-and-drop operations using synthetic `DataTransfer` streams to upload local resumes and cover letters.
+* **Sensitivity Gating:**
+  * **Standard (Green/Amber):** Fills details instantly and highlights them for quick visual checking.
+  * **EEO Protections (Opt-in):** Disables equal-opportunity fields unless they are explicitly enabled in the settings panel.
+  * **Critical Items (Needs Confirm):** Fields like Social Security Numbers are never auto-filled. Instead, a floating golden badge appears, requiring a manual click to confirm injection.
+
+---
+
+## Directory Structure
 
 ```
 JobApplier/
-├── .github/               # Automated GitHub CI/CD Actions and Templates
-├── docs/                  # Detailed Architectural & Security guides
+├── .github/               # CI/CD Workflows & Templates
+├── docs/                  # Detailed System and Security Guides
 ├── src/
-│   ├── background/        # Extension background service worker
-│   ├── content/           # Content script matching and filling logic
-│   │   ├── adapters/      # Site-specific platform adapters
-│   │   ├── core/          # Main execution orchestrator
-│   │   ├── dom/           # Element scanners and observation observers
-│   │   ├── fill/          # Value injectors and input simulators
-│   │   ├── ui/            # Highlighters and badge overlays
-│   ├── options/           # Profile settings dashboard (HTML/CSS/TS)
-│   ├── popup/             # Popup UI panel (HTML/CSS/TS)
-│   └── shared/            # Core business logic, types, and persistence
-│       ├── config/        # Environment config manager
-│       ├── constants/     # Metric scores, rankings, abbreviations
-│       ├── dictionary/    # Signal rules and signatures
-│       ├── messaging/     # Messaging type interfaces
-│       ├── storage/       # Local-first persistence wrapper
-│       └── types/         # Core TypeScript declarations
-├── tests/                 # Vitest test runner suites and mock scripts
-├── build.js               # esbuild build bundler configuration
-└── vitest.config.ts       # Test harness configuration
+│   ├── background/        # Service Worker bootstrapping
+│   ├── content/           # Core runtime engine
+│   │   ├── adapters/      # Site-specific platform adapters (Workday, Lever)
+│   │   ├── core/          # Orchestrator and logic bootstrappers
+│   │   ├── dom/           # DOM traversal and observers
+│   │   ├── fill/          # Value injectors and event simulation
+│   │   ├── ui/            # Highlighters and badge widgets
+│   ├── options/           # Dashboard settings panel (HTML/CSS/TS)
+│   ├── popup/             # Action panel (HTML/CSS/TS)
+│   └── shared/            # Common drivers, configs, and types
+├── tests/                 # JSDOM unit test runner suites
+├── build.js               # esbuild bundler configuration
+└── vitest.config.ts       # Test runner configuration
 ```
 
 ---
 
-## Getting Started
+## Setup & Development
 
-### Prerequisites
+### 1. Installation
 
-* Node.js (v18 or higher)
-* NPM
+Install project dependencies and build the extension:
 
-### Development Setup
+```bash
+# Clone the repository
+git clone https://github.com/AhmadHassan-BTed/JobApplier.git
+cd JobApplier
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/AhmadHassan-BTed/JobApplier.git
-   cd JobApplier
-   ```
-2. Install local packages:
-   ```bash
-   npm install
-   ```
-3. Set up the local environment configuration:
-   ```bash
-   cp .env.example .env
-   ```
-4. Build the extension:
-   ```bash
-   npm run build
-   ```
+# Install local dependencies
+npm install
 
-### Loading in Chrome
+# Copy local configurations
+cp .env.example .env
 
-1. Open Chrome and navigate to `chrome://extensions/`.
+# Build unpacked files
+npm run build
+```
+
+### 2. Loading the Extension in Chrome
+
+1. Navigate to `chrome://extensions/` in Google Chrome.
 2. Toggle **Developer mode** in the top-right corner.
 3. Click **Load unpacked** in the top-left corner.
-4. Select the `dist/` folder inside your project directory.
+4. Select the `dist/` directory inside this repository.
+
+### 3. Environment Variables
+
+<details>
+<summary><b>Click to expand environment configurations</b></summary>
+
+| Parameter | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `DEBUG_MODE` | `boolean` | `false` | Enables detailed logging in the browser console. |
+| `MOCK_STORAGE` | `boolean` | `false` | Uses an in-memory database mock for testing. |
+| `BYPASS_CONFIRMATIONS` | `boolean` | `false` | Automatically fills critical fields without requiring confirmation (for development use only). |
+
+</details>
 
 ---
 
-## Testing & Quality
+## Testing & Quality Assurance
 
-We run Vitest under a sandboxed JSDOM container to verify matching scoring pipelines.
+Static verification and unit testing are configured to validate changes:
 
-* **Execute test suite:**
-  ```bash
-  npm run test
-  ```
-* **Verify Types Compiler:**
-  ```bash
-  npx tsc --noEmit
-  ```
+```bash
+# Run unit and integration tests
+npm run test
 
----
+# Run static type checks
+npx tsc --noEmit
+```
 
-## DevOps & Docker Support
+Docker configurations are available to compile and test the extension within a standardized container:
 
-A Docker configuration is available to compile and test the extension within a standardized container environment.
-
-* **Build and execute tests in Docker:**
-  ```bash
-  docker-compose up --build
-  ```
+```bash
+# Run tests inside Docker
+docker-compose up --build
+```
 
 ---
 
-## Contributing
+## Roadmap
 
-We welcome contributions! Please review our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before opening pull requests.
+* **Q3 2026:** Custom field selection overrides saved to local storage.
+* **Q4 2026:** Platform adapters for Taleo, Workable, and Breezy HR.
+* **Q1 2027:** Encrypted profile backup exports using client-side AES-GCM.
 
-## Security
+---
 
-Please report vulnerabilities privately by emailing us at **ahmadhassan.bted@gmail.com**. Refer to our [Security Policy](SECURITY.md) for details.
+## License & Support
 
-## License
+This project is open-source and licensed under the [MIT License](LICENSE). 
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+For bug reports or support inquiries, open an issue in this repository or contact the author, **AhmadHassan-BTed**, at **ahmadhassan.bted@gmail.com**. Refer to the [Security Policy](SECURITY.md) for vulnerability reporting.
