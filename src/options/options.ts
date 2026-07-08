@@ -462,6 +462,43 @@ const EXTENSIVE_PROFILE_TEMPLATE = {
   }
 };
 
+function mergeProfileWithTemplate(profile: Profile, template: any): any {
+  const result = JSON.parse(JSON.stringify(template));
+  if (!profile) return result;
+
+  if (profile.personal) {
+    result.personal = { ...result.personal, ...profile.personal };
+  }
+  if ((profile as any).family) {
+    result.family = { ...result.family, ...(profile as any).family };
+  }
+  if (profile.address) {
+    result.address = { ...result.address, ...profile.address };
+  }
+  if (profile.links) {
+    result.links = { ...result.links, ...profile.links };
+  }
+  if (profile.workAuthorization) {
+    result.workAuthorization = { ...result.workAuthorization, ...profile.workAuthorization };
+  }
+  if (Array.isArray(profile.education) && profile.education.length > 0) {
+    result.education = profile.education;
+  }
+  if (Array.isArray(profile.experience) && profile.experience.length > 0) {
+    result.experience = profile.experience;
+  }
+  if (Array.isArray(profile.references) && profile.references.length > 0) {
+    result.references = profile.references;
+  }
+  if (profile.eeo) {
+    result.eeo = { ...result.eeo, ...profile.eeo };
+  }
+  if (profile.optIns) {
+    result.optIns = { ...result.optIns, ...profile.optIns };
+  }
+  return result;
+}
+
 function setupBackupRestore() {
   const exportBtn = document.getElementById('export-btn')!;
   const templateBtn = document.getElementById('template-btn')!;
@@ -477,7 +514,8 @@ function setupBackupRestore() {
   });
 
   templateBtn.addEventListener('click', () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(EXTENSIVE_PROFILE_TEMPLATE, null, 2));
+    const merged = mergeProfileWithTemplate(currentProfile, EXTENSIVE_PROFILE_TEMPLATE);
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(merged, null, 2));
     const dlAnchorElem = document.createElement('a');
     dlAnchorElem.setAttribute('href', dataStr);
     dlAnchorElem.setAttribute('download', 'hired_extensive_template.json');
