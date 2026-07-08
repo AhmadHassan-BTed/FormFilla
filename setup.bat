@@ -1,56 +1,42 @@
 @echo off
-title Hired - Local Setup Bootstrapper
-echo ===================================================
-echo Hired Extension - Development Environment Setup
+title FormFilla - Local Setup Bootstrapper
 echo ===================================================
 echo.
-
+echo FormFilla Extension - Development Environment Setup
+echo ===================================================
+echo.
+echo Checking Node.js installation...
 where node >nul 2>nul
-if %errorlevel% neq 0 (
-    echo [ERROR] Node.js is not installed or not in your PATH.
-    echo Please install Node.js from https://nodejs.org/ first.
-    echo.
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Node.js is not installed. Please install Node.js v18 or higher.
     pause
     exit /b 1
 )
-
-echo [1/3] Installing NPM packages...
+echo Node.js found: 
+node --version
+echo.
+echo Installing dependencies...
 call npm install
-if %errorlevel% neq 0 (
-    echo [ERROR] Failed to install NPM dependencies.
-    echo.
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] npm install failed. Check the output above.
     pause
     exit /b 1
 )
 echo.
-
-echo [2/3] Checking environment configurations...
-if not exist .env (
-    echo Copying .env.example to .env...
-    copy .env.example .env >nul
-) else (
-    echo .env configuration file already exists.
-)
-echo.
-
-echo [3/3] Compiling extension files...
+echo Building extension...
 call npm run build
-if %errorlevel% neq 0 (
-    echo [ERROR] Build compilation failed.
-    echo.
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Build failed. Check the output above.
     pause
     exit /b 1
 )
 echo.
-
-echo ===================================================
-echo Setup Completed Successfully!
-echo ===================================================
+echo Build complete!
 echo.
-echo To load Hired into Chrome:
+echo To load FormFilla into Chrome:
 echo 1. Open Google Chrome and go to chrome://extensions/
-echo 2. Enable "Developer mode" in the top-right corner.
-echo 3. Click "Load unpacked" and select the folder:
-echo    %~dp0dist
+echo 2. Enable Developer mode (toggle in top-right corner)
+echo 3. Click "Load unpacked"
+echo 4. Select the "dist" folder inside this directory
 echo.
 pause

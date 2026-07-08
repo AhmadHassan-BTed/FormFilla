@@ -28,14 +28,14 @@ jobs:
     - name: Package Extension ZIP
       run: |
         cd dist
-        zip -r ../hired-extension.zip .
+        zip -r ../formfilla-extension.zip .
         cd ..
 
     - name: Create GitHub Release
       id: create_release
       uses: softprops/action-gh-release@v2
       with:
-        files: hired-extension.zip
+        files: formfilla-extension.zip
         draft: false
         prerelease: false
       env:

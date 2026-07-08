@@ -1,7 +1,7 @@
 import { getProfile, saveProfile } from '../shared/storage/storage-client.js';
 
 chrome.runtime.onInstalled.addListener(async () => {
-  console.log('Hired extension installed.');
+  console.log('FormFilla extension installed.');
   try {
     const profile = await getProfile();
     if (!profile.personal.email) {

@@ -1,8 +1,8 @@
-<h1 align="center">Hired</h1>
+<h1 align="center">FormFilla</h1>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
-  <a href="https://github.com/AhmadHassan-BTed/Hired/actions"><img src="https://github.com/AhmadHassan-BTed/Hired/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
+  <a href="https://github.com/AhmadHassan-BTed/FormFilla/actions"><img src="https://github.com/AhmadHassan-BTed/FormFilla/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
   <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Version-0.1.0-purple.svg" alt="Version"></a>
   <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Language-TypeScript-blue.svg" alt="TypeScript"></a>
 </p>
@@ -17,13 +17,13 @@
 
 Job hunting is exhausting, repetitive, and increasingly dehumanizing. Candidates spend hours copy-pasting their professional profiles into applicant tracking systems (ATS) that often parse records inaccurately. 
 
-Hired was created by **Ahmad Hassan (B-Ted)** to reclaim candidate time. Built as a local-first browser extension, it processes all data in memory, ensuring that personal details (such as contact information, references, and resumes) never leave the local environment.
+FormFilla was created by **Ahmad Hassan (B-Ted)** to reclaim candidate time. Built as a local-first browser extension, it processes all data in memory, ensuring that personal details (such as contact information, references, and resumes) never leave the local environment.
 
 ---
 
 ## Technical Architecture
 
-Hired runs a structured analysis and injection pipeline inside the browser. It avoids fragile heuristics by utilizing classical bipartite graph matching.
+FormFilla runs a structured analysis and injection pipeline inside the browser. It avoids fragile heuristics by utilizing classical bipartite graph matching.
 
 ### 1. Element Scanning & Normalization
 
@@ -40,7 +40,7 @@ flowchart TD
 
 ### 2. Kuhn-Munkres (Hungarian) Scoring Engine
 
-Rather than using a greedy best-match strategy (which often leads to field misalignments), Hired models form filling as a **Maximum Weight Bipartite Matching** problem. The Kuhn-Munkres algorithm solves this globally, maximizing the overall score confidence across the form.
+Rather than using a greedy best-match strategy (which often leads to field misalignments), FormFilla models form filling as a **Maximum Weight Bipartite Matching** problem. The Kuhn-Munkres algorithm solves this globally, maximizing the overall score confidence across the form.
 
 ```mermaid
 flowchart TD
@@ -53,7 +53,7 @@ flowchart TD
 
 ### 3. Framework-Safe DOM Writing
 
-Standard value assignment fails on websites built with modern frameworks (React, Vue, Angular) because virtual DOM trees override standard property setters. Hired retrieves the browser's native property setter descriptors and dispatches bubbling events to trigger state updates.
+Standard value assignment fails on websites built with modern frameworks (React, Vue, Angular) because virtual DOM trees override standard property setters. FormFilla retrieves the browser's native property setter descriptors and dispatches bubbling events to trigger state updates.
 
 ```mermaid
 sequenceDiagram
@@ -87,7 +87,7 @@ sequenceDiagram
 ## Directory Structure
 
 ```
-Hired/
+FormFilla/
 ├── .github/               # CI/CD Workflows & Templates
 ├── docs/                  # Detailed System and Security Guides
 ├── src/
@@ -110,10 +110,10 @@ Hired/
 
 ## AI-Driven Dictionary Expansion (Enhancing Performance)
 
-Hired's matching engine relies entirely on externalized JSON databases rather than hardcoded logic. To scale up field matching accuracy and support custom career portals, developers and independent AI models can directly expand these 4 dictionary files. Expanding these files directly increases the coverage and intelligence of the matching solver:
+FormFilla's matching engine relies entirely on externalized JSON databases rather than hardcoded logic. To scale up field matching accuracy and support custom career portals, developers and independent AI models can directly expand these 4 dictionary files. Expanding these files directly increases the coverage and intelligence of the matching solver:
 
 1. **[rules.json](file:///p:/JobApplier/src/shared/dictionary/rules.json) (Field Selectors & Signatures):**
-   Defines document guidelines, repeated blocks, and input selectors. Expanding its `exactPhrases` and `regexPatterns` allows Hired to map highly customized inputs.
+   Defines document guidelines, repeated blocks, and input selectors. Expanding its `exactPhrases` and `regexPatterns` allows FormFilla to map highly customized inputs.
 2. **[profile-template.json](file:///p:/JobApplier/src/shared/dictionary/profile-template.json) (Profile Schema Layout):**
    Defines the export template schema. Expand this to align with new fields in `rules.json` to allow user pre-configurations.
 3. **[abbreviations.json](file:///p:/JobApplier/src/shared/constants/abbreviations.json) (Acronym maps):**
@@ -121,7 +121,7 @@ Hired's matching engine relies entirely on externalized JSON databases rather th
 4. **[degrees.json](file:///p:/JobApplier/src/shared/constants/degrees.json) (Education Rank Matrix):**
    Compares and ranks degrees. Expand this to add local or international variations.
 
-*Every JSON configuration contains an embedded `__meta__` prompt. You can supply these files directly to AI models to securely expand Hired's capacity without editing code.*
+*Every JSON configuration contains an embedded `__meta__` prompt. You can supply these files directly to AI models to securely expand FormFilla's capacity without editing code.*
 
 
 ---
@@ -134,8 +134,8 @@ Install project dependencies and build the extension:
 
 ```bash
 # Clone the repository
-git clone https://github.com/AhmadHassan-BTed/Hired.git
-cd Hired
+git clone https://github.com/AhmadHassan-BTed/FormFilla.git
+cd FormFilla
 
 # Install local dependencies
 npm install

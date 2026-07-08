@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Hired",
+  "name": "FormFilla",
   "version": "0.1.0",
   "description": "Fills job application forms from local JSON profile data. No AI, no network calls.",
   "author": "AhmadHassan-BTed (https://github.com/AhmadHassan-BTed)",
-  "homepage_url": "https://github.com/AhmadHassan-BTed/Hired",
+  "homepage_url": "https://github.com/AhmadHassan-BTed/FormFilla",
   "permissions": ["storage", "scripting", "activeTab"],
   "optional_host_permissions": ["<all_urls>"],
   "background": {

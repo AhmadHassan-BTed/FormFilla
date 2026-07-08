@@ -9,7 +9,7 @@ function isChromeStorageAvailable(): boolean {
   return typeof chrome !== 'undefined' && chrome.storage !== undefined && chrome.storage.local !== undefined;
 }
 
-const DB_NAME = 'HiredFiles';
+const DB_NAME = 'FormFillaFiles';
 const STORE_NAME = 'files';
 const DB_VERSION = 1;
 

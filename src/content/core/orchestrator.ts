@@ -246,6 +246,6 @@ export function startOrchestrator() {
     }
   });
 
-  console.log('Hired content script active.');
+  console.log('FormFilla content script active.');
 }
 export { getValueByPath };

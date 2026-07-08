@@ -1,4 +1,4 @@
-# Contributing to Hired
+# Contributing to FormFilla
 
 Thank you for taking the time to contribute. Contributions make the open-source community an amazing place to learn, inspire, and create.
 
@@ -21,8 +21,8 @@ By participating in this project, agreement to abide by the [Code of Conduct](CO
 1. Fork the repository on GitHub.
 2. Clone your fork locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/Hired.git
-   cd Hired
+   git clone https://github.com/YOUR_USERNAME/FormFilla.git
+   cd FormFilla
    ```
 3. Install dependencies:
    ```bash
@@ -76,7 +76,7 @@ By participating in this project, agreement to abide by the [Code of Conduct](CO
 
 ## Contributing to JSON Databases (Expandable Configurations)
 
-To scale up Hired's parser and matching accuracy, contributions can be made directly to the **4 JSON Configuration Databases** without modifying TypeScript source code:
+To scale up FormFilla's parser and matching accuracy, contributions can be made directly to the **4 JSON Configuration Databases** without modifying TypeScript source code:
 
 1. **`src/shared/dictionary/rules.json`:** Expand input exact phrases, regex patterns, or repeated block signatures.
 2. **`src/shared/dictionary/profile-template.json`:** Add new default parameters matching the profile schema.
@@ -84,4 +84,3 @@ To scale up Hired's parser and matching accuracy, contributions can be made dire
 4. **`src/shared/constants/degrees.json`:** Add international degree ranks.
 
 *Each file includes a `"__meta__"` key outlining developer prompt instructions. You can load these files directly into advanced AI models to expand and validate matching scopes securely.*
-

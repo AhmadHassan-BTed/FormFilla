@@ -1,71 +1,16 @@
-# System Design - Data Flow and State Synchronization
+# System Design
 
-This document explains the data flow, persistence layout, and DOM writing abstractions used in Hired.
+This document explains the data flow, persistence layout, and DOM writing abstractions used in FormFilla.
 
----
+## Data Persistence
 
-## 1. System Data Flow
-
-```mermaid
-flowchart TD
-    Dashboard[Options Dashboard] -->|Saves JSON/Files| Sandbox[(Local Sandbox:\n- chrome.storage\n- IndexedDB)]
-    Popup[Popup UI Panel] -->|Sends START_FILL| Content[Content Script]
-    Content <-->|Reads Profile| Sandbox
-    
-    subgraph Content Script [Content Script Core]
-        scan[scanForFields]
-        resolve[resolveAllFields]
-        write[writeValue]
-    end
-```
-
-* **Options Dashboard:** The primary setup interface. All textual configuration is written directly to `chrome.storage.local`. Large files (like resumes, cover letters, and pictures) are converted to `ArrayBuffer` objects and persisted inside browser-level **IndexedDB** sandboxes under the database name `HiredFiles`.
+* **Options Dashboard:** The primary setup interface. All textual configuration is written directly to `chrome.storage.local`. Large files (like resumes, cover letters, and pictures) are converted to `ArrayBuffer` objects and persisted inside browser-level **IndexedDB** sandboxes under the database name `FormFillaFiles`.
 * **Popup Controller:** A simple control panel. It queries the active tab window, triggers the content script, and outputs match count statistics.
-* **Content Script Core:** The central execution worker. It reads data from local sandbox storage, runs the scanners, scores matches, and mutates the form elements.
 
----
+## DOM Writing Abstractions
 
-## 2. State & Module Boundaries
+FormFilla implements a specialized value injector to bypass virtual DOM state overrides. Setting `element.value = "..."` directly on React, Angular, or Vue inputs only updates the visible DOM without syncing the framework's internal store.
 
-* **Immutable Configs:** Configuration constants, dictionary rules, and ranking indexes are immutable, stateless configurations.
-* **Storage Wrapper Isolation:** All storage modifications occur via [storage-client.ts](../../src/shared/storage/storage-client.ts). Content scripts and settings pages access persistence only through this contract.
-* **State Sync:** Background scripts operate as transient workers and do not retain business state in memory, conforming to Chrome Manifest V3 service-worker lifecycle limits.
+## JSON Database Architecture
 
----
-
-## 3. Framework-Safe DOM Writing
-
-Hired implements a specialized value injector to bypass virtual DOM state overrides. Setting `element.value = "..."` directly on React, Angular, or Vue inputs only updates the visible DOM without syncing the framework's internal store.
-
-The injector solves this by:
-1. Fetching the native element prototype descriptor setter (`HTMLInputElement.prototype` or `HTMLTextAreaElement.prototype`).
-2. Calling the native setter, bypassing the framework's overridden wrapper:
-   ```typescript
-   nativeSetter.call(element, value);
-   ```
-3. Dispatching bubbling `input` and `change` events on the input node so framework reactive hooks catch and commit the updates.
-
----
-
-## 4. Custom Combobox Adapters
-
-For custom selection elements (which are stylized divs without standard selects):
-* The adapter fires a click event on the combobox trigger element to mount the options dropdown.
-* It simulates character-by-character typing into the search node to trigger client-side filtration logic.
-* It polls the DOM (up to `1500ms`) for elements matching standard combobox selectors (`[role="option"]`, etc.).
-* It evaluates the mounted options using fuzzy string matching and clicks the winning option.
-* If it fails to find a match, it dispatches an `Escape` key event to close the dropdown cleanly.
-
----
-
-## 5. Extensible JSON Configuration Databases
-
-Hired separates execution logic from semantic data. The matching algorithms are immutable, while all semantic mapping logic is stored in 4 decoupled, human-readable JSON files designed for independent AI scaling:
-
-* **`src/shared/dictionary/rules.json`:** Holds the selectors, regexes, and container signatures.
-* **`src/shared/dictionary/profile-template.json`:** Holds the candidate JSON profile structure.
-* **`src/shared/constants/abbreviations.json`:** Holds text normalizer acronym mappings.
-* **`src/shared/constants/degrees.json`:** Holds comparative academic hierarchy ranks.
-
-*AI models can parse, add entries to, and validate these files directly using instructions embedded under their respective `"__meta__"` keys, enhancing matching performance without affecting the TypeScript compiler.*
-
+FormFilla separates execution logic from semantic data. The matching algorithms are immutable, while all semantic mapping logic is stored in 4 decoupled, human-readable JSON files designed for independent AI scaling.
