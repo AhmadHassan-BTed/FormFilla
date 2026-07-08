@@ -1,0 +1,34 @@
+{
+  "__meta__": {
+    "instructions": [
+      "AI INSTRUCTION SET FOR EXTENDING ABBREVIATIONS:",
+      "1. KEY FORMAT: The key must be a lowercase acronym or abbreviation common in DOM layouts (e.g. 'pwd', 'fname').",
+      "2. VALUE FORMAT: The value must be the fully expanded lowercase semantic phrase (e.g. 'password', 'first name').",
+      "3. GENERALITY: Avoid hyper-specific company jargon. Keep abbreviations widely applicable to applicant tracking forms."
+    ]
+  },
+  "fname": "first name",
+  "lname": "last name",
+  "mname": "middle name",
+  "dob": "date of birth",
+  "ssn": "social security number",
+  "tel": "phone number",
+  "phone": "phone number",
+  "mobile": "phone number",
+  "cell": "phone number",
+  "addr": "address",
+  "cv": "curriculum vitae",
+  "resume": "resume",
+  "gpa": "grade point average",
+  "grad": "graduation",
+  "univ": "university",
+  "sch": "school",
+  "deg": "degree",
+  "loc": "location",
+  "desc": "description",
+  "pos": "position",
+  "ref": "reference",
+  "rel": "relationship",
+  "pwd": "password",
+  "passwd": "password"
+}
