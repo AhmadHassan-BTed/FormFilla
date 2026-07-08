@@ -38,7 +38,7 @@ function openDB(): Promise<IDBDatabase> {
 export async function getProfile(): Promise<Profile> {
   if (isChromeStorageAvailable()) {
     const data = await chrome.storage.local.get('profile');
-    return data.profile || createEmptyProfile();
+    return (data as any).profile || createEmptyProfile();
   }
   return memoryProfile || createEmptyProfile();
 }
@@ -55,7 +55,7 @@ export async function getLearnedMapping(domain: string): Promise<Record<string, 
   if (isChromeStorageAvailable()) {
     const key = `mapping:${domain}`;
     const data = await chrome.storage.local.get(key);
-    return data[key] || null;
+    return (data as any)[key] || null;
   }
   return memoryLearnedMappings[domain] || null;
 }

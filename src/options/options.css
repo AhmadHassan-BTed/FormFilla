@@ -61,6 +61,7 @@ body {
   font-size: 20px;
   font-weight: 700;
   background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;

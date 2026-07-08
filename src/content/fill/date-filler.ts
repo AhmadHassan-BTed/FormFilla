@@ -41,10 +41,11 @@ export function fillDate(field: HTMLInputElement | DateFieldGroup, isoDate: stri
   }
 
   // 1. Handle Date Field Group
-  if ('type' in field && field.type === 'date-group') {
-    const mOk = fillSubEl(field.monthEl, month, monthName);
-    const dOk = fillSubEl(field.dayEl, day, '');
-    const yOk = fillSubEl(field.yearEl, year, '');
+  if ('type' in field && (field as any).type === 'date-group') {
+    const group = field as DateFieldGroup;
+    const mOk = fillSubEl(group.monthEl, month, monthName);
+    const dOk = fillSubEl(group.dayEl, day, '');
+    const yOk = fillSubEl(group.yearEl, year, '');
     return mOk && dOk && yOk;
   }
 

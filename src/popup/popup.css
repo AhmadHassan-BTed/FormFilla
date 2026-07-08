@@ -58,6 +58,7 @@ body {
   font-size: 18px;
   font-weight: 700;
   background: var(--primary-accent);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
