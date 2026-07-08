@@ -451,6 +451,38 @@ const EXTENSIVE_PROFILE_TEMPLATE = {
       phone: "+1 (555) 012-3456"
     }
   ],
+  documents: {
+    "documents.resume": {
+      name: "resume.pdf",
+      type: "application/pdf",
+      size: 12345,
+      lastModified: 1625000000000
+    },
+    "documents.coverLetter": {
+      name: "cover_letter.pdf",
+      type: "application/pdf",
+      size: 54321,
+      lastModified: 1625000000000
+    },
+    "documents.photo": {
+      name: "photo.jpg",
+      type: "image/jpeg",
+      size: 15000,
+      lastModified: 1625000000000
+    },
+    "documents.passport": {
+      name: "passport.pdf",
+      type: "application/pdf",
+      size: 25000,
+      lastModified: 1625000000000
+    },
+    "documents.cnic": {
+      name: "cnic.pdf",
+      type: "application/pdf",
+      size: 18000,
+      lastModified: 1625000000000
+    }
+  },
   eeo: {
     gender: "Male",
     race: "White",
@@ -492,6 +524,9 @@ function mergeProfileWithTemplate(profile: Profile, template: any): any {
   }
   if (profile.eeo) {
     result.eeo = { ...result.eeo, ...profile.eeo };
+  }
+  if (profile.documents) {
+    result.documents = { ...result.documents, ...profile.documents };
   }
   if (profile.optIns) {
     result.optIns = { ...result.optIns, ...profile.optIns };

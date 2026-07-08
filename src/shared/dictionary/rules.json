@@ -1,4 +1,15 @@
 {
+  "__meta__": {
+    "instructions": [
+      "AI INSTRUCTION SET FOR EXTENDING DICTIONARY RULES:",
+      "1. KEY FORMAT: The rule key must match the JSON path in the candidate profile schema (e.g. 'documents.passport', 'personal.firstName').",
+      "2. TIERING: Specify 'sensitivityTier' as 'standard', 'sensitive', or 'critical'. Critical inputs (e.g. SSN) will trigger verification overlays.",
+      "3. ELEMENT TYPE SCAFFOLD: Use 'allowedTypes' to constrain inputs by standard HTML type tags (e.g. ['file'] for file widgets, ['email'] for email fields).",
+      "4. TARGET MATCHES: Provide descriptive match lists. Use 'exactPhrases' for literal string checks (lowercase) and 'regexPatterns' for case-insensitive regular expression strings.",
+      "5. REGEX COMPATIBILITY: Provide clean regex strings. Avoid enclosing characters (like /^pattern$/i). Backslashes must be double-escaped (e.g. '\\s' becomes '\\\\s').",
+      "6. COHESION: Do not create overlapping or duplicate rule keys. Ensure every rule remains completely decoupled and independent."
+    ]
+  },
   "personal.firstName": {
     "exactPhrases": ["first name", "given name", "forename"],
     "regexPatterns": ["first\\s*name", "given\\s*name", "^forename", "^fname"],
@@ -200,6 +211,16 @@
     "allowedTypes": ["file"],
     "exactPhrases": ["photo", "headshot", "picture", "upload photo", "upload picture"],
     "regexPatterns": ["photo", "headshot", "picture", "image"]
+  },
+  "documents.passport": {
+    "allowedTypes": ["file"],
+    "exactPhrases": ["passport", "upload passport", "passport photo", "passport copy", "passport page"],
+    "regexPatterns": ["passport"]
+  },
+  "documents.cnic": {
+    "allowedTypes": ["file"],
+    "exactPhrases": ["cnic", "national identity card", "national id card", "cnic front", "cnic back", "upload cnic", "cnic photo", "cnic copy"],
+    "regexPatterns": ["cnic", "national\\s*id\\s*card"]
   },
   "eeo.gender": {
     "sensitivityTier": "sensitive",

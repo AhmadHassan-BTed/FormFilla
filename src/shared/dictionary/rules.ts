@@ -43,6 +43,7 @@ function defaultTypeCompatible(type: string, tagName: string, allowedTypes?: str
 const compiledRules: Record<string, FieldRule> = {};
 
 for (const [key, raw] of Object.entries(rawRules)) {
+  if (key.startsWith('__')) continue;
   const rawRule = raw as any;
   compiledRules[key] = {
     sensitivityTier: rawRule.sensitivityTier || 'standard',
