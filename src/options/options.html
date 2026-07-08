@@ -22,6 +22,7 @@
         <button class="nav-item" data-section="education">🎓 Education</button>
         <button class="nav-item" data-section="experience">💼 Experience</button>
         <button class="nav-item" data-section="references">👥 References</button>
+        <button class="nav-item" data-section="academics">🏫 Academics & Scholarships</button>
         <button class="nav-item" data-section="documents">📄 Documents & files</button>
         <button class="nav-item" data-section="settings">⚙️ Settings & Import</button>
       </nav>
@@ -186,6 +187,102 @@
               <input type="file" id="file-photo" accept="image/*">
               <div class="file-details" id="photo-details">No file chosen</div>
             </div>
+
+            <div class="file-upload-card">
+              <span class="file-icon">✍️</span>
+              <h3>Statement of Purpose (SOP)</h3>
+              <input type="file" id="file-sop" accept=".pdf,.doc,.docx,.txt">
+              <div class="file-details" id="sop-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <span class="file-icon">🔬</span>
+              <h3>Research Proposal / Study Plan</h3>
+              <input type="file" id="file-researchProposal" accept=".pdf,.doc,.docx,.txt">
+              <div class="file-details" id="researchProposal-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <span class="file-icon">🤝</span>
+              <h3>Recommendation Letter</h3>
+              <input type="file" id="file-recommendationLetter" accept=".pdf,.doc,.docx">
+              <div class="file-details" id="recommendationLetter-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <span class="file-icon">💰</span>
+              <h3>Financial Statement / Proof of Income</h3>
+              <input type="file" id="file-financialStatement" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+              <div class="file-details" id="financialStatement-details">No file chosen</div>
+            </div>
+        </section>
+
+        <!-- SECTION: Academics & Scholarships -->
+        <section id="section-academics" class="content-section">
+          <h2 class="section-title">Academics & Scholarships</h2>
+          
+          <h3 class="subsection-title">Standardized Test Scores</h3>
+          <div class="card grid-3">
+            <div class="form-group">
+              <label for="academics-greVerbal">GRE Verbal Score</label>
+              <input type="text" id="academics-greVerbal" placeholder="e.g. 160">
+            </div>
+            <div class="form-group">
+              <label for="academics-greQuant">GRE Quantitative Score</label>
+              <input type="text" id="academics-greQuant" placeholder="e.g. 165">
+            </div>
+            <div class="form-group">
+              <label for="academics-greWriting">GRE Analytical Writing</label>
+              <input type="text" id="academics-greWriting" placeholder="e.g. 4.5">
+            </div>
+            <div class="form-group">
+              <label for="academics-greTotal">GRE Total Score</label>
+              <input type="text" id="academics-greTotal" placeholder="e.g. 325">
+            </div>
+            <div class="form-group">
+              <label for="academics-toeflTotal">TOEFL Total Score</label>
+              <input type="text" id="academics-toeflTotal" placeholder="e.g. 110">
+            </div>
+            <div class="form-group">
+              <label for="academics-ieltsBand">IELTS Band Score</label>
+              <input type="text" id="academics-ieltsBand" placeholder="e.g. 8.0">
+            </div>
+            <div class="form-group">
+              <label for="academics-satTotal">SAT Total Score</label>
+              <input type="text" id="academics-satTotal" placeholder="e.g. 1520">
+            </div>
+            <div class="form-group">
+              <label for="academics-actTotal">ACT Total Score</label>
+              <input type="text" id="academics-actTotal" placeholder="e.g. 34">
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Research & Academic Standing</h3>
+          <div class="card grid-2">
+            <div class="form-group">
+              <label for="academics-classRank">Class Rank / Percentile</label>
+              <input type="text" id="academics-classRank" placeholder="e.g. 1st out of 50">
+            </div>
+            <div class="form-group">
+              <label for="academics-proposedAdvisor">Proposed Advisor / Supervisor</label>
+              <input type="text" id="academics-proposedAdvisor" placeholder="e.g. Dr. Sarah Jenkins">
+            </div>
+            <div class="form-group span-2">
+              <label for="academics-researchInterests">Research Interests & Description</label>
+              <textarea id="academics-researchInterests" rows="4" placeholder="Describe your areas of interest, research goals, or publication summaries..."></textarea>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Financial & Funding Details</h3>
+          <div class="card grid-2">
+            <div class="form-group">
+              <label for="academics-annualHouseholdIncome">Annual Household Income (USD/Equivalent)</label>
+              <input type="text" id="academics-annualHouseholdIncome" placeholder="e.g. 25000">
+            </div>
+            <div class="form-group checkbox-group" style="margin-top: 30px;">
+              <input type="checkbox" id="academics-fundingRequired">
+              <label for="academics-fundingRequired">Funding / Scholarship Support Required</label>
+            </div>
           </div>
         </section>
 
@@ -199,9 +296,17 @@
               <input type="checkbox" id="settings-sensitiveEeo">
               <label for="settings-sensitiveEeo">Enable auto-filling of sensitive EEO fields (Gender, Race, Veteran, Disability)</label>
             </div>
-            <div class="form-group checkbox-group" style="margin-top: 15px;">
+             <div class="form-group checkbox-group" style="margin-top: 15px;">
               <input type="checkbox" id="settings-autoFillCritical">
               <label for="settings-autoFillCritical">Enable auto-filling of critical fields (CNIC, National ID, Passport) without confirmation</label>
+            </div>
+            <div class="form-group checkbox-group" style="margin-top: 15px;">
+              <input type="checkbox" id="settings-sensitiveFinancials">
+              <label for="settings-sensitiveFinancials">Enable auto-filling of sensitive financial details (Household Income, Financial Statements)</label>
+            </div>
+            <div class="form-group checkbox-group" style="margin-top: 15px;">
+              <input type="checkbox" id="settings-sensitiveCompensation">
+              <label for="settings-sensitiveCompensation">Enable auto-filling of sensitive compensation fields (Current Salary, Desired Salary)</label>
             </div>
           </div>
 

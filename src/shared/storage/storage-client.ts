@@ -63,6 +63,7 @@ export async function getProfile(): Promise<Profile> {
     source: { ...empty.source, ...profile.source },
     legal: { ...empty.legal, ...profile.legal },
     eeo: { ...empty.eeo, ...profile.eeo },
+    academics: { ...empty.academics, ...profile.academics },
     optIns: { ...empty.optIns, ...profile.optIns }
   };
 }
@@ -138,6 +139,7 @@ export async function saveFileBlob(key: string, bytes: ArrayBuffer): Promise<voi
 function createEmptyProfile(): Profile {
   const template = JSON.parse(JSON.stringify(profileTemplate));
   delete template.__meta__;
+  const optIns = template.optIns;
 
   const clean = (obj: any): any => {
     if (obj === null || obj === undefined) return obj;
@@ -164,5 +166,7 @@ function createEmptyProfile(): Profile {
     return obj;
   };
 
-  return clean(template) as Profile;
+  const cleanProfile = clean(template) as Profile;
+  cleanProfile.optIns = optIns;
+  return cleanProfile;
 }

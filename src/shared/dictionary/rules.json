@@ -1451,6 +1451,251 @@
       "fluency"
     ]
   },
+  "academics.classRank": {
+    "exactPhrases": [
+      "class rank",
+      "academic rank",
+      "percentile",
+      "standing",
+      "academic standing"
+    ],
+    "regexPatterns": [
+      "class\\s*rank",
+      "academic\\s*rank",
+      "percentile",
+      "standing"
+    ]
+  },
+  "academics.greVerbal": {
+    "exactPhrases": [
+      "gre verbal",
+      "gre verbal score",
+      "verbal score",
+      "gre verbal reasoning"
+    ],
+    "regexPatterns": [
+      "gre\\s*verbal",
+      "verbal\\s*score",
+      "verbal\\s*reasoning"
+    ]
+  },
+  "academics.greQuant": {
+    "exactPhrases": [
+      "gre quant",
+      "gre quantitative",
+      "gre quantitative score",
+      "quantitative score",
+      "gre quantitative reasoning"
+    ],
+    "regexPatterns": [
+      "gre\\s*quant",
+      "quantitative\\s*score",
+      "quantitative\\s*reasoning"
+    ]
+  },
+  "academics.greWriting": {
+    "exactPhrases": [
+      "gre writing",
+      "gre analytical writing",
+      "analytical writing",
+      "gre writing score",
+      "gre awa"
+    ],
+    "regexPatterns": [
+      "gre\\s*writing",
+      "analytical\\s*writing",
+      "gre\\s*awa",
+      "awa\\s*score"
+    ]
+  },
+  "academics.greTotal": {
+    "exactPhrases": [
+      "gre total",
+      "gre score",
+      "gre total score",
+      "cumulative gre"
+    ],
+    "regexPatterns": [
+      "gre\\s*(total|score)",
+      "cumulative\\s*gre"
+    ]
+  },
+  "academics.toeflTotal": {
+    "exactPhrases": [
+      "toefl total",
+      "toefl score",
+      "toefl total score",
+      "toefl ibt"
+    ],
+    "regexPatterns": [
+      "toefl"
+    ]
+  },
+  "academics.ieltsBand": {
+    "exactPhrases": [
+      "ielts band",
+      "ielts score",
+      "ielts band score",
+      "ielts total"
+    ],
+    "regexPatterns": [
+      "ielts"
+    ]
+  },
+  "academics.satTotal": {
+    "exactPhrases": [
+      "sat score",
+      "sat total",
+      "sat total score"
+    ],
+    "regexPatterns": [
+      "sat\\s*(score|total)"
+    ]
+  },
+  "academics.actTotal": {
+    "exactPhrases": [
+      "act score",
+      "act total",
+      "act total score"
+    ],
+    "regexPatterns": [
+      "act\\s*(score|total)"
+    ]
+  },
+  "academics.researchInterests": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "research interests",
+      "statement of research",
+      "proposed research area",
+      "area of research",
+      "research topic"
+    ],
+    "regexPatterns": [
+      "research\\s*(interest|topic|area|statement)"
+    ]
+  },
+  "academics.proposedAdvisor": {
+    "exactPhrases": [
+      "proposed advisor",
+      "proposed supervisor",
+      "intended advisor",
+      "academic advisor",
+      "supervisor name",
+      "advising professor"
+    ],
+    "regexPatterns": [
+      "proposed\\s*(advisor|supervisor)",
+      "intended\\s*advisor",
+      "academic\\s*advisor"
+    ]
+  },
+  "academics.fundingRequired": {
+    "allowedTypes": [
+      "checkbox",
+      "radio"
+    ],
+    "exactPhrases": [
+      "do you require funding",
+      "funding required",
+      "applying for financial aid",
+      "requesting scholarship support"
+    ],
+    "regexPatterns": [
+      "require\\s*funding",
+      "financial\\s*aid",
+      "scholarship\\s*support"
+    ]
+  },
+  "academics.annualHouseholdIncome": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveFinancials",
+    "exactPhrases": [
+      "annual household income",
+      "family income",
+      "household income",
+      "annual family income",
+      "gross household income"
+    ],
+    "regexPatterns": [
+      "household\\s*income",
+      "family\\s*income"
+    ]
+  },
+  "documents.sop": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "statement of purpose",
+      "sop",
+      "personal statement",
+      "upload statement of purpose",
+      "upload sop"
+    ],
+    "regexPatterns": [
+      "statement\\s*of\\s*purpose",
+      "\\bsop\\b",
+      "personal\\s*statement"
+    ]
+  },
+  "documents.researchProposal": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "research proposal",
+      "study plan",
+      "proposal document",
+      "upload research proposal",
+      "upload study plan"
+    ],
+    "regexPatterns": [
+      "research\\s*proposal",
+      "study\\s*plan"
+    ]
+  },
+  "documents.recommendationLetter": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "recommendation letter",
+      "letter of recommendation",
+      "reference letter",
+      "lor",
+      "upload reference letter"
+    ],
+    "regexPatterns": [
+      "recommendation\\s*letter",
+      "letter\\s*of\\s*recommendation",
+      "\\blor\\b",
+      "reference\\s*letter"
+    ]
+  },
+  "documents.financialStatement": {
+    "allowedTypes": [
+      "file"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveFinancials",
+    "exactPhrases": [
+      "financial statement",
+      "proof of income",
+      "bank statement",
+      "financial support documents",
+      "upload proof of income"
+    ],
+    "regexPatterns": [
+      "financial\\s*statement",
+      "proof\\s*of\\s*income",
+      "bank\\s*statement"
+    ]
+  },
   "__arrayShapeSignatures__": {
     "education": [
       "school",

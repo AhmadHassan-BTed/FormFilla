@@ -143,6 +143,22 @@ export interface LegalInfo {
   eSignature?: string;
 }
 
+export interface AcademicsInfo {
+  classRank?: string;
+  greVerbal?: string;
+  greQuant?: string;
+  greWriting?: string;
+  greTotal?: string;
+  toeflTotal?: string;
+  ieltsBand?: string;
+  satTotal?: string;
+  actTotal?: string;
+  researchInterests?: string;
+  proposedAdvisor?: string;
+  fundingRequired?: boolean;
+  annualHouseholdIncome?: string;
+}
+
 export interface Profile {
   personal: PersonalInfo;
   address?: AddressInfo;
@@ -152,6 +168,7 @@ export interface Profile {
   availability?: AvailabilityInfo;
   source?: SourceInfo;
   legal?: LegalInfo;
+  academics?: AcademicsInfo;
   education?: EducationEntry[];
   experience?: ExperienceEntry[];
   references?: ReferenceEntry[];
@@ -166,6 +183,8 @@ export interface Profile {
   optIns: {
     sensitiveEeo: boolean;
     autoFillCritical?: boolean;
+    sensitiveFinancials?: boolean;
+    sensitiveCompensation?: boolean;
     [key: string]: boolean | undefined;
   };
 }

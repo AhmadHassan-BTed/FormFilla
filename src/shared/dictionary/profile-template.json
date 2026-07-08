@@ -217,6 +217,30 @@
       "type": "application/pdf",
       "size": 42000,
       "lastModified": 1625000000000
+    },
+    "documents.sop": {
+      "name": "statement_of_purpose.pdf",
+      "type": "application/pdf",
+      "size": 28000,
+      "lastModified": 1625000000000
+    },
+    "documents.researchProposal": {
+      "name": "research_proposal.pdf",
+      "type": "application/pdf",
+      "size": 32000,
+      "lastModified": 1625000000000
+    },
+    "documents.recommendationLetter": {
+      "name": "recommendation_letter.pdf",
+      "type": "application/pdf",
+      "size": 15000,
+      "lastModified": 1625000000000
+    },
+    "documents.financialStatement": {
+      "name": "financial_statement.pdf",
+      "type": "application/pdf",
+      "size": 20000,
+      "lastModified": 1625000000000
     }
   },
   "eeo": {
@@ -227,8 +251,25 @@
     "disabilityStatus": "No",
     "sexualOrientation": "Heterosexual"
   },
+  "academics": {
+    "classRank": "1st / 50",
+    "greVerbal": "160",
+    "greQuant": "165",
+    "greWriting": "4.5",
+    "greTotal": "325",
+    "toeflTotal": "110",
+    "ieltsBand": "8.0",
+    "satTotal": "1520",
+    "actTotal": "34",
+    "researchInterests": "Generative AI, Compiler Optimizations, Graph Matching Algorithms",
+    "proposedAdvisor": "Dr. Sarah Jenkins",
+    "fundingRequired": true,
+    "annualHouseholdIncome": "25000"
+  },
   "optIns": {
-    "sensitiveEeo": false,
-    "autoFillCritical": true
+    "sensitiveEeo": true,
+    "autoFillCritical": true,
+    "sensitiveFinancials": true,
+    "sensitiveCompensation": true
   }
 }

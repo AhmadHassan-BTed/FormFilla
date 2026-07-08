@@ -13,11 +13,11 @@ flowchart TD
     subgraph Inputs [Form Analysis]
         DOM[DOM Inputs] --> Normalizer[Normalizer] --> Tokens[Tokenized Signals]
     end
-    
+
     subgraph Rules [Schema Matcher]
         Keys[Profile Keys] --> Dict[Dictionary] --> Check[Field Rules Check]
     end
-    
+
     Tokens & Check --> Scorer[Scoring Primitives:\nFuzzy Sim, Regex]
     Scorer --> Hungarian[Hungarian Matcher]
     Hungarian --> Gate[Gate Resolution]
@@ -32,18 +32,22 @@ Every field in the [rules.ts](../../src/shared/dictionary/rules.ts) dictionary d
 Each input element is checked against all available dictionary rules:
 
 ### A. Autocomplete Tokens
+
 If the element defines an `autocomplete` property that exactly matches a token listed in the dictionary rule, it receives a direct weight boost of `+45` points:
 $$\text{Score}_{\text{autocomplete}} = 45$$
 
 ### B. Exact Phrase Match
+
 The engine checks if any exact phrase listed in the rule's `exactPhrases` matches the tokenized input signal:
 $$\text{Score}_{\text{exact}} = 35$$
 
 ### C. Regular Expression Matches
+
 The engine evaluates the regex patterns against the signal tokens:
 $$\text{Score}_{\text{regex}} = 20$$
 
 ### D. Fuzzy Similarity
+
 Fuzzy similarity is calculated using the Jaro-Winkler metric and Dice's Coefficient, taking the maximum of the two:
 $$\text{Similarity} = \max(\text{Dice}(A, B), \text{Jaro-Winkler}(A, B))$$
 If the similarity exceeds `0.6`, it receives a scaled boost:
@@ -54,9 +58,10 @@ $$\text{Score}_{\text{similarity}} = \text{Similarity} \times 15$$
 ## 3. The Kuhn-Munkres (Hungarian) Resolver
 
 To avoid greedy misassignments, Hired models the matching problem as a **Maximum Weight Bipartite Matching** problem:
-* **Vertices (Left):** Candidate input fields on the active DOM subtree.
-* **Vertices (Right):** Non-array keys defined in the candidate profile schema.
-* **Edges:** Plausible assignments between fields and keys, with edge weights representing the calculated matching score.
+
+- **Vertices (Left):** Candidate input fields on the active DOM subtree.
+- **Vertices (Right):** Non-array keys defined in the candidate profile schema.
+- **Edges:** Plausible assignments between fields and keys, with edge weights representing the calculated matching score.
 
 The assignment is transformed into a minimization problem by defining the edge cost as:
 $$\text{Cost}_{i,j} = 100 - \text{Score}_{i,j}$$
@@ -68,6 +73,7 @@ The Hungarian algorithm runs in $\mathcal{O}(V^3)$ time, where $V$ is the dimens
 ## 4. Sensitivity Gates
 
 Once assigned, scored fields are classified into gate behaviors based on their risk level:
+
 1. **`standard` (e.g. Job Title, Name):** Auto-filled directly at high (score $\ge 70$) or medium (score $\ge 40$) confidence.
 2. **`sensitive` (e.g. Reference details, EEO data):** Auto-filled only at high confidence. Requires explicit user opt-in settings.
 3. **`critical` (e.g. Passport/SSN):** Never auto-filled. The review highlighter overlays a persistent floating badge requiring a manual click to confirm injection.
@@ -87,5 +93,4 @@ The scoring engine evaluates elements against raw data loaded from external JSON
 4. **`src/shared/constants/degrees.json` (Degree Rankings):**
    Stores comparison rankings. Expand to compare international academic ranks.
 
-*Each file includes a `__meta__` JSON block containing structured prompt engineering guidelines for AI models.*
-
+_Each file includes a `__meta__` JSON block containing structured prompt engineering guidelines for AI models._

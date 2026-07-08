@@ -67,12 +67,34 @@ async function loadProfileData() {
     setInputValue('work-visaType', currentProfile.workAuthorization.visaType);
   }
 
-  setCheckboxValue('settings-sensitiveEeo', currentProfile.optIns?.sensitiveEeo);
+  if (currentProfile.academics) {
+    setInputValue('academics-greVerbal', currentProfile.academics.greVerbal);
+    setInputValue('academics-greQuant', currentProfile.academics.greQuant);
+    setInputValue('academics-greWriting', currentProfile.academics.greWriting);
+    setInputValue('academics-greTotal', currentProfile.academics.greTotal);
+    setInputValue('academics-toeflTotal', currentProfile.academics.toeflTotal);
+    setInputValue('academics-ieltsBand', currentProfile.academics.ieltsBand);
+    setInputValue('academics-satTotal', currentProfile.academics.satTotal);
+    setInputValue('academics-actTotal', currentProfile.academics.actTotal);
+    setInputValue('academics-classRank', currentProfile.academics.classRank);
+    setInputValue('academics-proposedAdvisor', currentProfile.academics.proposedAdvisor);
+    setInputValue('academics-researchInterests', currentProfile.academics.researchInterests);
+    setInputValue('academics-annualHouseholdIncome', currentProfile.academics.annualHouseholdIncome);
+    setCheckboxValue('academics-fundingRequired', currentProfile.academics.fundingRequired);
+  }
+
+  setCheckboxValue('settings-sensitiveEeo', currentProfile.optIns?.sensitiveEeo ?? true);
   setCheckboxValue('settings-autoFillCritical', currentProfile.optIns?.autoFillCritical ?? true);
+  setCheckboxValue('settings-sensitiveFinancials', currentProfile.optIns?.sensitiveFinancials ?? true);
+  setCheckboxValue('settings-sensitiveCompensation', currentProfile.optIns?.sensitiveCompensation ?? true);
 
   renderFileDetails('resume', currentProfile.documents?.['documents.resume']);
   renderFileDetails('coverLetter', currentProfile.documents?.['documents.coverLetter']);
   renderFileDetails('photo', currentProfile.documents?.['documents.photo']);
+  renderFileDetails('sop', currentProfile.documents?.['documents.sop']);
+  renderFileDetails('researchProposal', currentProfile.documents?.['documents.researchProposal']);
+  renderFileDetails('recommendationLetter', currentProfile.documents?.['documents.recommendationLetter']);
+  renderFileDetails('financialStatement', currentProfile.documents?.['documents.financialStatement']);
 }
 
 function setInputValue(id: string, value: any) {
@@ -227,7 +249,7 @@ function addReferenceRow(container: HTMLElement, data?: ReferenceEntry) {
 }
 
 function setupFilePickers() {
-  const filesList = ['resume', 'coverLetter', 'photo'];
+  const filesList = ['resume', 'coverLetter', 'photo', 'sop', 'researchProposal', 'recommendationLetter', 'financialStatement'];
   filesList.forEach(key => {
     const picker = document.getElementById(`file-${key}`) as HTMLInputElement;
     if (picker) {
@@ -345,9 +367,27 @@ async function saveAllProfileData() {
       };
     }
 
+    const academics = {
+      greVerbal: getInputValue('academics-greVerbal'),
+      greQuant: getInputValue('academics-greQuant'),
+      greWriting: getInputValue('academics-greWriting'),
+      greTotal: getInputValue('academics-greTotal'),
+      toeflTotal: getInputValue('academics-toeflTotal'),
+      ieltsBand: getInputValue('academics-ieltsBand'),
+      satTotal: getInputValue('academics-satTotal'),
+      actTotal: getInputValue('academics-actTotal'),
+      classRank: getInputValue('academics-classRank'),
+      proposedAdvisor: getInputValue('academics-proposedAdvisor'),
+      researchInterests: getInputValue('academics-researchInterests'),
+      annualHouseholdIncome: getInputValue('academics-annualHouseholdIncome'),
+      fundingRequired: getCheckboxValue('academics-fundingRequired')
+    };
+
     const optIns = {
       sensitiveEeo: getCheckboxValue('settings-sensitiveEeo'),
-      autoFillCritical: getCheckboxValue('settings-autoFillCritical')
+      autoFillCritical: getCheckboxValue('settings-autoFillCritical'),
+      sensitiveFinancials: getCheckboxValue('settings-sensitiveFinancials'),
+      sensitiveCompensation: getCheckboxValue('settings-sensitiveCompensation')
     };
 
     const updatedProfile: Profile = {
@@ -356,6 +396,7 @@ async function saveAllProfileData() {
       address,
       links,
       workAuthorization,
+      academics,
       education,
       experience,
       references,
@@ -424,6 +465,9 @@ function mergeProfileWithTemplate(profile: Profile, template: any): any {
   }
   if (Array.isArray(profile.references) && profile.references.length > 0) {
     result.references = profile.references;
+  }
+  if (profile.academics) {
+    result.academics = { ...result.academics, ...profile.academics };
   }
   if (profile.eeo) {
     result.eeo = { ...result.eeo, ...profile.eeo };
