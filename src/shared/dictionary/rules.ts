@@ -62,8 +62,4 @@ for (const [key, raw] of Object.entries(rawRules)) {
 
 export const FIELD_RULES = compiledRules;
 
-export const arrayShapeSignatures = {
-  education: ['school', 'degree', 'major', 'date', 'gpa', 'university', 'college'],
-  experience: ['company', 'title', 'location', 'date', 'description', 'employer'],
-  references: ['name', 'relationship', 'company', 'email', 'phone', 'relation']
-};
+export const arrayShapeSignatures: Record<string, string[]> = (rawRules as any).__arrayShapeSignatures__;

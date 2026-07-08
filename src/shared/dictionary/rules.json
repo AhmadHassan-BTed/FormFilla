@@ -249,5 +249,10 @@
     "optInKey": "sensitiveEeo",
     "exactPhrases": ["disability", "disability status", "handicap"],
     "regexPatterns": ["disability", "handicap"]
+  },
+  "__arrayShapeSignatures__": {
+    "education": ["school", "degree", "major", "date", "gpa", "university", "college"],
+    "experience": ["company", "title", "location", "date", "description", "employer"],
+    "references": ["name", "relationship", "company", "email", "phone", "relation"]
   }
 }
