@@ -1,5 +1,6 @@
 import { getProfile, saveProfile, saveFileBlob } from '../shared/storage/storage-client.js';
 import { Profile, EducationEntry, ExperienceEntry, ReferenceEntry, DocumentFile } from '../shared/types/index.js';
+import EXTENSIVE_PROFILE_TEMPLATE from './profile-template.json' with { type: 'json' };
 
 let currentProfile: Profile;
 const uploadedFiles: Record<string, { file: File; buffer: ArrayBuffer }> = {};
@@ -390,112 +391,11 @@ function getCheckboxValue(id: string): boolean {
   return el ? el.checked : false;
 }
 
-const EXTENSIVE_PROFILE_TEMPLATE = {
-  personal: {
-    firstName: "John",
-    lastName: "Doe",
-    middleName: "Robert",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 019-2834",
-    nationalId: "123-456-7890",
-    summary: "Experienced software engineer specializing in local-first client applications."
-  },
-  family: {
-    fatherName: "Robert Doe Sr.",
-    motherName: "Mary Doe"
-  },
-  address: {
-    street: "123 Main Street, Apt 4B",
-    city: "New York",
-    state: "NY",
-    postalCode: "10001",
-    country: "United States"
-  },
-  links: {
-    linkedin: "https://linkedin.com/in/johndoe",
-    github: "https://github.com/johndoe",
-    portfolio: "https://johndoe.dev"
-  },
-  workAuthorization: {
-    authorizedInUS: true,
-    requiresSponsorship: false,
-    visaType: ""
-  },
-  education: [
-    {
-      school: "State University",
-      degree: "Bachelor of Science",
-      fieldOfStudy: "Computer Science",
-      startDate: "2018-09",
-      endDate: "2022-05",
-      gpa: "3.8"
-    }
-  ],
-  experience: [
-    {
-      company: "Tech Corp",
-      title: "Software Engineer",
-      location: "New York, NY",
-      startDate: "2022-06",
-      endDate: "2025-12",
-      description: "Designed, built, and optimized high-performance local services."
-    }
-  ],
-  references: [
-    {
-      name: "Alice Smith",
-      relationship: "Manager",
-      company: "Tech Corp",
-      title: "Engineering Lead",
-      email: "alice.smith@techcorp.com",
-      phone: "+1 (555) 012-3456"
-    }
-  ],
-  documents: {
-    "documents.resume": {
-      name: "resume.pdf",
-      type: "application/pdf",
-      size: 12345,
-      lastModified: 1625000000000
-    },
-    "documents.coverLetter": {
-      name: "cover_letter.pdf",
-      type: "application/pdf",
-      size: 54321,
-      lastModified: 1625000000000
-    },
-    "documents.photo": {
-      name: "photo.jpg",
-      type: "image/jpeg",
-      size: 15000,
-      lastModified: 1625000000000
-    },
-    "documents.passport": {
-      name: "passport.pdf",
-      type: "application/pdf",
-      size: 25000,
-      lastModified: 1625000000000
-    },
-    "documents.cnic": {
-      name: "cnic.pdf",
-      type: "application/pdf",
-      size: 18000,
-      lastModified: 1625000000000
-    }
-  },
-  eeo: {
-    gender: "Male",
-    race: "White",
-    veteranStatus: "No",
-    disabilityStatus: "No"
-  },
-  optIns: {
-    sensitiveEeo: false
-  }
-};
+
 
 function mergeProfileWithTemplate(profile: Profile, template: any): any {
   const result = JSON.parse(JSON.stringify(template));
+  delete result.__meta__;
   if (!profile) return result;
 
   if (profile.personal) {
