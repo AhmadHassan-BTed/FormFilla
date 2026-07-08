@@ -33,6 +33,10 @@ function getValueByPath(obj: any, path: string): any {
     return sorted[0][field as keyof typeof sorted[0]];
   }
 
+  if (path.startsWith('documents.')) {
+    return obj.documents?.[path];
+  }
+
   const parts = path.replace(/\]/g, '').split(/[.\[]/);
   let current = obj;
   for (const part of parts) {

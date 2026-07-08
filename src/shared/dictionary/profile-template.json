@@ -31,6 +31,7 @@
   },
   "address": {
     "street": "House 123, Sector F-10",
+    "line2": "",
     "city": "Islamabad",
     "state": "Federal",
     "postalCode": "44000",
@@ -165,6 +166,12 @@
   "documents": {
     "documents.resume": {
       "name": "resume.pdf",
+      "type": "application/pdf",
+      "size": 12345,
+      "lastModified": 1625000000000
+    },
+    "documents.cv": {
+      "name": "cv.pdf",
       "type": "application/pdf",
       "size": 12345,
       "lastModified": 1625000000000
