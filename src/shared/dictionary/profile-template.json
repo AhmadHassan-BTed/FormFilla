@@ -9,64 +9,158 @@
     ]
   },
   "personal": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "middleName": "Robert",
-    "email": "john.doe@example.com",
-    "phone": "+1 (555) 019-2834",
-    "nationalId": "123-456-7890",
-    "summary": "Experienced software engineer specializing in local-first client applications."
+    "firstName": "Ahmad",
+    "lastName": "Hassan",
+    "middleName": "",
+    "namePrefix": "Mr.",
+    "nameSuffix": "",
+    "fullName": "Ahmad Hassan",
+    "preferredName": "Ahmad",
+    "pronouns": "he/him",
+    "email": "ahmadhassan.bted@gmail.com",
+    "phone": "+92 300 1234567",
+    "dateOfBirth": "2004-02-23",
+    "nationalId": "12345-6789012-3",
+    "cnicNumber": "12345-6789012-3",
+    "passportNumber": "",
+    "summary": "Senior Software Architect with experience in compiler architectures and bipartite form matching systems."
   },
   "family": {
-    "fatherName": "Robert Doe Sr.",
-    "motherName": "Mary Doe"
+    "fatherName": "Father Name",
+    "motherName": "Mother Name"
   },
   "address": {
-    "street": "123 Main Street, Apt 4B",
-    "city": "New York",
-    "state": "NY",
-    "postalCode": "10001",
-    "country": "United States"
+    "street": "House 123, Sector F-10",
+    "city": "Islamabad",
+    "state": "Federal",
+    "postalCode": "44000",
+    "country": "Pakistan",
+    "county": ""
   },
   "links": {
-    "linkedin": "https://linkedin.com/in/johndoe",
-    "github": "https://github.com/johndoe",
-    "portfolio": "https://johndoe.dev"
+    "linkedin": "https://linkedin.com/in/AhmadHassan-BTed",
+    "github": "https://github.com/AhmadHassan-BTed",
+    "portfolio": "https://ahmadhassan.dev",
+    "twitter": ""
   },
   "workAuthorization": {
-    "authorizedInUS": true,
-    "requiresSponsorship": false,
-    "visaType": ""
+    "authorizedInUS": false,
+    "requiresSponsorship": true,
+    "visaType": "",
+    "willingToRelocate": true,
+    "willingToTravel": true
+  },
+  "compensation": {
+    "currentSalary": "",
+    "desiredSalary": ""
+  },
+  "availability": {
+    "startDate": "",
+    "noticePeriod": ""
+  },
+  "source": {
+    "howDidYouHear": "LinkedIn",
+    "referredByName": ""
+  },
+  "legal": {
+    "isOver18": true,
+    "criminalHistory": "No",
+    "nonCompeteAgreement": "No",
+    "backgroundCheckConsent": true,
+    "certifyInformation": true,
+    "eSignature": "Ahmad Hassan"
   },
   "education": [
     {
-      "school": "State University",
-      "degree": "Bachelor of Science",
-      "fieldOfStudy": "Computer Science",
-      "startDate": "2018-09",
-      "endDate": "2022-05",
-      "gpa": "3.8"
+      "school": "Air University",
+      "degree": "Bachelor of Science in Software Engineering",
+      "fieldOfStudy": "Software Engineering",
+      "minor": "",
+      "startDate": "2020-09",
+      "endDate": "2024-06",
+      "isCurrent": false,
+      "gpa": "3.8",
+      "honors": "Silver Medalist"
     }
   ],
   "experience": [
     {
-      "company": "Tech Corp",
-      "title": "Software Engineer",
-      "location": "New York, NY",
-      "startDate": "2022-06",
-      "endDate": "2025-12",
-      "description": "Designed, built, and optimized high-performance local services."
+      "company": "Software Labs",
+      "title": "Systems Architect",
+      "location": "Islamabad, PK",
+      "employmentType": "Full-time",
+      "startDate": "2024-07",
+      "endDate": "",
+      "isCurrent": true,
+      "description": "Designed localized first-client frameworks, compilers, and state managers.",
+      "reasonForLeaving": "",
+      "supervisorName": ""
     }
   ],
   "references": [
     {
-      "name": "Alice Smith",
-      "relationship": "Manager",
-      "company": "Tech Corp",
+      "name": "Reference Contact",
+      "relationship": "Supervisor",
+      "company": "Software Labs",
       "title": "Engineering Lead",
-      "email": "alice.smith@techcorp.com",
-      "phone": "+1 (555) 012-3456"
+      "email": "reference@example.com",
+      "phone": "+92 300 7654321"
     }
+  ],
+  "projects": [
+    {
+      "name": "Fractal",
+      "role": "Lead Architect",
+      "description": "My Final Year Project (FYP) - a high-performance fractal engine.",
+      "technologies": ["C++", "Rust", "WebAssembly"],
+      "url": "https://github.com/AhmadHassan-BTed/Fractal"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "PMI Generative AI",
+      "issuingOrganization": "Project Management Institute",
+      "issueDate": "2024-01",
+      "expirationDate": "",
+      "credentialId": ""
+    }
+  ],
+  "skills": {
+    "programmingLanguages": ["TypeScript", "JavaScript", "Python", "C#", "C++", "Rust"],
+    "machineLearningAndAI": ["Natural Language Processing", "Fuzzy Scorer Matching", "Transformers"],
+    "markupAndScripting": ["HTML", "CSS", "Bash", "Powershell"],
+    "hardware": ["ARM", "x86"],
+    "architectureAndParadigms": ["Clean Architecture", "OOP", "Bipartite Graph Matching"],
+    "toolsAndIDEs": ["Git", "Docker", "VS Code", "Vite", "esbuild"]
+  },
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Professional working proficiency"
+    },
+    {
+      "language": "Urdu",
+      "proficiency": "Native or bilingual proficiency"
+    },
+    {
+      "language": "French",
+      "proficiency": "Elementary proficiency"
+    }
+  ],
+  "awardsAndAchievements": [
+    {
+      "title": "Head Systems Architect",
+      "organization": "Air University SE Society",
+      "date": "2023-09",
+      "description": "Led core architecture design and systems strategy."
+    }
+  ],
+  "coursework": [
+    "Software Design & Architecture",
+    "Data Structures & Algorithms",
+    "Natural Language Processing",
+    "System Programming",
+    "Database Systems"
   ],
   "documents": {
     "documents.resume": {
@@ -98,15 +192,36 @@
       "type": "application/pdf",
       "size": 18000,
       "lastModified": 1625000000000
+    },
+    "documents.driversLicense": {
+      "name": "license.pdf",
+      "type": "application/pdf",
+      "size": 22000,
+      "lastModified": 1625000000000
+    },
+    "documents.transcript": {
+      "name": "transcript.pdf",
+      "type": "application/pdf",
+      "size": 35000,
+      "lastModified": 1625000000000
+    },
+    "documents.workSample": {
+      "name": "portfolio.pdf",
+      "type": "application/pdf",
+      "size": 42000,
+      "lastModified": 1625000000000
     }
   },
   "eeo": {
     "gender": "Male",
     "race": "White",
+    "hispanicOrLatino": "No",
     "veteranStatus": "No",
-    "disabilityStatus": "No"
+    "disabilityStatus": "No",
+    "sexualOrientation": "Heterosexual"
   },
   "optIns": {
-    "sensitiveEeo": false
+    "sensitiveEeo": false,
+    "autoFillCritical": true
   }
 }

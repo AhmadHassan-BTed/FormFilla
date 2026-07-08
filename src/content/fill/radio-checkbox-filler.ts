@@ -37,16 +37,25 @@ export function fillChoiceGroup(elements: Element[], value: string): boolean {
   const isFalseVal = ['false', 'no', 'n', '0'].includes(lowerVal);
 
   if (isTrueVal || isFalseVal) {
-    for (const opt of optionsInfo) {
-      const optText = opt.labelText.toLowerCase();
-      if (isTrueVal && (optText === 'yes' || optText === 'y' || optText === 'true')) {
-        opt.element.click();
-        return true;
-      }
-      if (isFalseVal && (optText === 'no' || optText === 'n' || optText === 'false')) {
-        opt.element.click();
-        return true;
-      }
+    const yesPattern = /\byes\b|\btrue\b|\bagree\b|\baccept\b|\bauthorized\b|\bwilling\b|\bwill\b/i;
+    const noPattern = /\bno\b|\bfalse\b|\bdisagree\b|\bdecline\b|\bunauthorized\b|\bnot\b/i;
+
+    let foundIndex = -1;
+    if (isTrueVal) {
+      foundIndex = optionsInfo.findIndex(opt => {
+        const text = opt.labelText;
+        return yesPattern.test(text) && !noPattern.test(text);
+      });
+    } else {
+      foundIndex = optionsInfo.findIndex(opt => {
+        const text = opt.labelText;
+        return noPattern.test(text);
+      });
+    }
+
+    if (foundIndex !== -1) {
+      optionsInfo[foundIndex].element.click();
+      return true;
     }
   }
 

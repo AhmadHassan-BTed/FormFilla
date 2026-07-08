@@ -4,9 +4,34 @@ export function fillSelect(el: HTMLSelectElement, value: string): boolean {
   const options = Array.from(el.options);
   if (options.length === 0) return false;
 
-  let matchIndex = options.findIndex(
-    opt => (opt.text || opt.value || '').trim().toLowerCase() === value.toLowerCase()
-  );
+  const lowerVal = value.trim().toLowerCase();
+  const isTrueVal = ['true', 'yes', 'y', '1'].includes(lowerVal);
+  const isFalseVal = ['false', 'no', 'n', '0'].includes(lowerVal);
+
+  let matchIndex = -1;
+
+  if (isTrueVal || isFalseVal) {
+    const yesPattern = /\byes\b|\btrue\b|\bagree\b|\baccept\b|\bauthorized\b|\bwilling\b|\bwill\b/i;
+    const noPattern = /\bno\b|\bfalse\b|\bdisagree\b|\bdecline\b|\bunauthorized\b|\bnot\b/i;
+
+    if (isTrueVal) {
+      matchIndex = options.findIndex(opt => {
+        const text = (opt.text || opt.value || '').trim();
+        return yesPattern.test(text) && !noPattern.test(text);
+      });
+    } else {
+      matchIndex = options.findIndex(opt => {
+        const text = (opt.text || opt.value || '').trim();
+        return noPattern.test(text);
+      });
+    }
+  }
+
+  if (matchIndex === -1) {
+    matchIndex = options.findIndex(
+      opt => (opt.text || opt.value || '').trim().toLowerCase() === value.toLowerCase()
+    );
+  }
 
   if (matchIndex === -1) {
     const optionTexts = options.map(opt => (opt.text || opt.value || '').trim());

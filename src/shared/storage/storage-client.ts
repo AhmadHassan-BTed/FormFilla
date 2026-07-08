@@ -54,8 +54,14 @@ export async function getProfile(): Promise<Profile> {
     workAuthorization: {
       requiresSponsorship: profile.workAuthorization?.requiresSponsorship ?? empty.workAuthorization!.requiresSponsorship,
       authorizedInUS: profile.workAuthorization?.authorizedInUS ?? empty.workAuthorization!.authorizedInUS,
-      visaType: profile.workAuthorization?.visaType ?? empty.workAuthorization!.visaType
+      visaType: profile.workAuthorization?.visaType ?? empty.workAuthorization!.visaType,
+      willingToRelocate: profile.workAuthorization?.willingToRelocate ?? empty.workAuthorization!.willingToRelocate,
+      willingToTravel: profile.workAuthorization?.willingToTravel ?? empty.workAuthorization!.willingToTravel
     },
+    compensation: { ...empty.compensation, ...profile.compensation },
+    availability: { ...empty.availability, ...profile.availability },
+    source: { ...empty.source, ...profile.source },
+    legal: { ...empty.legal, ...profile.legal },
     eeo: { ...empty.eeo, ...profile.eeo },
     optIns: { ...empty.optIns, ...profile.optIns }
   };

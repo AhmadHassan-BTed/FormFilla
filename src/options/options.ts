@@ -68,6 +68,7 @@ async function loadProfileData() {
   }
 
   setCheckboxValue('settings-sensitiveEeo', currentProfile.optIns?.sensitiveEeo);
+  setCheckboxValue('settings-autoFillCritical', currentProfile.optIns?.autoFillCritical ?? true);
 
   renderFileDetails('resume', currentProfile.documents?.['documents.resume']);
   renderFileDetails('coverLetter', currentProfile.documents?.['documents.coverLetter']);
@@ -345,10 +346,12 @@ async function saveAllProfileData() {
     }
 
     const optIns = {
-      sensitiveEeo: getCheckboxValue('settings-sensitiveEeo')
+      sensitiveEeo: getCheckboxValue('settings-sensitiveEeo'),
+      autoFillCritical: getCheckboxValue('settings-autoFillCritical')
     };
 
     const updatedProfile: Profile = {
+      ...currentProfile,
       personal,
       address,
       links,

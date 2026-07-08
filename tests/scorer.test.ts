@@ -15,7 +15,8 @@ const mockProfile: Profile = {
     nationalId: '123-456-7890'
   },
   optIns: {
-    sensitiveEeo: false
+    sensitiveEeo: false,
+    autoFillCritical: false
   }
 };
 

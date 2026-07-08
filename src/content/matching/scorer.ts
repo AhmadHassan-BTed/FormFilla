@@ -151,8 +151,14 @@ export function resolveAllFields(
     const confidence = assign.score >= HIGH_THRESHOLD ? 'high' : 'medium';
     
     let gate: GateType = 'unmapped';
+    const autoFillCritical = profile.optIns?.autoFillCritical !== false;
+
     if (originalCand.sensitivityTier === 'critical') {
-      gate = 'needs-confirm';
+      if (autoFillCritical) {
+        gate = confidence === 'high' ? 'confident' : 'review';
+      } else {
+        gate = 'needs-confirm';
+      }
     } else if (originalCand.sensitivityTier === 'sensitive') {
       gate = confidence === 'high' ? 'confident' : 'unmapped';
     } else {

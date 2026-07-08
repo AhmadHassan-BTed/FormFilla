@@ -157,7 +157,7 @@ npm run build
 ### 3. Environment Variables
 
 <details>
-<summary><b>Click to expand environment configurations</b></summary>
+<summary>Click to expand environment configurations</summary>
 
 | Parameter | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
