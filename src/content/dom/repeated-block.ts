@@ -99,7 +99,7 @@ export function detectRepeatedBlocks(root: Document | Element): RepeatedBlock[] 
   return blocks;
 }
 
-function classifyBlockType(container: Element): 'education' | 'experience' | 'references' {
+function classifyBlockType(container: Element): 'education' | 'experience' | 'references' | 'projects' | 'certifications' | 'languages' | 'awardsAndAchievements' {
   const fields = scanForFields(container);
   const textSignals: string[] = [];
 
@@ -118,7 +118,7 @@ function classifyBlockType(container: Element): 'education' | 'experience' | 're
   const tokens = tokenize(combinedText);
 
   let bestScore = -1;
-  let bestCategory: 'education' | 'experience' | 'references' = 'education';
+  let bestCategory: 'education' | 'experience' | 'references' | 'projects' | 'certifications' | 'languages' | 'awardsAndAchievements' = 'education';
 
   for (const [category, keywords] of Object.entries(arrayShapeSignatures)) {
     let score = 0;
@@ -129,7 +129,7 @@ function classifyBlockType(container: Element): 'education' | 'experience' | 're
     }
     if (score > bestScore) {
       bestScore = score;
-      bestCategory = category as 'education' | 'experience' | 'references';
+      bestCategory = category as 'education' | 'experience' | 'references' | 'projects' | 'certifications' | 'languages' | 'awardsAndAchievements';
     }
   }
 

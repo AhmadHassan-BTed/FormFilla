@@ -275,7 +275,7 @@ export interface ScoredField {
 
 export interface RepeatedBlock {
   index: number;
-  arrayKey: 'education' | 'experience' | 'references';
+  arrayKey: 'education' | 'experience' | 'references' | 'projects' | 'certifications' | 'languages' | 'awardsAndAchievements';
   container: Element;
   fields: Element[];
 }

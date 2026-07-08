@@ -45,6 +45,10 @@ async function loadProfileData() {
   setInputValue('personal-email', currentProfile.personal.email);
   setInputValue('personal-phone', currentProfile.personal.phone);
   setInputValue('personal-nationalId', currentProfile.personal.nationalId);
+  setInputValue('personal-namePrefix', currentProfile.personal.namePrefix);
+  setInputValue('personal-dateOfBirth', currentProfile.personal.dateOfBirth);
+  setInputValue('personal-cnicNumber', currentProfile.personal.cnicNumber);
+  setInputValue('personal-passportNumber', currentProfile.personal.passportNumber);
   setInputValue('personal-summary', currentProfile.personal.summary);
 
   if (currentProfile.address) {
@@ -146,7 +150,16 @@ async function loadProfileData() {
   renderFileDetails('sop', currentProfile.documents?.['documents.sop']);
   renderFileDetails('researchProposal', currentProfile.documents?.['documents.researchProposal']);
   renderFileDetails('recommendationLetter', currentProfile.documents?.['documents.recommendationLetter']);
-  renderFileDetails('financialStatement', currentProfile.documents?.['documents.financialStatement']);
+  // Load Portfolio & Skills tab fields
+  const skillsText = Array.isArray(currentProfile.skills) 
+    ? currentProfile.skills.join(', ') 
+    : (currentProfile.skills ? JSON.stringify(currentProfile.skills) : '');
+  setInputValue('portfolio-skills', skillsText);
+
+  const courseworkText = Array.isArray(currentProfile.coursework)
+    ? currentProfile.coursework.join(', ')
+    : '';
+  setInputValue('portfolio-coursework', courseworkText);
 }
 
 function setInputValue(id: string, value: any) {
@@ -183,6 +196,18 @@ function setupDynamicLists() {
   const refContainer = document.getElementById('references-list')!;
   const addRefBtn = document.getElementById('add-reference-btn')!;
 
+  const langContainer = document.getElementById('languages-list')!;
+  const addLangBtn = document.getElementById('add-language-btn')!;
+
+  const certContainer = document.getElementById('certifications-list')!;
+  const addCertBtn = document.getElementById('add-certification-btn')!;
+
+  const projContainer = document.getElementById('projects-list')!;
+  const addProjBtn = document.getElementById('add-project-btn')!;
+
+  const awardContainer = document.getElementById('awards-list')!;
+  const addAwardBtn = document.getElementById('add-award-btn')!;
+
   if (currentProfile.education) {
     currentProfile.education.forEach(entry => addEducationRow(eduContainer, entry));
   }
@@ -192,10 +217,26 @@ function setupDynamicLists() {
   if (currentProfile.references) {
     currentProfile.references.forEach(entry => addReferenceRow(refContainer, entry));
   }
+  if (currentProfile.languages) {
+    currentProfile.languages.forEach(entry => addLanguageRow(langContainer, entry));
+  }
+  if (currentProfile.certifications) {
+    currentProfile.certifications.forEach(entry => addCertificationRow(certContainer, entry));
+  }
+  if (currentProfile.projects) {
+    currentProfile.projects.forEach(entry => addProjectRow(projContainer, entry));
+  }
+  if (currentProfile.awardsAndAchievements) {
+    currentProfile.awardsAndAchievements.forEach(entry => addAwardRow(awardContainer, entry));
+  }
 
   addEduBtn.addEventListener('click', () => addEducationRow(eduContainer));
   addExpBtn.addEventListener('click', () => addExperienceRow(expContainer));
   addRefBtn.addEventListener('click', () => addReferenceRow(refContainer));
+  addLangBtn.addEventListener('click', () => addLanguageRow(langContainer));
+  addCertBtn.addEventListener('click', () => addCertificationRow(certContainer));
+  addProjBtn.addEventListener('click', () => addProjectRow(projContainer));
+  addAwardBtn.addEventListener('click', () => addAwardRow(awardContainer));
 }
 
 function addEducationRow(container: HTMLElement, data?: EducationEntry) {
@@ -300,6 +341,107 @@ function addReferenceRow(container: HTMLElement, data?: ReferenceEntry) {
   container.appendChild(card);
 }
 
+function addLanguageRow(container: HTMLElement, data?: LanguageEntry) {
+  const card = document.createElement('div');
+  card.className = 'card list-item-card grid-2';
+  card.innerHTML = `
+    <button type="button" class="remove-btn">Remove</button>
+    <div class="form-group">
+      <label>Language</label>
+      <input type="text" class="lang-name" required placeholder="English" value="${data?.language || ''}">
+    </div>
+    <div class="form-group">
+      <label>Proficiency / Level</label>
+      <input type="text" class="lang-proficiency" placeholder="e.g. Native, Professional Working, TOPIK Level 5" value="${data?.proficiency || ''}">
+    </div>
+  `;
+  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
+  container.appendChild(card);
+}
+
+function addCertificationRow(container: HTMLElement, data?: CertificationEntry) {
+  const card = document.createElement('div');
+  card.className = 'card list-item-card grid-3';
+  card.innerHTML = `
+    <button type="button" class="remove-btn">Remove</button>
+    <div class="form-group span-2">
+      <label>Certification Name</label>
+      <input type="text" class="cert-name" required placeholder="e.g. PMI Generative AI Certified" value="${data?.name || ''}">
+    </div>
+    <div class="form-group">
+      <label>Issuing Organization</label>
+      <input type="text" class="cert-org" required placeholder="e.g. Project Management Institute" value="${data?.issuingOrganization || ''}">
+    </div>
+    <div class="form-group">
+      <label>Issue Date</label>
+      <input type="text" class="cert-issue-date" placeholder="e.g. 2024-05" value="${data?.issueDate || ''}">
+    </div>
+    <div class="form-group">
+      <label>Expiration Date (if any)</label>
+      <input type="text" class="cert-exp-date" placeholder="e.g. 2026-05" value="${data?.expirationDate || ''}">
+    </div>
+    <div class="form-group">
+      <label>Credential ID</label>
+      <input type="text" class="cert-id" placeholder="e.g. ID-123456" value="${data?.credentialId || ''}">
+    </div>
+  `;
+  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
+  container.appendChild(card);
+}
+
+function addProjectRow(container: HTMLElement, data?: ProjectEntry) {
+  const card = document.createElement('div');
+  card.className = 'card list-item-card grid-3';
+  card.innerHTML = `
+    <button type="button" class="remove-btn">Remove</button>
+    <div class="form-group">
+      <label>Project Name</label>
+      <input type="text" class="proj-name" required placeholder="e.g. Fractal" value="${data?.name || ''}">
+    </div>
+    <div class="form-group">
+      <label>Role</label>
+      <input type="text" class="proj-role" placeholder="e.g. Head Architect" value="${data?.role || ''}">
+    </div>
+    <div class="form-group">
+      <label>Project URL</label>
+      <input type="text" class="proj-url" placeholder="e.g. https://github.com/..." value="${data?.url || ''}">
+    </div>
+    <div class="form-group span-3">
+      <label>Description</label>
+      <textarea class="proj-desc" rows="3" placeholder="Describe the project objective, tech stack, and architect details...">${data?.description || ''}</textarea>
+    </div>
+  `;
+  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
+  container.appendChild(card);
+}
+
+function addAwardRow(container: HTMLElement, data?: AwardEntry) {
+  const card = document.createElement('div');
+  card.className = 'card list-item-card grid-3';
+  card.innerHTML = `
+    <button type="button" class="remove-btn">Remove</button>
+    <div class="form-group">
+      <label>Award / Honor Title</label>
+      <input type="text" class="award-title" required placeholder="e.g. 1st Place UI/UX Design" value="${data?.title || ''}">
+    </div>
+    <div class="form-group">
+      <label>Issuing Organization</label>
+      <input type="text" class="award-org" placeholder="e.g. Air University SE Society" value="${data?.organization || ''}">
+    </div>
+    <div class="form-group">
+      <label>Date Awarded</label>
+      <input type="text" class="award-date" placeholder="e.g. 2023-11" value="${data?.date || ''}">
+    </div>
+    <div class="form-group span-3">
+      <label>Description / Details</label>
+      <textarea class="award-desc" rows="2" placeholder="Provide extra detail about the achievement...">${data?.description || ''}</textarea>
+    </div>
+  `;
+  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
+  container.appendChild(card);
+}
+
+
 function setupFilePickers() {
   const filesList = ['resume', 'coverLetter', 'photo', 'sop', 'researchProposal', 'recommendationLetter', 'financialStatement'];
   filesList.forEach(key => {
@@ -346,6 +488,10 @@ async function saveAllProfileData() {
       email: getInputValue('personal-email'),
       phone: getInputValue('personal-phone'),
       nationalId: getInputValue('personal-nationalId'),
+      namePrefix: getInputValue('personal-namePrefix'),
+      dateOfBirth: getInputValue('personal-dateOfBirth'),
+      cnicNumber: getInputValue('personal-cnicNumber'),
+      passportNumber: getInputValue('personal-passportNumber'),
       summary: getInputValue('personal-summary')
     };
 
@@ -405,6 +551,51 @@ async function saveAllProfileData() {
         title: (card.querySelector('.ref-title') as HTMLInputElement).value || undefined,
         email: (card.querySelector('.ref-email') as HTMLInputElement).value || undefined,
         phone: (card.querySelector('.ref-phone') as HTMLInputElement).value || undefined
+      });
+    });
+
+    const skillsInput = getInputValue('portfolio-skills');
+    const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+    const courseworkInput = getInputValue('portfolio-coursework');
+    const coursework = courseworkInput ? courseworkInput.split(',').map(c => c.trim()).filter(Boolean) : [];
+
+    const languages: LanguageEntry[] = [];
+    document.querySelectorAll('#languages-list .list-item-card').forEach(card => {
+      languages.push({
+        language: (card.querySelector('.lang-name') as HTMLInputElement).value.trim(),
+        proficiency: (card.querySelector('.lang-proficiency') as HTMLInputElement).value.trim()
+      });
+    });
+
+    const certifications: CertificationEntry[] = [];
+    document.querySelectorAll('#certifications-list .list-item-card').forEach(card => {
+      certifications.push({
+        name: (card.querySelector('.cert-name') as HTMLInputElement).value.trim(),
+        issuingOrganization: (card.querySelector('.cert-org') as HTMLInputElement).value.trim(),
+        issueDate: (card.querySelector('.cert-issue-date') as HTMLInputElement).value.trim() || undefined,
+        expirationDate: (card.querySelector('.cert-exp-date') as HTMLInputElement).value.trim() || undefined,
+        credentialId: (card.querySelector('.cert-id') as HTMLInputElement).value.trim() || undefined
+      });
+    });
+
+    const projects: ProjectEntry[] = [];
+    document.querySelectorAll('#projects-list .list-item-card').forEach(card => {
+      projects.push({
+        name: (card.querySelector('.proj-name') as HTMLInputElement).value.trim(),
+        role: (card.querySelector('.proj-role') as HTMLInputElement).value.trim(),
+        url: (card.querySelector('.proj-url') as HTMLInputElement).value.trim() || undefined,
+        description: (card.querySelector('.proj-desc') as HTMLTextAreaElement).value.trim()
+      });
+    });
+
+    const awardsAndAchievements: AwardEntry[] = [];
+    document.querySelectorAll('#awards-list .list-item-card').forEach(card => {
+      awardsAndAchievements.push({
+        title: (card.querySelector('.award-title') as HTMLInputElement).value.trim(),
+        organization: (card.querySelector('.award-org') as HTMLInputElement).value.trim(),
+        date: (card.querySelector('.award-date') as HTMLInputElement).value.trim() || undefined,
+        description: (card.querySelector('.award-desc') as HTMLTextAreaElement).value.trim() || undefined
       });
     });
 
@@ -504,6 +695,12 @@ async function saveAllProfileData() {
       education,
       experience,
       references,
+      projects,
+      certifications,
+      skills,
+      languages,
+      awardsAndAchievements,
+      coursework,
       documents: documentsMetadata,
       optIns
     };
@@ -578,6 +775,24 @@ function mergeProfileWithTemplate(profile: Profile, template: any): any {
   }
   if (profile.documents) {
     result.documents = { ...result.documents, ...profile.documents };
+  }
+  if (Array.isArray(profile.projects) && profile.projects.length > 0) {
+    result.projects = profile.projects;
+  }
+  if (Array.isArray(profile.certifications) && profile.certifications.length > 0) {
+    result.certifications = profile.certifications;
+  }
+  if (Array.isArray(profile.skills) && (Array.isArray(profile.skills) || typeof profile.skills === 'object')) {
+    result.skills = profile.skills;
+  }
+  if (Array.isArray(profile.languages) && profile.languages.length > 0) {
+    result.languages = profile.languages;
+  }
+  if (Array.isArray(profile.awardsAndAchievements) && profile.awardsAndAchievements.length > 0) {
+    result.awardsAndAchievements = profile.awardsAndAchievements;
+  }
+  if (Array.isArray(profile.coursework) && profile.coursework.length > 0) {
+    result.coursework = profile.coursework;
   }
   if (profile.optIns) {
     result.optIns = { ...result.optIns, ...profile.optIns };

@@ -2343,6 +2343,145 @@
       "special\\s*diet"
     ]
   },
+  "skills": {
+    "allowedTags": [
+      "INPUT",
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "skills",
+      "technical skills",
+      "expertise",
+      "technologies",
+      "list of skills",
+      "core competencies"
+    ],
+    "regexPatterns": [
+      "skills",
+      "technical\\s*skills",
+      "expertise",
+      "competencies"
+    ]
+  },
+  "coursework": {
+    "allowedTags": [
+      "INPUT",
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "coursework",
+      "relevant coursework",
+      "relevant courses",
+      "subjects",
+      "major courses"
+    ],
+    "regexPatterns": [
+      "coursework",
+      "relevant\\s*courses"
+    ]
+  },
+  "projects[].name": {
+    "exactPhrases": [
+      "project name",
+      "project title",
+      "title of project",
+      "name of project"
+    ],
+    "regexPatterns": [
+      "project\\s*(name|title)"
+    ]
+  },
+  "projects[].role": {
+    "exactPhrases": [
+      "project role",
+      "your role",
+      "role in project",
+      "position in project"
+    ],
+    "regexPatterns": [
+      "project\\s*role",
+      "role\\s*in\\s*project"
+    ]
+  },
+  "projects[].description": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "project description",
+      "description of project",
+      "project details"
+    ],
+    "regexPatterns": [
+      "project\\s*description",
+      "description\\s*of\\s*project"
+    ]
+  },
+  "projects[].url": {
+    "exactPhrases": [
+      "project url",
+      "project link",
+      "github link",
+      "project repository",
+      "project website"
+    ],
+    "regexPatterns": [
+      "project\\s*(url|link)",
+      "github\\s*link"
+    ]
+  },
+  "awardsAndAchievements[].title": {
+    "exactPhrases": [
+      "award title",
+      "award name",
+      "honor title",
+      "achievement title",
+      "award or honor"
+    ],
+    "regexPatterns": [
+      "award\\s*(title|name)",
+      "achievement\\s*title"
+    ]
+  },
+  "awardsAndAchievements[].organization": {
+    "exactPhrases": [
+      "issuing organization",
+      "award issuer",
+      "awarding body",
+      "issuer",
+      "organization"
+    ],
+    "regexPatterns": [
+      "issuing\\s*organization",
+      "awarding\\s*body"
+    ]
+  },
+  "awardsAndAchievements[].date": {
+    "exactPhrases": [
+      "date awarded",
+      "award date",
+      "achievement date",
+      "date of award"
+    ],
+    "regexPatterns": [
+      "date\\s*awarded",
+      "award\\s*date"
+    ]
+  },
+  "awardsAndAchievements[].description": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "award description",
+      "achievement description",
+      "award details"
+    ],
+    "regexPatterns": [
+      "award\\s*description",
+      "achievement\\s*description"
+    ]
+  },
   "__arrayShapeSignatures__": {
     "education": [
       "school",
@@ -2386,6 +2525,25 @@
       "fluency",
       "proficiency",
       "spoken"
+    ],
+    "projects": [
+      "project",
+      "name",
+      "role",
+      "description",
+      "url",
+      "github",
+      "stack"
+    ],
+    "awardsAndAchievements": [
+      "award",
+      "achievement",
+      "honor",
+      "title",
+      "organization",
+      "issuer",
+      "date",
+      "description"
     ]
   }
 }
