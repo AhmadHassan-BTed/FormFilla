@@ -31,11 +31,33 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 export async function getProfile(): Promise<Profile> {
+  let profile: Profile | null = null;
   if (isChromeStorageAvailable()) {
     const data = await chrome.storage.local.get('profile');
-    return (data as any).profile || createEmptyProfile();
+    profile = (data as any).profile || null;
+  } else {
+    profile = memoryProfile;
   }
-  return memoryProfile || createEmptyProfile();
+
+  if (!profile) {
+    return createEmptyProfile();
+  }
+
+  const empty = createEmptyProfile();
+  return {
+    ...empty,
+    ...profile,
+    personal: { ...empty.personal, ...profile.personal },
+    address: { ...empty.address, ...profile.address },
+    links: { ...empty.links, ...profile.links },
+    workAuthorization: {
+      requiresSponsorship: profile.workAuthorization?.requiresSponsorship ?? empty.workAuthorization!.requiresSponsorship,
+      authorizedInUS: profile.workAuthorization?.authorizedInUS ?? empty.workAuthorization!.authorizedInUS,
+      visaType: profile.workAuthorization?.visaType ?? empty.workAuthorization!.visaType
+    },
+    eeo: { ...empty.eeo, ...profile.eeo },
+    optIns: { ...empty.optIns, ...profile.optIns }
+  };
 }
 
 export async function saveProfile(profile: Profile): Promise<void> {
@@ -111,8 +133,38 @@ function createEmptyProfile(): Profile {
     personal: {
       firstName: '',
       lastName: '',
+      middleName: '',
       email: '',
-      phone: ''
+      phone: '',
+      nationalId: '',
+      summary: ''
+    },
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: ''
+    },
+    links: {
+      linkedin: '',
+      github: '',
+      portfolio: ''
+    },
+    workAuthorization: {
+      requiresSponsorship: false,
+      authorizedInUS: false,
+      visaType: ''
+    },
+    education: [],
+    experience: [],
+    references: [],
+    documents: {},
+    eeo: {
+      gender: '',
+      race: '',
+      veteranStatus: '',
+      disabilityStatus: ''
     },
     optIns: {
       sensitiveEeo: false
