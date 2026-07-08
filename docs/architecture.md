@@ -8,31 +8,19 @@ This document provides a technical breakdown of the matching and scoring subsyst
 
 The matching engine matches unstructured DOM input nodes on dynamic web forms to structured fields inside the candidate's JSON profile.
 
-```
-+--------------+     +-------------+     +-------------------+
-|  DOM Inputs  | --> | Normalizer  | --> | Tokenized Signals |
-+--------------+     +-------------+     +-------------------+
-                                                   |
-                                                   v
-+--------------+     +-------------+     +-------------------+
-| Profile Keys | --> |  Dictionary | --> | Field Rules Check |
-+--------------+     +-------------+     +-------------------+
-                                                   |
-                                                   v
-                                         +-------------------+
-                                         | Scoring Primitives|
-                                         | Fuzzy Sim, Regex  |
-                                         +-------------------+
-                                                   |
-                                                   v
-                                         +-------------------+
-                                         | Hungarian Matcher |
-                                         +-------------------+
-                                                   |
-                                                   v
-                                         +-------------------+
-                                         | Gate Resolution   |
-                                         +-------------------+
+```mermaid
+flowchart TD
+    subgraph Inputs [Form Analysis]
+        DOM[DOM Inputs] --> Normalizer[Normalizer] --> Tokens[Tokenized Signals]
+    end
+    
+    subgraph Rules [Schema Matcher]
+        Keys[Profile Keys] --> Dict[Dictionary] --> Check[Field Rules Check]
+    end
+    
+    Tokens & Check --> Scorer[Scoring Primitives:\nFuzzy Sim, Regex]
+    Scorer --> Hungarian[Hungarian Matcher]
+    Hungarian --> Gate[Gate Resolution]
 ```
 
 ---

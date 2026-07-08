@@ -6,18 +6,17 @@ This document explains the data flow, persistence layout, and DOM writing abstra
 
 ## 1. System Data Flow
 
-```
-   [Options Dashboard]                     [Popup UI panel]
-          |                                       |
-    Saves JSON/Files                        Sends START_FILL
-          |                                       |
-          v                                       v
-+--------------------+                  +---------------------+
-| Local Sandbox:     |                  | Content Script:     |
-| - chrome.storage   | <=============>  | - scanForFields()   |
-| - IndexedDB        |   Reads Profile  | - resolveAllFields()|
-+--------------------+                  | - writeValue()      |
-                                        +---------------------+
+```mermaid
+flowchart TD
+    Dashboard[Options Dashboard] -->|Saves JSON/Files| Sandbox[(Local Sandbox:\n- chrome.storage\n- IndexedDB)]
+    Popup[Popup UI Panel] -->|Sends START_FILL| Content[Content Script]
+    Content <-->|Reads Profile| Sandbox
+    
+    subgraph Content Script [Content Script Core]
+        scan[scanForFields]
+        resolve[resolveAllFields]
+        write[writeValue]
+    end
 ```
 
 * **Options Dashboard:** The primary setup interface. All textual configuration is written directly to `chrome.storage.local`. Large files (like resumes, cover letters, and pictures) are converted to `ArrayBuffer` objects and persisted inside browser-level **IndexedDB** sandboxes under the database name `HiredFiles`.
