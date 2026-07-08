@@ -1,6 +1,6 @@
 import { getProfile, saveProfile, saveFileBlob } from '../shared/storage/storage-client.js';
 import { Profile, EducationEntry, ExperienceEntry, ReferenceEntry, DocumentFile } from '../shared/types/index.js';
-import EXTENSIVE_PROFILE_TEMPLATE from './profile-template.json' with { type: 'json' };
+import EXTENSIVE_PROFILE_TEMPLATE from '../shared/dictionary/profile-template.json' with { type: 'json' };
 
 let currentProfile: Profile;
 const uploadedFiles: Record<string, { file: File; buffer: ArrayBuffer }> = {};

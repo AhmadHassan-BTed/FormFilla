@@ -23,7 +23,7 @@
   },
   "address": {
     "street": "123 Main Street, Apt 4B",
-    "city: ": "New York",
+    "city": "New York",
     "state": "NY",
     "postalCode": "10001",
     "country": "United States"

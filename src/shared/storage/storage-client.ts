@@ -1,4 +1,5 @@
 import { Profile } from '../types/index.js';
+import profileTemplate from '../dictionary/profile-template.json' with { type: 'json' };
 
 let memoryProfile: Profile | null = null;
 const memoryLearnedMappings: Record<string, Record<string, string>> = {};
@@ -129,45 +130,33 @@ export async function saveFileBlob(key: string, bytes: ArrayBuffer): Promise<voi
 }
 
 function createEmptyProfile(): Profile {
-  return {
-    personal: {
-      firstName: '',
-      lastName: '',
-      middleName: '',
-      email: '',
-      phone: '',
-      nationalId: '',
-      summary: ''
-    },
-    address: {
-      street: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: ''
-    },
-    links: {
-      linkedin: '',
-      github: '',
-      portfolio: ''
-    },
-    workAuthorization: {
-      requiresSponsorship: false,
-      authorizedInUS: false,
-      visaType: ''
-    },
-    education: [],
-    experience: [],
-    references: [],
-    documents: {},
-    eeo: {
-      gender: '',
-      race: '',
-      veteranStatus: '',
-      disabilityStatus: ''
-    },
-    optIns: {
-      sensitiveEeo: false
+  const template = JSON.parse(JSON.stringify(profileTemplate));
+  delete template.__meta__;
+
+  const clean = (obj: any): any => {
+    if (obj === null || obj === undefined) return obj;
+    if (Array.isArray(obj)) {
+      return [];
     }
+    if (typeof obj === 'object') {
+      const newObj: any = {};
+      for (const [k, v] of Object.entries(obj)) {
+        if (typeof v === 'string') {
+          newObj[k] = '';
+        } else if (typeof v === 'boolean') {
+          newObj[k] = false;
+        } else if (typeof v === 'number') {
+          newObj[k] = 0;
+        } else if (typeof v === 'object') {
+          newObj[k] = clean(v);
+        } else {
+          newObj[k] = v;
+        }
+      }
+      return newObj;
+    }
+    return obj;
   };
+
+  return clean(template) as Profile;
 }
