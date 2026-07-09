@@ -36,9 +36,9 @@ function Apply-UnsharpMask {
   $center = 1 + (4 * $Amount)
   $edge = -1 * $Amount
   $kernel = @(
-    0,     $edge, 0,
+    0, $edge, 0,
     $edge, $center, $edge,
-    0,     $edge, 0
+    0, $edge, 0
   )
 
   $src = New-Object System.Drawing.Bitmap $Bitmap
@@ -115,7 +115,8 @@ try {
 
         # Slight inset avoids edge-clamp artifacts at exact bounds
         $graphics.DrawImage($sourceImage, 0, 0, $size, $size)
-      } finally {
+      }
+      finally {
         $graphics.Dispose()
       }
 
@@ -132,7 +133,8 @@ try {
       $sharpened.Dispose()
 
       Write-Host "Wrote $targetPath ($size x $size, sharpen=$sizeAdjustedAmount)"
-    } finally {
+    }
+    finally {
       $bitmap.Dispose()
     }
   }

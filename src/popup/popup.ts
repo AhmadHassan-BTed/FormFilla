@@ -2,7 +2,7 @@ import { FillResult } from '../shared/types/index.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const fillBtn = document.getElementById('fill-btn') as HTMLButtonElement;
-  const optionsBtn = document.getElementById('options-btn') as HTMLButtonElement;
+  const optionsBtn = document.getElementById('options-btn') as HTMLButtonElement | null;
   const resultsPanel = document.getElementById('results-panel') as HTMLDivElement;
   const statusDot = document.querySelector('.status-dot') as HTMLSpanElement;
   const statusText = document.getElementById('status-text') as HTMLSpanElement;
@@ -12,15 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const countConfirm = document.getElementById('count-confirm') as HTMLSpanElement;
   const countUnmapped = document.getElementById('count-unmapped') as HTMLSpanElement;
 
-  optionsBtn.addEventListener('click', () => {
-    chrome.runtime.openOptionsPage();
-  });
+  if (optionsBtn) {
+    optionsBtn.addEventListener('click', () => {
+      chrome.runtime.openOptionsPage();
+    });
+  }
 
   fillBtn.addEventListener('click', async () => {
     fillBtn.disabled = true;
     const btnText = fillBtn.querySelector('.btn-text');
     const originalText = btnText ? btnText.textContent : 'Fill this page';
-    
+
     if (btnText) btnText.textContent = 'Analyzing Page...';
     statusDot.className = 'status-dot loading';
     statusText.textContent = 'Finding and scoring elements...';
@@ -49,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response && response.type === 'FILL_RESULT') {
           const res = response.result as FillResult;
-          
+
           countConfident.textContent = String(res.confident);
           countReview.textContent = String(res.review);
           countConfirm.textContent = String(res.needsConfirm);

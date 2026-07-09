@@ -11,7 +11,7 @@ export function scanForFields(root: Document | Element): (Element | DateFieldGro
 
     const processedElements = new Set<Element>();
     const containers = new Set<Element>();
-    
+
     candidates.forEach(el => {
       if (el.parentElement) {
         containers.add(el.parentElement);
@@ -19,8 +19,8 @@ export function scanForFields(root: Document | Element): (Element | DateFieldGro
     });
 
     for (const container of containers) {
-      const children = Array.from(container.children).filter(child => 
-        child.tagName === 'SELECT' || 
+      const children = Array.from(container.children).filter(child =>
+        child.tagName === 'SELECT' ||
         (child.tagName === 'INPUT' && !['hidden', 'submit', 'button', 'radio', 'checkbox'].includes((child as HTMLInputElement).type))
       ) as (HTMLSelectElement | HTMLInputElement)[];
 
@@ -89,10 +89,16 @@ export function scanForFields(root: Document | Element): (Element | DateFieldGro
 
   if (blockedOrigins.size > 0 && typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
     blockedOrigins.forEach(origin => {
-      chrome.runtime.sendMessage({
-        type: 'PERMISSION_NEEDED',
-        origin
-      });
+      try {
+        chrome.runtime.sendMessage({
+          type: 'PERMISSION_NEEDED',
+          origin
+        });
+      } catch (err) {
+        if (!(err instanceof Error && err.message.includes('Extension context invalidated'))) {
+          throw err;
+        }
+      }
     });
   }
 
