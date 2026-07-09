@@ -27,7 +27,7 @@ flowchart TD
 
 ## 2. Multi-Signal Scoring
 
-Every field in the [rules.ts](../../src/shared/dictionary/rules.ts) dictionary defines a matching policy consisting of exact phrases, regex patterns, autocomplete tokens, and type constraints.
+Every field in the [rules.ts](../src/shared/dictionary/rules.ts) dictionary defines a matching policy consisting of exact phrases, regex patterns, autocomplete tokens, and type constraints.
 
 Each input element is checked against all available dictionary rules:
 

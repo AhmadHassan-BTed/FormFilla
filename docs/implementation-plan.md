@@ -70,10 +70,16 @@ Step-by-step contract:
 
 ```
 applyengine/
-├── manifest.json
-├── package.json
-├── tsconfig.json
+├── docs/                  # Documentation
+│   ├── assets/            # Documentation images & previews
+│   └── infra/             # Infrastructure docs
+├── infra/                 # Infrastructure & deployment
+│   └── docker/            # Docker Compose & Dockerfile
+├── scripts/               # Build & utility scripts
+│   ├── build.js           # esbuild bundler
+│   └── generate-icons.ps1 # Icon generation
 ├── src/
+│   ├── assets/            # Static assets (logos, SVGs)
 │   ├── background/
 │   │   └── service-worker.ts
 │   ├── content/
@@ -103,26 +109,37 @@ applyengine/
 │   │   │   └── lever.ts
 │   │   └── overlay/
 │   │       └── review-highlighter.ts
-│   ├── popup/
-│   │   ├── popup.html
-│   │   ├── popup.ts
-│   │   └── popup.css
 │   ├── options/
 │   │   ├── options.html
 │   │   ├── options.ts
 │   │   └── options.css
-│   └── shared/
-│       ├── types.ts
-│       ├── messages.ts
-│       ├── storage-client.ts
-│       └── constants.ts
+│   ├── popup/
+│   │   ├── popup.html
+│   │   ├── popup.ts
+│   │   └── popup.css
+│   ├── shared/
+│   │   ├── types.ts
+│   │   ├── messages.ts
+│   │   ├── storage-client.ts
+│   │   └── constants.ts
+│   └── themes/            # CSS theme files
+├── icons/                 # Extension icons
+├── store_assets/          # Chrome Web Store assets
 ├── tests/
 │   ├── fixtures/
 │   │   ├── generic-form.html
 │   │   ├── workday-sample.html
 │   │   └── greenhouse-sample.html
 │   └── scorer.test.ts
-└── icons/
+├── .editorconfig
+├── .env.example
+├── .gitattributes
+├── .gitignore
+├── LICENSE
+├── manifest.json
+├── package.json
+├── tsconfig.json
+└── vitest.config.ts
 ```
 
 ---

@@ -23,5 +23,5 @@ Clean and sophisticate repo structure: move code into proper folders, split “g
 - [ ] Add barrel `index.ts` files only where they reduce churn (optional).
 - [x] Run `npm test` and `npm run build`.
 
-- [ ] Update documentation notes if any folder paths changed.
+- [x] Update documentation notes if any folder paths changed.
 
