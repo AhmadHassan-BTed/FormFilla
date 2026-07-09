@@ -19,7 +19,8 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
   for (const [candidateKey, rule] of Object.entries(FIELD_RULES)) {
     if (rule.sensitivityTier === 'sensitive' && rule.requiresOptIn) {
       const optInKey = rule.optInKey || 'sensitiveEeo';
-      if (!profile.optIns || !profile.optIns[optInKey]) {
+      const isOptInAllowed = !profile.optIns || profile.optIns[optInKey] !== false;
+      if (!isOptInAllowed) {
         continue;
       }
     }

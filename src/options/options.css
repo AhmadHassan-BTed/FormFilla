@@ -453,3 +453,44 @@ textarea:focus {
   fill: var(--accent-indigo);
   display: block;
 }
+
+.custom-file-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px dashed var(--border-color);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin: 8px 0;
+  width: fit-content;
+}
+
+.custom-file-upload-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-purple);
+}
+
+/* Custom scrollbar for textareas and other scrollable boxes */
+textarea::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+textarea::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+textarea::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+textarea::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-purple);
+}
+
