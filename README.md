@@ -6,7 +6,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-grey?labelColor=black" alt="License"></a>
   <a href="https://github.com/AhmadHassan-BTed/FormFilla/actions"><img src="https://img.shields.io/github/actions/workflow/status/AhmadHassan-BTed/FormFilla/ci.yml?branch=main&label=Build&labelColor=black&color=grey" alt="CI Status"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Version-0.1.0-grey?labelColor=black" alt="Version"></a>
+  <a href="docs/CHANGELOG.md"><img src="https://img.shields.io/badge/Version-0.1.0-grey?labelColor=black" alt="Version"></a>
   <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Language-TypeScript-grey?labelColor=black" alt="TypeScript"></a>
   <img src="https://img.shields.io/badge/Engine-Zero--AI-grey?labelColor=black" alt="Zero AI" />
   <img src="https://img.shields.io/badge/Logic-Kuhn--Munkres-grey?labelColor=black" alt="Kuhn-Munkres" />
@@ -16,10 +16,6 @@
 
 <p align="center">
   <strong>A local-first, privacy-respecting form engine designed to restore candidate dignity and speed in the modern job hunt.</strong>
-</p>
-
-
-
 </p>
 
 
@@ -101,20 +97,40 @@ sequenceDiagram
 ```
 FormFilla/
 ├── .github/               # CI/CD Workflows & Templates
-├── docs/                  # Detailed System and Security Guides
+├── docs/                  # Documentation (guides, changelog, roadmap, etc.)
+│   ├── assets/            # Documentation images and previews
+│   └── infra/             # Infrastructure documentation
+├── infra/                 # Infrastructure & deployment configs
+│   └── docker/            # Docker Compose & Dockerfile
+├── scripts/               # Build & utility scripts
+│   ├── build.js           # esbuild bundler configuration
+│   └── generate-icons.ps1 # Icon generation script
 ├── src/
+│   ├── assets/            # Static assets (logos, SVGs)
 │   ├── background/        # Service Worker bootstrapping
 │   ├── content/           # Core runtime engine
 │   │   ├── adapters/      # Site-specific platform adapters (Workday, Lever)
 │   │   ├── core/          # Orchestrator and logic bootstrappers
 │   │   ├── dom/           # DOM traversal and observers
 │   │   ├── fill/          # Value injectors and event simulation
-│   │   ├── ui/            # Highlighters and badge widgets
+│   │   ├── matching/      # Scoring & matching algorithms
+│   │   ├── overlay/       # Overlay UI components
+│   │   └── ui/            # Highlighters and badge widgets
 │   ├── options/           # Dashboard settings panel (HTML/CSS/TS)
 │   ├── popup/             # Action panel (HTML/CSS/TS)
-│   └── shared/            # Common drivers, configs, and types
+│   ├── shared/            # Common drivers, configs, and types
+│   └── themes/            # CSS theme files
+├── icons/                 # Extension icons (16, 32, 48, 128)
+├── store_assets/          # Chrome Web Store promotional assets
 ├── tests/                 # JSDOM unit test runner suites
-├── build.js               # esbuild bundler configuration
+├── .editorconfig          # Editor configuration
+├── .env.example           # Environment variable template
+├── .gitattributes         # Git attributes
+├── .gitignore             # Git ignore rules
+├── LICENSE                # MIT License
+├── manifest.json          # Extension manifest
+├── package.json           # Node dependencies & scripts
+├── tsconfig.json          # TypeScript configuration
 └── vitest.config.ts       # Test runner configuration
 ```
 
@@ -197,7 +213,7 @@ Docker configurations are available to compile and test the extension within a s
 
 ```bash
 # Run tests inside Docker
-docker-compose up --build
+docker compose -f infra/docker/docker-compose.yml up --build
 ```
 
 ---
@@ -212,6 +228,6 @@ docker-compose up --build
 
 ## License & Support
 
-This project is open-source and licensed under the [MIT License](LICENSE). 
+This project is open-source and licensed under the [MIT License](LICENSE).
 
-For bug reports or support inquiries, open an issue in this repository or contact the author, **AhmadHassan-BTed**, at **ahmadhassan.bted@gmail.com**. Refer to the [Security Policy](SECURITY.md) for vulnerability reporting.
+For bug reports or support inquiries, open an issue in this repository or contact the author, **AhmadHassan-BTed**, at **ahmadhassan.bted@gmail.com**. Refer to the [Security Policy](docs/SECURITY.md) for vulnerability reporting.

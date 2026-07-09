@@ -12,56 +12,8 @@ import { fillCombobox } from '../fill/combobox-adapter.js';
 import { tagField } from '../ui/review-highlighter.js';
 import { watch } from '../dom/mutation-watcher.js';
 import { FieldSignals, FillResult, ScoredField } from '../../shared/types/index.js';
-import { DEGREE_RANK } from '../../shared/constants/constants.js';
+import { getValueByPath } from './value-path.js';
 
-function getValueByPath(obj: any, path: string): any {
-  if (!obj || !path) return undefined;
-
-  if (path.startsWith('education.highest.')) {
-    const field = path.substring('education.highest.'.length);
-    const educationList = obj.education;
-    if (!Array.isArray(educationList) || educationList.length === 0) {
-      return undefined;
-    }
-
-    const sorted = [...educationList].sort((a, b) => {
-      const rankA = getDegreeRank(a.degree);
-      const rankB = getDegreeRank(b.degree);
-      return rankB - rankA;
-    });
-
-    return sorted[0][field as keyof typeof sorted[0]];
-  }
-
-  if (path.startsWith('documents.')) {
-    return obj.documents?.[path];
-  }
-
-  const parts = path.replace(/\]/g, '').split(/[.\[]/);
-  let current = obj;
-  for (const part of parts) {
-    if (current === undefined || current === null) return undefined;
-    current = current[part];
-  }
-  return current;
-}
-
-function getDegreeRank(degreeName: string): number {
-  if (!degreeName) return 0;
-  const norm = degreeName.toLowerCase().trim();
-
-  if (DEGREE_RANK[norm] !== undefined) {
-    return DEGREE_RANK[norm];
-  }
-
-  for (const [key, val] of Object.entries(DEGREE_RANK)) {
-    if (norm.includes(key)) {
-      return val;
-    }
-  }
-
-  return 1;
-}
 
 export async function processFields(
   fields: any[],
@@ -101,7 +53,7 @@ export async function processFields(
 
   for (const sf of scoredFields) {
     const el = sf.element as HTMLElement;
-    const isChoice = el.tagName === 'INPUT' && 
+    const isChoice = el.tagName === 'INPUT' &&
       ((el as HTMLInputElement).type === 'radio' || (el as HTMLInputElement).type === 'checkbox');
 
     if (isChoice) {
@@ -157,7 +109,7 @@ export async function processFields(
 
   for (const sf of singleFields) {
     const value = getValueByPath(profile, sf.key);
-    
+
     if (sf.gate === 'confident') confident++;
     else if (sf.gate === 'review') review++;
     else if (sf.gate === 'needs-confirm') needsConfirm++;
@@ -221,7 +173,7 @@ export function startOrchestrator() {
           const profile = await getProfile();
           const fields = scanForFields(document.body);
           const results = await processFields(fields, profile);
-          
+
           sendResponse({ type: 'FILL_RESULT', result: results });
         } catch (err) {
           console.error('Error during form fill execution:', err);

@@ -4,9 +4,9 @@
   "description": "Fills job application forms from local JSON profile data. No AI, no network calls.",
   "type": "module",
   "scripts": {
-    "build": "node build.js",
+    "build": "node scripts/build.js",
     "icons": "pwsh -File scripts/generate-icons.ps1",
-    "watch": "node build.js --watch",
+    "watch": "node scripts/build.js --watch",
     "test": "vitest run",
     "test:watch": "vitest"
   },
