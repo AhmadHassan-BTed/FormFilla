@@ -6,27 +6,42 @@
   "author": "AhmadHassan-BTed (https://github.com/AhmadHassan-BTed)",
   "homepage_url": "https://github.com/AhmadHassan-BTed/FormFilla",
   "icons": {
-    "16": "assets/logo.svg",
-    "32": "assets/logo.svg",
-    "48": "assets/logo.svg",
-    "128": "assets/logo.svg"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
   },
-  "permissions": ["storage", "scripting", "activeTab"],
-  "optional_host_permissions": ["<all_urls>"],
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
   "background": {
     "service_worker": "background/service-worker.js",
     "type": "module"
   },
   "action": {
     "default_popup": "popup/popup.html",
-    "default_icon": "assets/logo.svg"
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
   },
   "options_page": "options/options.html",
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "<all_urls>"
+      ],
       "all_frames": true,
-      "js": ["content/index.js"],
+      "js": [
+        "content/index.js"
+      ],
       "run_at": "document_idle"
     }
   ]

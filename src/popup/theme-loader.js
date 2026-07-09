@@ -1,6 +1,6 @@
 (function() {
   chrome.storage.local.get(['theme'], (result) => {
-    const theme = result.theme || 'dark';
+    const theme = result.theme || 'brutalist-dark';
     const link = document.createElement('link');
     link.id = 'theme-link';
     link.rel = 'stylesheet';

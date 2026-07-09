@@ -18,6 +18,7 @@
   --brand-text-bg: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
   --brand-text-color: transparent;
   --brand-logo-fill: url(#brand-grad);
+  --brand-logo-filter: brightness(0);
   --focus-ring: rgba(168, 85, 247, 0.15);
   --file-btn-bg: rgba(0, 0, 0, 0.02);
   --file-btn-color: var(--text-primary);
@@ -31,9 +32,14 @@
   --brand-text-bg: var(--primary-accent);
   --brand-text-color: transparent;
   --brand-logo-fill: url(#brand-grad);
+  --brand-logo-filter: brightness(0);
   --btn-primary-bg: var(--primary-accent);
   --btn-primary-text: #FFFFFF;
   --icon-btn-bg: rgba(0, 0, 0, 0.05);
   --icon-btn-color: var(--text-primary);
   --result-item-bg: rgba(0, 0, 0, 0.02);
+  --save-btn-shadow: 0 4px 14px rgba(168, 85, 247, 0.25);
+  --save-btn-shadow-hover: 0 6px 20px rgba(168, 85, 247, 0.35);
+  --btn-primary-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+  --btn-primary-shadow-hover: 0 6px 20px rgba(168, 85, 247, 0.4);
 }

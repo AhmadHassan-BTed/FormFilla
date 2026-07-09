@@ -19,15 +19,16 @@ function copyFile(src, dest) {
 function copyAssets() {
   console.log('Copying static assets...');
   copyFile('manifest.json', 'dist/manifest.json');
-  
+
   if (fs.existsSync('src/popup/popup.html')) copyFile('src/popup/popup.html', 'dist/popup/popup.html');
   if (fs.existsSync('src/popup/popup.css')) copyFile('src/popup/popup.css', 'dist/popup/popup.css');
   if (fs.existsSync('src/options/options.html')) copyFile('src/options/options.html', 'dist/options/options.html');
   if (fs.existsSync('src/options/options.css')) copyFile('src/options/options.css', 'dist/options/options.css');
   if (fs.existsSync('src/assets/logo.svg')) copyFile('src/assets/logo.svg', 'dist/assets/logo.svg');
+  if (fs.existsSync('icon.svg')) copyFile('icon.svg', 'dist/icon.svg');
   if (fs.existsSync('src/popup/theme-loader.js')) copyFile('src/popup/theme-loader.js', 'dist/popup/theme-loader.js');
   if (fs.existsSync('src/options/theme-loader.js')) copyFile('src/options/theme-loader.js', 'dist/options/theme-loader.js');
-  
+
   if (fs.existsSync('src/themes')) {
     try {
       const files = fs.readdirSync('src/themes');
@@ -38,7 +39,7 @@ function copyAssets() {
       console.warn('Failed to copy themes:', e);
     }
   }
-  
+
   if (fs.existsSync('icons')) {
     try {
       const files = fs.readdirSync('icons');

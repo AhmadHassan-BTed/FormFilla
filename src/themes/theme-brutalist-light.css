@@ -18,12 +18,15 @@
   --brand-text-bg: none;
   --brand-text-color: #07080C;
   --brand-logo-fill: #07080C;
+  --brand-logo-filter: brightness(0);
   --focus-ring: rgba(7, 8, 12, 0.15);
   --file-btn-bg: rgba(0, 0, 0, 0.02);
   --file-btn-color: var(--text-primary);
   --file-btn-border: rgba(0, 0, 0, 0.12);
   --scrollbar-thumb: rgba(7, 8, 12, 0.2);
   --scrollbar-track: rgba(255, 255, 255, 0.8);
+  --save-btn-shadow: 0 4px 14px rgba(7, 8, 12, 0.15);
+  --save-btn-shadow-hover: 0 6px 20px rgba(7, 8, 12, 0.22);
 
   /* Popup overrides */
   --primary-accent: #07080C;
@@ -31,8 +34,11 @@
   --brand-text-bg: none;
   --brand-text-color: #07080C;
   --brand-logo-fill: #07080C;
+  --brand-logo-filter: brightness(0);
   --btn-primary-bg: #07080C;
   --btn-primary-text: #FFFFFF;
+  --btn-primary-shadow: 0 4px 15px rgba(7, 8, 12, 0.18);
+  --btn-primary-shadow-hover: 0 6px 20px rgba(7, 8, 12, 0.24);
   --icon-btn-bg: rgba(0, 0, 0, 0.05);
   --icon-btn-color: var(--text-primary);
   --result-item-bg: rgba(0, 0, 0, 0.02);

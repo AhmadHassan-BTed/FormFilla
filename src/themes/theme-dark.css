@@ -31,9 +31,12 @@
   --brand-text-bg: var(--primary-accent);
   --brand-text-color: transparent;
   --brand-logo-fill: url(#brand-grad);
+  --brand-logo-filter: brightness(0) invert(1);
   --btn-primary-bg: var(--primary-accent);
   --btn-primary-text: #FFFFFF;
   --icon-btn-bg: rgba(255, 255, 255, 0.08);
   --icon-btn-color: var(--text-primary);
   --result-item-bg: rgba(255, 255, 255, 0.02);
+  --save-btn-shadow: 0 4px 14px rgba(168, 85, 247, 0.25);
+  --save-btn-shadow-hover: 0 6px 20px rgba(168, 85, 247, 0.35);
 }
