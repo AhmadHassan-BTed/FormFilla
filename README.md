@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="store_assets/small_promo_tile.png" alt="FormFilla promo tile" style="width:100%;max-width:440px;height:auto;" />
+  <img src="docs/assets//small_promo_tile_hd.png" alt="FormFilla promo tile" style="width:100%;max-width:440px;height:auto;" />
 
 <h1 align="center">FormFilla</h1>
 
