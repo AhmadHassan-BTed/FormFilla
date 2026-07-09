@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="store_assets/small_promo_tile.png" alt="FormFilla promo tile" style="width:100%;max-width:440px;height:auto;" />
+
 <h1 align="center">FormFilla</h1>
 
 <p align="center">
@@ -11,8 +14,7 @@
   <strong>A local-first, privacy-respecting form engine designed to restore candidate dignity and speed in the modern job hunt.</strong>
 </p>
 
-<p align="center">
-  <img src="store_assets/small_promo_tile.png" alt="FormFilla promo tile" style="width:100%;max-width:440px;height:auto;" />
+
 
 </p>
 
