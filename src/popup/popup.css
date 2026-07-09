@@ -317,3 +317,125 @@ body {
 }
 
 /* Removed old class overrides, delegated to separate files. */
+
+/* ===== GitHub Support Panel ===== */
+
+.support-panel {
+  background: var(--results-panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.support-panel.hidden {
+  display: none;
+}
+
+.support-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.support-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.support-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.support-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.support-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+}
+
+.support-link:active {
+  transform: scale(0.97);
+}
+
+.star-link {
+  background: rgba(250, 200, 50, 0.1);
+  color: #facc15;
+  border-color: rgba(250, 200, 50, 0.2);
+}
+
+.star-link:hover {
+  background: rgba(250, 200, 50, 0.2);
+  border-color: rgba(250, 200, 50, 0.4);
+  box-shadow: 0 0 12px rgba(250, 200, 50, 0.15);
+}
+
+.follow-link {
+  background: rgba(100, 100, 255, 0.1);
+  color: #818cf8;
+  border-color: rgba(100, 100, 255, 0.2);
+}
+
+.follow-link:hover {
+  background: rgba(100, 100, 255, 0.2);
+  border-color: rgba(100, 100, 255, 0.4);
+  box-shadow: 0 0 12px rgba(100, 100, 255, 0.15);
+}
+
+.support-icon {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.support-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--icon-btn-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.support-dismiss:hover {
+  background: var(--icon-btn-hover-bg);
+  color: var(--text-primary);
+}
+
+.dismiss-icon {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+.support-extra {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.3;
+}

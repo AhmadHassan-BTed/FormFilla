@@ -1,6 +1,14 @@
 import { FillResult } from '../shared/types/index.js';
+import {
+  initSupportState,
+  shouldShowSupport,
+  markStarred,
+  markFollowed,
+  dismissSupport,
+  recordReminderShown,
+} from '../shared/storage/github-support.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const fillBtn = document.getElementById('fill-btn') as HTMLButtonElement;
   const optionsBtn = document.getElementById('options-btn') as HTMLButtonElement | null;
   const resultsPanel = document.getElementById('results-panel') as HTMLDivElement;
@@ -11,6 +19,53 @@ document.addEventListener('DOMContentLoaded', () => {
   const countReview = document.getElementById('count-review') as HTMLSpanElement;
   const countConfirm = document.getElementById('count-confirm') as HTMLSpanElement;
   const countUnmapped = document.getElementById('count-unmapped') as HTMLSpanElement;
+
+  // GitHub support panel
+  const supportPanel = document.getElementById('support-panel') as HTMLDivElement;
+  const starBtn = document.getElementById('star-btn') as HTMLAnchorElement;
+  const followBtn = document.getElementById('follow-btn') as HTMLAnchorElement;
+  const dismissBtn = document.getElementById('support-dismiss-btn') as HTMLButtonElement;
+
+  // Initialize support state and show prompt if needed
+  await initSupportState();
+  const showSupport = await shouldShowSupport();
+  if (showSupport) {
+    supportPanel.classList.remove('hidden');
+    await recordReminderShown();
+  }
+
+  // Star button — mark as starred when clicked
+  starBtn.addEventListener('click', async () => {
+    await markStarred();
+    starBtn.style.opacity = '0.5';
+    starBtn.style.pointerEvents = 'none';
+    checkSupportComplete();
+  });
+
+  // Follow button — mark as followed when clicked
+  followBtn.addEventListener('click', async () => {
+    await markFollowed();
+    followBtn.style.opacity = '0.5';
+    followBtn.style.pointerEvents = 'none';
+    checkSupportComplete();
+  });
+
+  // Dismiss button
+  dismissBtn.addEventListener('click', async () => {
+    await dismissSupport();
+    supportPanel.classList.add('hidden');
+  });
+
+  // Check if both actions completed and auto-dismiss
+  async function checkSupportComplete() {
+    const state = await shouldShowSupport();
+    if (!state) {
+      // Both done or dismissed — hide with a brief delay for visual feedback
+      setTimeout(() => {
+        supportPanel.classList.add('hidden');
+      }, 600);
+    }
+  }
 
   if (optionsBtn) {
     optionsBtn.addEventListener('click', () => {
