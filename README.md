@@ -4,10 +4,14 @@
 <h1 align="center">FormFilla</h1>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a>
-  <a href="https://github.com/AhmadHassan-BTed/FormFilla/actions"><img src="https://github.com/AhmadHassan-BTed/FormFilla/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Version-0.1.0-purple.svg" alt="Version"></a>
-  <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Language-TypeScript-blue.svg" alt="TypeScript"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-grey?labelColor=black" alt="License"></a>
+  <a href="https://github.com/AhmadHassan-BTed/FormFilla/actions"><img src="https://img.shields.io/github/actions/workflow/status/AhmadHassan-BTed/FormFilla/ci.yml?branch=main&label=Build&labelColor=black&color=grey" alt="CI Status"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Version-0.1.0-grey?labelColor=black" alt="Version"></a>
+  <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Language-TypeScript-grey?labelColor=black" alt="TypeScript"></a>
+  <img src="https://img.shields.io/badge/Engine-Zero--AI-grey?labelColor=black" alt="Zero AI" />
+  <img src="https://img.shields.io/badge/Logic-Kuhn--Munkres-grey?labelColor=black" alt="Kuhn-Munkres" />
+  <img src="https://img.shields.io/badge/Architecture-Local--First-grey?labelColor=black" alt="Local First" />
+  <img src="https://img.shields.io/badge/Privacy-100%25-grey?labelColor=black" alt="Privacy" />
 </p>
 
 <p align="center">
