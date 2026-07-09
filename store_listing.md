@@ -75,7 +75,9 @@ Create and place them into `store_assets/` using these exact filenames:
 - `store_assets/screenshots/screenshot2.png` (same size rule)
 - `store_assets/screenshots/screenshot3.png` (same size rule)
 - `store_assets/small_promo_tile.png` (440x280 PNG/JPG)
+  - Use the provided `store_assets/small_promo_tile.png` (small_promo_tile.png) placed in the store listing assets.
 - `store_assets/marquee_promo_tile.png` (1400x560 PNG/JPG)
+
 
 > Requirement recap (Chrome Web Store):
 - **Screenshots**: 1280x800 or 640x400 (JPEG or 24-bit PNG without alpha). Up to 5 screenshots. **At least 1 is required.**

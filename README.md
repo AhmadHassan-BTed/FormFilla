@@ -11,6 +11,11 @@
   <strong>A local-first, privacy-respecting form engine designed to restore candidate dignity and speed in the modern job hunt.</strong>
 </p>
 
+<p align="center">
+  <img src="store_assets/small_promo_tile.png" alt="FormFilla promo tile" width="440" />
+</p>
+
+
 <hr />
 
 ## The Philosophy
@@ -159,10 +164,10 @@ npm run build
 <details>
 <summary>Click to expand environment configurations</summary>
 
-| Parameter | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `DEBUG_MODE` | `boolean` | `false` | Enables detailed logging in the browser console. |
-| `MOCK_STORAGE` | `boolean` | `false` | Uses an in-memory database mock for testing. |
+| Parameter              | Type      | Default | Description                                                                                    |
+| :--------------------- | :-------- | :------ | :--------------------------------------------------------------------------------------------- |
+| `DEBUG_MODE`           | `boolean` | `false` | Enables detailed logging in the browser console.                                               |
+| `MOCK_STORAGE`         | `boolean` | `false` | Uses an in-memory database mock for testing.                                                   |
 | `BYPASS_CONFIRMATIONS` | `boolean` | `false` | Automatically fills critical fields without requiring confirmation (for development use only). |
 
 </details>
