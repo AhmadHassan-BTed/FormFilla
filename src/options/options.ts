@@ -1,5 +1,5 @@
 import { getProfile, saveProfile, saveFileBlob } from '../shared/storage/storage-client.js';
-import { Profile, EducationEntry, ExperienceEntry, ReferenceEntry, DocumentFile } from '../shared/types/index.js';
+import { Profile, EducationEntry, ExperienceEntry, ReferenceEntry, DocumentFile, LanguageEntry, CertificationEntry, ProjectEntry, AwardEntry } from '../shared/types/index.js';
 import EXTENSIVE_PROFILE_TEMPLATE from '../shared/dictionary/profile-template.json' with { type: 'json' };
 
 let currentProfile: Profile;

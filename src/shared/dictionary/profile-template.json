@@ -5,7 +5,8 @@
       "1. STRUCTURE COHESION: Every key path in this template must map exactly to matching path keys defined in 'rules.json'.",
       "2. DATA TYPES: String fields must have realistic default string examples. Arrays (like 'education', 'experience') must contain a single element array representing the schema template.",
       "3. NESTED DIRECTIVES: Keep sub-objects (like 'personal', 'address', 'links') clean. Avoid deeply nested structures beyond 2 levels.",
-      "4. DOCUMENT ENTRIES: Add standard metadata placeholders under the 'documents' block when introducing new file fields."
+      "4. DOCUMENT ENTRIES: Add standard metadata placeholders under the 'documents' block when introducing new file fields.",
+      "5. DERIVED / UNSTORED PATHS: Some rules.json paths are resolved at fill-time from other stored fields rather than saved directly (e.g. 'education.highest.*' is derived from the 'education' array). Where a rules.json path's first two segments collide with an existing array key, store its example under a flat sibling key using the literal dotted prefix as the key name -- as done for 'education.highest' below -- instead of nesting inside the array."
     ]
   },
   "personal": {
@@ -113,7 +114,11 @@
       "name": "Fractal",
       "role": "Lead Architect",
       "description": "My Final Year Project (FYP) - a high-performance fractal engine.",
-      "technologies": ["C++", "Rust", "WebAssembly"],
+      "technologies": [
+        "C++",
+        "Rust",
+        "WebAssembly"
+      ],
       "url": "https://github.com/AhmadHassan-BTed/Fractal"
     }
   ],
@@ -127,12 +132,41 @@
     }
   ],
   "skills": {
-    "programmingLanguages": ["TypeScript", "JavaScript", "Python", "C#", "C++", "Rust"],
-    "machineLearningAndAI": ["Natural Language Processing", "Fuzzy Scorer Matching", "Transformers"],
-    "markupAndScripting": ["HTML", "CSS", "Bash", "Powershell"],
-    "hardware": ["ARM", "x86"],
-    "architectureAndParadigms": ["Clean Architecture", "OOP", "Bipartite Graph Matching"],
-    "toolsAndIDEs": ["Git", "Docker", "VS Code", "Vite", "esbuild"]
+    "programmingLanguages": [
+      "TypeScript",
+      "JavaScript",
+      "Python",
+      "C#",
+      "C++",
+      "Rust"
+    ],
+    "machineLearningAndAI": [
+      "Natural Language Processing",
+      "Fuzzy Scorer Matching",
+      "Transformers"
+    ],
+    "markupAndScripting": [
+      "HTML",
+      "CSS",
+      "Bash",
+      "Powershell"
+    ],
+    "hardware": [
+      "ARM",
+      "x86"
+    ],
+    "architectureAndParadigms": [
+      "Clean Architecture",
+      "OOP",
+      "Bipartite Graph Matching"
+    ],
+    "toolsAndIDEs": [
+      "Git",
+      "Docker",
+      "VS Code",
+      "Vite",
+      "esbuild"
+    ]
   },
   "languages": [
     {
@@ -319,5 +353,10 @@
     "sensitiveFinancials": true,
     "sensitiveCompensation": true,
     "sensitiveMedical": true
+  },
+  "education.highest": {
+    "school": "Air University",
+    "degree": "Bachelor of Science in Software Engineering",
+    "fieldOfStudy": "Software Engineering"
   }
 }

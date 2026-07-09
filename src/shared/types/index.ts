@@ -1,3 +1,7 @@
+import rawRules from '../dictionary/rules.json' with { type: 'json' };
+
+export type ArrayBlockType = keyof typeof rawRules.__arrayShapeSignatures__;
+
 export interface PersonalInfo {
   firstName: string;
   lastName: string;
@@ -252,7 +256,7 @@ export interface FieldSignals {
   legend?: string;
   options?: string[];
   blockIndex?: number;
-  blockType?: 'education' | 'experience' | 'references';
+  blockType?: ArrayBlockType;
 }
 
 export interface Candidate {
@@ -275,7 +279,7 @@ export interface ScoredField {
 
 export interface RepeatedBlock {
   index: number;
-  arrayKey: 'education' | 'experience' | 'references' | 'projects' | 'certifications' | 'languages' | 'awardsAndAchievements';
+  arrayKey: ArrayBlockType;
   container: Element;
   fields: Element[];
 }

@@ -1,4 +1,4 @@
-import { FieldSignals, RepeatedBlock } from '../../shared/types/index.js';
+import { FieldSignals, RepeatedBlock, ArrayBlockType } from '../../shared/types/index.js';
 
 export function extractSignals(el: Element, blocks: RepeatedBlock[]): FieldSignals {
   const htmlEl = el as HTMLElement;
@@ -15,7 +15,7 @@ export function extractSignals(el: Element, blocks: RepeatedBlock[]): FieldSigna
   }
 
   let blockIndex: number | undefined;
-  let blockType: 'education' | 'experience' | 'references' | undefined;
+  let blockType: ArrayBlockType | undefined;
 
   for (const block of blocks) {
     if (block.fields.includes(el)) {

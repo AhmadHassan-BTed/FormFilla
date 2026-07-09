@@ -2482,6 +2482,93 @@
       "achievement\\s*description"
     ]
   },
+  "skills.programmingLanguages": {
+    "exactPhrases": [
+      "programming languages",
+      "languages known",
+      "coding languages",
+      "programming languages known"
+    ],
+    "regexPatterns": [
+      "programming\\s*languages",
+      "coding\\s*languages"
+    ]
+  },
+  "skills.machineLearningAndAI": {
+    "exactPhrases": [
+      "machine learning",
+      "ai skills",
+      "ml skills",
+      "artificial intelligence skills",
+      "ai/ml skills"
+    ],
+    "regexPatterns": [
+      "machine\\s*learning",
+      "\\bai\\s*skills\\b",
+      "\\bml\\s*skills\\b",
+      "ai\\s*/\\s*ml"
+    ]
+  },
+  "skills.markupAndScripting": {
+    "exactPhrases": [
+      "markup and scripting",
+      "scripting languages",
+      "markup languages"
+    ],
+    "regexPatterns": [
+      "scripting\\s*languages",
+      "markup\\s*languages"
+    ]
+  },
+  "skills.hardware": {
+    "exactPhrases": [
+      "hardware skills",
+      "hardware experience",
+      "embedded/hardware",
+      "hardware & embedded systems"
+    ],
+    "regexPatterns": [
+      "hardware\\s*(skills|experience)",
+      "embedded\\s*systems"
+    ]
+  },
+  "skills.architectureAndParadigms": {
+    "exactPhrases": [
+      "architecture and paradigms",
+      "design paradigms",
+      "software architecture skills",
+      "architectural paradigms"
+    ],
+    "regexPatterns": [
+      "architecture.*paradigms",
+      "design\\s*paradigms"
+    ]
+  },
+  "skills.toolsAndIDEs": {
+    "exactPhrases": [
+      "tools and technologies",
+      "tools & ides",
+      "development tools",
+      "software tools",
+      "tools and ides"
+    ],
+    "regexPatterns": [
+      "tools\\s*(and|&)\\s*(ides|technologies)",
+      "development\\s*tools"
+    ]
+  },
+  "projects[].technologies": {
+    "exactPhrases": [
+      "technologies used",
+      "tech stack",
+      "tools & technologies",
+      "technologies"
+    ],
+    "regexPatterns": [
+      "technolog",
+      "tech\\s*stack"
+    ]
+  },
   "__arrayShapeSignatures__": {
     "education": [
       "school",

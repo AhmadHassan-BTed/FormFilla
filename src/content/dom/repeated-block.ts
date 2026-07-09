@@ -1,4 +1,4 @@
-import { RepeatedBlock } from '../../shared/types/index.js';
+import { RepeatedBlock, ArrayBlockType } from '../../shared/types/index.js';
 import { scanForFields } from './field-scanner.js';
 import { arrayShapeSignatures } from '../../shared/dictionary/rules.js';
 import { tokenize } from '../matching/normalizer.js';
@@ -99,7 +99,7 @@ export function detectRepeatedBlocks(root: Document | Element): RepeatedBlock[] 
   return blocks;
 }
 
-function classifyBlockType(container: Element): 'education' | 'experience' | 'references' | 'projects' | 'certifications' | 'languages' | 'awardsAndAchievements' {
+function classifyBlockType(container: Element): ArrayBlockType {
   const fields = scanForFields(container);
   const textSignals: string[] = [];
 
@@ -118,7 +118,7 @@ function classifyBlockType(container: Element): 'education' | 'experience' | 're
   const tokens = tokenize(combinedText);
 
   let bestScore = -1;
-  let bestCategory: 'education' | 'experience' | 'references' | 'projects' | 'certifications' | 'languages' | 'awardsAndAchievements' = 'education';
+  let bestCategory: ArrayBlockType = 'education';
 
   for (const [category, keywords] of Object.entries(arrayShapeSignatures)) {
     let score = 0;
@@ -129,7 +129,7 @@ function classifyBlockType(container: Element): 'education' | 'experience' | 're
     }
     if (score > bestScore) {
       bestScore = score;
-      bestCategory = category as 'education' | 'experience' | 'references' | 'projects' | 'certifications' | 'languages' | 'awardsAndAchievements';
+      bestCategory = category as ArrayBlockType;
     }
   }
 

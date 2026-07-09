@@ -1,4 +1,4 @@
-import { FieldSignals, ScoredField, Candidate, Profile, SensitivityTier, GateType } from '../../shared/types/index.js';
+import { FieldSignals, ScoredField, Candidate, Profile, SensitivityTier, GateType, ArrayBlockType } from '../../shared/types/index.js';
 import { FIELD_RULES } from '../../shared/dictionary/rules.js';
 import { tokenize } from './normalizer.js';
 import { diceCoefficient, jaroWinkler } from './fuzzy.js';
@@ -96,7 +96,7 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
 
 function blockContextBonus(
   blockIndex: number | undefined,
-  blockType: 'education' | 'experience' | 'references' | undefined,
+  blockType: ArrayBlockType | undefined,
   candidateKey: string
 ): number {
   if (blockIndex !== undefined && blockType !== undefined) {
