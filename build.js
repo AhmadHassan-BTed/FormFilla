@@ -24,6 +24,18 @@ function copyAssets() {
   if (fs.existsSync('src/popup/popup.css')) copyFile('src/popup/popup.css', 'dist/popup/popup.css');
   if (fs.existsSync('src/options/options.html')) copyFile('src/options/options.html', 'dist/options/options.html');
   if (fs.existsSync('src/options/options.css')) copyFile('src/options/options.css', 'dist/options/options.css');
+  if (fs.existsSync('src/assets/logo.svg')) copyFile('src/assets/logo.svg', 'dist/assets/logo.svg');
+  
+  if (fs.existsSync('src/themes')) {
+    try {
+      const files = fs.readdirSync('src/themes');
+      for (const file of files) {
+        copyFile(path.join('src/themes', file), path.join('dist/themes', file));
+      }
+    } catch (e) {
+      console.warn('Failed to copy themes:', e);
+    }
+  }
   
   if (fs.existsSync('icons')) {
     try {

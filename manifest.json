@@ -5,6 +5,12 @@
   "description": "Fills job application forms from local JSON profile data. No AI, no network calls.",
   "author": "AhmadHassan-BTed (https://github.com/AhmadHassan-BTed)",
   "homepage_url": "https://github.com/AhmadHassan-BTed/FormFilla",
+  "icons": {
+    "16": "assets/logo.svg",
+    "32": "assets/logo.svg",
+    "48": "assets/logo.svg",
+    "128": "assets/logo.svg"
+  },
   "permissions": ["storage", "scripting", "activeTab"],
   "optional_host_permissions": ["<all_urls>"],
   "background": {
@@ -12,7 +18,8 @@
     "type": "module"
   },
   "action": {
-    "default_popup": "popup/popup.html"
+    "default_popup": "popup/popup.html",
+    "default_icon": "assets/logo.svg"
   },
   "options_page": "options/options.html",
   "content_scripts": [

@@ -7,6 +7,7 @@ const uploadedFiles: Record<string, { file: File; buffer: ArrayBuffer }> = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
   setupNavigation();
+  setupThemeSelection();
   await loadProfileData();
   setupDynamicLists();
   setupFilePickers();
@@ -32,6 +33,34 @@ function setupNavigation() {
       if (activeSection) {
         activeSection.classList.add('active');
       }
+    });
+  });
+}
+
+function applyTheme(theme: string) {
+  let themeLink = document.getElementById('theme-link') as HTMLLinkElement;
+  if (!themeLink) {
+    themeLink = document.createElement('link');
+    themeLink.id = 'theme-link';
+    themeLink.rel = 'stylesheet';
+    document.head.appendChild(themeLink);
+  }
+  themeLink.href = `../themes/theme-${theme}.css`;
+}
+
+function setupThemeSelection() {
+  const themeSelect = document.getElementById('settings-theme') as HTMLSelectElement;
+  if (!themeSelect) return;
+
+  chrome.storage.local.get(['theme'], (result) => {
+    const theme = (result as any).theme || 'dark';
+    themeSelect.value = theme as string;
+  });
+
+  themeSelect.addEventListener('change', () => {
+    const selectedTheme = themeSelect.value;
+    chrome.storage.local.set({ theme: selectedTheme }, () => {
+      applyTheme(selectedTheme);
     });
   });
 }

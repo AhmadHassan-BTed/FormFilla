@@ -1,6 +1,6 @@
 :root {
-  --bg-color: #07080d;
-  --sidebar-bg: #0f101a;
+  --bg-color: #07080C;
+  --sidebar-bg: #0C0E17;
   --card-bg: rgba(20, 22, 34, 0.6);
   --border-color: rgba(255, 255, 255, 0.06);
   --input-bg: rgba(0, 0, 0, 0.2);
@@ -11,6 +11,22 @@
   --success: #10b981;
   --danger: #ef4444;
   --font-family: 'Outfit', sans-serif;
+
+  /* Component overrides */
+  --save-btn-bg: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
+  --save-btn-text: #FFFFFF;
+  --nav-active-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+  --nav-active-border: rgba(168, 85, 247, 0.25);
+  --nav-active-text: #FFFFFF;
+  --brand-text-bg: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
+  --brand-text-color: transparent;
+  --brand-logo-fill: url(#brand-grad);
+  --focus-ring: rgba(168, 85, 247, 0.15);
+  --file-btn-bg: rgba(255, 255, 255, 0.05);
+  --file-btn-color: var(--text-primary);
+  --file-btn-border: var(--border-color);
+  --scrollbar-thumb: var(--border-color);
+  --scrollbar-track: rgba(0, 0, 0, 0.15);
 }
 
 * {
@@ -97,9 +113,9 @@ body {
 }
 
 .nav-item.active {
-  color: white;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
-  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: var(--nav-active-text);
+  background: var(--nav-active-bg);
+  border: 1px solid var(--nav-active-border);
   font-weight: 600;
 }
 
@@ -112,41 +128,37 @@ body {
   display: inline-block;
 }
 
-.brand-logo-icon {
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
+.brand-logo-icon path {
+  fill: var(--brand-logo-fill);
 }
 
-.sidebar-footer {
-  padding: 0 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  background: var(--brand-text-bg);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: var(--brand-text-color);
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
 }
 
-.credit-link {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 11px;
-  text-align: center;
-  padding: 4px 0;
-  transition: color 0.2s ease;
-}
-
-.credit-link:hover {
-  color: var(--accent-purple);
-}
-
-.credit-link strong {
-  font-weight: 600;
+.welcome-subtitle {
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-weight: 500;
+  background: var(--brand-text-bg);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: var(--brand-text-color);
+  color: var(--text-primary);
 }
 
 .save-button {
-  background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
+  background: var(--save-btn-bg);
   border: none;
   border-radius: 8px;
-  color: white;
+  color: var(--save-btn-text);
   font-family: var(--font-family);
   font-size: 15px;
   font-weight: 600;
@@ -294,7 +306,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--accent-purple);
-  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.15);
+  box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
 .checkbox-group {
@@ -458,9 +470,9 @@ textarea:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px dashed var(--border-color);
-  color: var(--text-primary);
+  background-color: var(--file-btn-bg);
+  border: 1px dashed var(--file-btn-border);
+  color: var(--file-btn-color);
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
@@ -486,11 +498,15 @@ textarea::-webkit-scrollbar-track {
   border-radius: 4px;
 }
 textarea::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
   border: 1px solid transparent;
 }
 textarea::-webkit-scrollbar-thumb:hover {
   background: var(--accent-purple);
+}
+textarea::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
 }
 
