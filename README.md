@@ -12,7 +12,8 @@
 </p>
 
 <p align="center">
-  <img src="store_assets/small_promo_tile.png" alt="FormFilla promo tile" width="440" />
+  <img src="store_assets/small_promo_tile.png" alt="FormFilla promo tile" style="width:100%;max-width:440px;height:auto;" />
+
 </p>
 
 
