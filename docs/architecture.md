@@ -1,6 +1,6 @@
 # Architectural Blueprint - Matching Engine
 
-This document provides a technical breakdown of the matching and scoring subsystems in Hired.
+This document provides a technical breakdown of the matching and scoring subsystems in FormFilla.
 
 ---
 
@@ -57,7 +57,7 @@ $$\text{Score}_{\text{similarity}} = \text{Similarity} \times 15$$
 
 ## 3. The Kuhn-Munkres (Hungarian) Resolver
 
-To avoid greedy misassignments, Hired models the matching problem as a **Maximum Weight Bipartite Matching** problem:
+To avoid greedy misassignments, FormFilla models the matching problem as a **Maximum Weight Bipartite Matching** problem:
 
 - **Vertices (Left):** Candidate input fields on the active DOM subtree.
 - **Vertices (Right):** Non-array keys defined in the candidate profile schema.
@@ -82,7 +82,7 @@ Once assigned, scored fields are classified into gate behaviors based on their r
 
 ## 5. AI Dictionary Expansion & Accuracy Performance
 
-The scoring engine evaluates elements against raw data loaded from external JSON files. Making these dictionaries larger and more comprehensive directly enhances Hired's matching performance. The 4 target JSON databases to feed to AI models for expansion are:
+The scoring engine evaluates elements against raw data loaded from external JSON files. Making these dictionaries larger and more comprehensive directly enhances FormFilla's matching performance. The 4 target JSON databases to feed to AI models for expansion are:
 
 1. **`src/shared/dictionary/rules.json` (Field Selectors):**
    Stores mapping directives. Expand the `exactPhrases` and `regexPatterns` to handle custom form inputs. Also contains `__arrayShapeSignatures__` which defines container mapping tags.

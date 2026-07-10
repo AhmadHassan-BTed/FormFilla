@@ -1,4 +1,4 @@
-# ApplyEngine — Implementation Plan
+# FormFilla — Implementation Plan
 
 **Document type:** Machine-executable architectural blueprint. **Audience:** an autonomous coding agent. **Rule for the agent:** build phases in the order given; do not start a phase until every file in the previous phase exists and (where a test is named) passes; within a phase, files may be built in any order unless a same-phase dependency is called out explicitly.
 
@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| **Name** | ApplyEngine *(placeholder — rename freely)* |
+| **Name** | FormFilla |
 | **Core purpose** | A browser extension that fills job-application forms from the user's own local profile data (JSON) and files. Every match is produced by deterministic rules, string algorithms, and combinatorial optimization — no AI model, no LLM call, no network request of any kind. |
 | **Key features** | 1. Multi-signal field detection with confidence-scored autofill (never guesses blindly). 2. Globally-optimal field↔key assignment (Hungarian algorithm), not greedy first-match. 3. Structural repeated-block detection for education/experience/references, plus a highest-qualification reducer for single-value equivalents. 4. Framework-safe DOM writing for React/Angular-heavy ATS platforms. 5. File uploads (resume/CV, cover letter, photo) via synthetic `DataTransfer`. 6. Sensitivity-tiered fill behavior — national ID numbers and third-party contact info are never treated like a name or job title. 7. Visual review overlay and a manual trigger — nothing runs automatically, nothing auto-submits. |
 | **Target browser(s)** | Chrome / Edge / Brave / Opera on Manifest V3 (primary). Firefox is manifest-compatible with one small branch (Phase 0). |
@@ -25,13 +25,13 @@ flowchart TD
     Options -->|saveFileBlob| Blobs[(IndexedDB: resume / CV / cover letter / photo bytes)]
     Orchestrator -->|getProfile| Storage
     Orchestrator --> Scan[field-scanner.ts]
-    Scan --> Blocks[repeated-block-detector.ts]
+    Scan --> Blocks[repeated-block-detector.ts → repeated-block.ts]
     Blocks --> Extract[signal-extractor.ts]
     Extract --> Score[scorer.ts: assignment + tiers]
     Score -->|standard/sensitive, confident| Fill[fill modules: write to DOM]
     Score -->|critical tier| Confirm[overlay: one-click confirm tag]
     Score -->|no confidence| Skip[overlay: tag unmapped]
-    Fill --> Overlay[review-highlighter.ts]
+    Fill --> Overlay[review-highlighter.ts → ui/review-highlighter.ts]
     Fill -. reads bytes for file fields .-> Blobs
     Watcher[mutation-watcher.ts] -->|new fields appear| Scan
     Orchestrator --> Report[FILL_RESULT message]
@@ -43,7 +43,7 @@ Step-by-step contract:
 1. **Trigger** — the popup sends a `StartFillMessage` (`{type:'START_FILL', tabId}`) to the content script of the active tab. The user always presses the button; nothing fires on page load.
 2. **Read profile** — `content/index.ts` calls `storageClient.getProfile()`, the *only* sanctioned path to `chrome.storage.local`.
 3. **Scan** — `field-scanner.ts` returns every fillable node on the page and any same-permission iframe.
-4. **Group** — `repeated-block-detector.ts` (§2.5) clusters structurally-identical sibling containers into indexed blocks (education #1, #2, ... / experience #1, #2, ... / references #1, #2, ...) before anything is scored, so a field's array index is known up front rather than guessed per-field.
+4. **Group** — `repeated-block.ts` (§2.5) clusters structurally-identical sibling containers into indexed blocks (education #1, #2, ... / experience #1, #2, ... / references #1, #2, ...) before anything is scored, so a field's array index is known up front rather than guessed per-field.
 5. **Extract** — `signal-extractor.ts` turns each element into a plain `FieldSignals` object, now including the block index/type assigned in step 4. From here on, nothing downstream touches the live DOM node except the fill layer.
 6. **Score & assign** — `scorer.ts` scores every field against every candidate key (§2.1), then resolves *all* competing claims at once via optimal bipartite assignment (§2.1) rather than greedily. Sensitivity tiers (§2.1) gate what happens next.
 7. **Fill** — standard/sensitive fields at sufficient confidence are written via the native-setter technique (§2.2); critical-tier fields are never auto-written — they get a one-click confirm affordance instead; zero-confidence fields are left untouched.
@@ -53,23 +53,23 @@ Step-by-step contract:
 ### 1.2 State management
 
 - **Single source of truth:** `chrome.storage.local` for the profile JSON and settings; IndexedDB for binary blobs (resume/CV, cover letter, photo). Nothing else persists anything.
-- **No shared mutable state, no module-level globals.** Every function receives what it needs as a parameter and returns a new value. Immutable, read-only tables (`constants.ts`, `dictionary.ts`) are configuration, not state.
+- **No shared mutable state, no module-level globals.** Every function receives what it needs as a parameter and returns a new value. Immutable, read-only tables (`constants.ts`, `dictionary/rules.ts`) are configuration, not state.
 - **Cross-context sync** (popup ⇄ content script ⇄ background — three separate JS realms in MV3 sharing no memory): only via (a) `chrome.storage` reads/writes, (b) one-shot messages in `messages.ts`, (c) `chrome.storage.onChanged` for reactive updates.
 - **The background service worker holds no business state at all.** It relays messages and handles install/update lifecycle only. MV3 can terminate it at any moment.
 - **What "separation of concerns" does *not* mean:** every context may still *call* `storage-client.ts`'s exported functions. `storage-client.ts` is the single door into persistence; every other context uses that same door rather than rolling its own `chrome.storage` calls.
 
 ### 1.3 SOLID mapping
 
-- **Single responsibility** — `field-scanner.ts` only finds elements, `repeated-block-detector.ts` only groups them, `signal-extractor.ts` only reads attributes, `scorer.ts` only scores and assigns, `fill/*.ts` only writes.
+- **Single responsibility** — `field-scanner.ts` only finds elements, `repeated-block.ts` only groups them, `signal-extractor.ts` only reads attributes, `scorer.ts` only scores and assigns, `fill/*.ts` only writes.
 - **Open/closed** — the generic engine is never edited to special-case a site; site behavior is added only via a new `PlatformAdapter` under `content/adapters/`.
 - **Liskov substitution** — every adapter implements the identical `PlatformAdapter` interface interchangeably.
-- **Interface segregation** — `types.ts` defines narrow interfaces (`FieldSignals`, `ScoredField`, `RepeatedBlock`, `PlatformAdapter`) rather than one large shape.
+- **Interface segregation** — `types/index.ts` defines narrow interfaces (`FieldSignals`, `ScoredField`, `RepeatedBlock`, `PlatformAdapter`) rather than one large shape.
 - **Dependency inversion** — `content/index.ts` depends on interfaces (`PlatformAdapter`, the storage-client contract), never on a concrete implementation.
 
 ### 1.4 Directory tree
 
 ```
-applyengine/
+FormFilla/
 ├── docs/                  # Documentation
 │   ├── assets/            # Documentation images & previews
 │   └── infra/             # Infrastructure docs
@@ -77,7 +77,8 @@ applyengine/
 │   └── docker/            # Docker Compose & Dockerfile
 ├── scripts/               # Build & utility scripts
 │   ├── build.js           # esbuild bundler
-│   └── generate-icons.ps1 # Icon generation
+│   ├── generate-icons.ps1 # Icon generation
+│   └── setup.bat          # Windows setup script
 ├── src/
 │   ├── assets/            # Static assets (logos, SVGs)
 │   ├── background/
@@ -86,11 +87,11 @@ applyengine/
 │   │   ├── index.ts
 │   │   ├── dom/
 │   │   │   ├── field-scanner.ts
-│   │   │   ├── repeated-block-detector.ts
+│   │   │   ├── repeated-block.ts
 │   │   │   ├── signal-extractor.ts
 │   │   │   └── mutation-watcher.ts
 │   │   ├── matching/
-│   │   │   ├── dictionary.ts
+│   │   │   ├── dictionary.ts   (see shared/dictionary/rules.ts)
 │   │   │   ├── normalizer.ts
 │   │   │   ├── fuzzy.ts
 │   │   │   ├── assignment.ts
@@ -103,26 +104,52 @@ applyengine/
 │   │   │   ├── file-filler.ts
 │   │   │   └── combobox-adapter.ts
 │   │   ├── adapters/
+│   │   │   ├── adapter.interface.ts
 │   │   │   ├── generic.ts
 │   │   │   ├── workday.ts
 │   │   │   ├── greenhouse.ts
 │   │   │   └── lever.ts
-│   │   └── overlay/
+│   │   ├── core/
+│   │   │   ├── orchestrator.ts
+│   │   │   └── value-path.ts
+│   │   └── ui/
 │   │       └── review-highlighter.ts
 │   ├── options/
 │   │   ├── options.html
 │   │   ├── options.ts
-│   │   └── options.css
+│   │   ├── options.css
+│   │   ├── activation-status.ts
+│   │   └── theme-loader.js
 │   ├── popup/
 │   │   ├── popup.html
 │   │   ├── popup.ts
-│   │   └── popup.css
+│   │   ├── popup.css
+│   │   └── theme-loader.js
 │   ├── shared/
-│   │   ├── types.ts
-│   │   ├── messages.ts
-│   │   ├── storage-client.ts
-│   │   └── constants.ts
+│   │   ├── types/index.ts
+│   │   ├── messaging/messages.ts
+│   │   ├── storage/
+│   │   │   ├── storage-client.ts
+│   │   │   ├── profile-storage.ts
+│   │   │   ├── mapping-storage.ts
+│   │   │   ├── files-storage.ts
+│   │   │   ├── feedback.ts
+│   │   │   ├── activation-status.ts
+│   │   │   └── github-support.ts
+│   │   ├── config/config.ts
+│   │   ├── constants/
+│   │   │   ├── constants.ts
+│   │   │   ├── abbreviations.json
+│   │   │   └── degrees.json
+│   │   └── dictionary/
+│   │       ├── rules.ts
+│   │       ├── rules.json
+│   │       └── profile-template.json
 │   └── themes/            # CSS theme files
+│       ├── theme-brutalist-dark.css
+│       ├── theme-brutalist-light.css
+│       ├── theme-dark.css
+│       └── theme-light.css
 ├── icons/                 # Extension icons
 ├── store_assets/          # Chrome Web Store assets
 ├── tests/
@@ -150,7 +177,7 @@ Five problems in this codebase are genuinely hard and must not be left to agent 
 
 ### 2.1 Multi-signal scoring, sensitivity tiers, and optimal assignment
 
-Every `FieldRule` in `dictionary.ts` now carries a `sensitivityTier: 'standard' | 'sensitive' | 'critical'` (generalizing the old single-purpose EEO gate to every field, including `personal.nationalId` and `family.*`):
+Every `FieldRule` in `dictionary/rules.ts` now carries a `sensitivityTier: 'standard' | 'sensitive' | 'critical'` (generalizing the old single-purpose EEO gate to every field, including `personal.nationalId` and `family.*`):
 
 ```
 FUNCTION scoreField(signals: FieldSignals) -> Candidate[]:
@@ -278,7 +305,7 @@ FUNCTION fillFileInput(inputEl, fileBytes, fileName, mimeType) -> boolean:
   RETURN true
 ```
 
-**Resume vs CV terminology:** `dictionary.ts`'s rule for the resume-like document key matches both "resume" and "cv"/"curriculum vitae" phrasing. If the user has populated *both* `documents.resume` and `documents.cv` as distinct files, a field whose label says specifically "CV" prefers `documents.cv` (falling back to `documents.resume` if absent), and vice versa for a field that says "resume."
+**Resume vs CV terminology:** `dictionary/rules.json`'s rule for the resume-like document key matches both "resume" and "cv"/"curriculum vitae" phrasing. If the user has populated *both* `documents.resume` and `documents.cv` as distinct files, a field whose label says specifically "CV" prefers `documents.cv` (falling back to `documents.resume` if absent), and vice versa for a field that says "resume."
 
 ### 2.5 Repeated-block detection & the highest-qualification reducer
 
@@ -331,7 +358,7 @@ Build in this order. Do not begin phase *N+1* until every file in phase *N* exis
 ```json
 {
   "manifest_version": 3,
-  "name": "ApplyEngine",
+  "name": "FormFilla",
   "version": "0.1.0",
   "description": "Fills job application forms from your own local profile data. No AI, no network calls.",
   "permissions": ["storage", "scripting", "activeTab"],
@@ -344,7 +371,7 @@ Build in this order. Do not begin phase *N+1* until every file in phase *N* exis
   ]
 }
 ```
-Firefox branch: replace `background.service_worker` with `background.scripts: ["background/service-worker.js"]` and add `"browser_specific_settings": {"gecko": {"id": "applyengine@yourdomain.example"}}`.
+Firefox branch: replace `background.service_worker` with `background.scripts: ["background/service-worker.js"]` and add `"browser_specific_settings": {"gecko": {"id": "formfilla@yourdomain.example"}}`.
 
 #### `package.json`, `tsconfig.json`
 - **Objective:** TypeScript build tooling, strict mode on, one bundler entry per context.
@@ -354,25 +381,25 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 
 ### Phase 1 — Shared foundation
 
-#### `src/shared/types.ts`
+#### `src/shared/types/index.ts`
 - **Objective:** the single source of truth for every cross-file data shape.
 - **Core logic/algorithm:** pure type declarations, zero runtime code: `Profile` (now including `personal.summary`, `personal.nationalId`, `family: {fatherName?, motherName?}`, `references: ReferenceEntry[]`, `documents: Record<string, DocumentFile>`), `PersonalInfo`, `EducationEntry`, `ExperienceEntry`, `ReferenceEntry` (`{name, relationship, company?, title?, email?, phone?}`), `FieldSignals` (now including `blockIndex`, `blockType`), `RepeatedBlock`, `ScoredField` (now including `tier`, `gate`), `FillResult`, `PlatformAdapter`, `Message`.
 - **Input → Output:** exported types only.
 - **Dependencies:** none.
 
-#### `src/shared/messages.ts`
+#### `src/shared/messaging/messages.ts`
 - **Objective:** the exact, exhaustive contract for cross-context communication.
 - **Core logic/algorithm:** discriminated union — `START_FILL`, `FILL_RESULT`, `PERMISSION_NEEDED`, `CONFIRM_FIELD` (new — user explicitly approving a single critical-tier fill) — each with a typed payload.
 - **Input → Output:** `createStartFillMessage(tabId: number): StartFillMessage`, etc.
-- **Dependencies:** `types.ts`.
+- **Dependencies:** `types/index.ts`.
 
-#### `src/shared/storage-client.ts`
+#### `src/shared/storage/storage-client.ts`
 - **Objective:** the *only* file permitted to call `chrome.storage.*` or IndexedDB directly.
 - **Core logic/algorithm:** thin typed wrapper; all binary blobs (resume, CV, cover letter, photo) route to IndexedDB, never `chrome.storage.local`.
 - **Input → Output:** `getProfile(): Promise<Profile>`, `saveProfile(p: Profile): Promise<void>`, `getLearnedMapping(domain): Promise<FieldMap|null>`, `saveLearnedMapping(domain, map): Promise<void>`, `getFileBlob(key: string): Promise<ArrayBuffer>`, `saveFileBlob(key, bytes): Promise<void>`.
-- **Dependencies:** `types.ts`.
+- **Dependencies:** `types/index.ts`.
 
-#### `src/shared/constants.ts`
+#### `src/shared/constants/constants.ts`
 - **Objective:** every magic number and shared pattern.
 - **Core logic/algorithm:** `HIGH_THRESHOLD`, `LOW_THRESHOLD`, `DEBOUNCE_MS`, `ABBREVIATION_MAP`, `CONFIRM_PATTERN`, `DEGREE_RANK` (new).
 - **Input → Output:** exported constants.
@@ -382,17 +409,17 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 
 *(Pure functions, no DOM access — independently unit-testable without a browser.)*
 
-#### `src/content/matching/dictionary.ts`
+#### `src/shared/dictionary/rules.ts`
 - **Objective:** the canonical field-matching ruleset.
-- **Core logic/algorithm:** exports `FIELD_RULES: Record<string, FieldRule>`, each carrying `sensitivityTier`. Covers `personal.firstName/lastName/middleName/email/phone/summary/nationalId` (nationalId: `critical`), `address.*`, `links.*`, `workAuthorization.*`, `education[].*` + `education.highest.*` reducer key, `experience[].*`, `references[].*` (`sensitive`), `family.fatherName/motherName` (`sensitive`), `documents.resume/cv/coverLetter/photo` (resume/cv synonym handling per §2.4), `eeo.*` (`sensitive`, opt-in gated). Also exports `arrayShapeSignatures` used by `repeated-block-detector.ts` to tell education/experience/references apart by aggregate shape.
+- **Core logic/algorithm:** exports `FIELD_RULES: Record<string, FieldRule>`, each carrying `sensitivityTier`. Covers `personal.firstName/lastName/middleName/email/phone/summary/nationalId` (nationalId: `critical`), `address.*`, `links.*`, `workAuthorization.*`, `education[].*` + `education.highest.*` reducer key, `experience[].*`, `references[].*` (`sensitive`), `family.fatherName/motherName` (`sensitive`), `documents.resume/cv/coverLetter/photo` (resume/cv synonym handling per §2.4), `eeo.*` (`sensitive`, opt-in gated). Also exports `arrayShapeSignatures` used by `repeated-block.ts` to tell education/experience/references apart by aggregate shape.
 - **Input → Output:** exports `FIELD_RULES` and `arrayShapeSignatures` only; no other file defines a matching rule.
-- **Dependencies:** `constants.ts`.
+- **Dependencies:** `constants.ts`, `rules.json`.
 
 #### `src/content/matching/normalizer.ts`
 - **Objective:** turn a raw signal bundle into normalized tokens.
 - **Core logic/algorithm:** lowercase → strip non-alphanumeric (keep spaces) → split camelCase/snake_case/kebab-case → expand via `ABBREVIATION_MAP` → collapse whitespace.
 - **Input → Output:** `normalize(signals: FieldSignals): string[]`.
-- **Dependencies:** `constants.ts`, `types.ts`.
+- **Dependencies:** `constants.ts`, `types/index.ts`.
 
 #### `src/content/matching/fuzzy.ts`
 - **Objective:** string-similarity primitives, no external dependency.
@@ -404,13 +431,13 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 - **Objective:** globally-optimal field↔key assignment — new file, replaces ad hoc greedy conflict resolution.
 - **Core logic/algorithm:** Hungarian algorithm (Kuhn–Munkres) over the bipartite graph of {fields} × {non-array candidate keys}, edge weight = score, edges below `LOW_THRESHOLD` excluded before the algorithm runs (so it never forces a bad match just to maximize a sum). O(n³), trivial at real-world form sizes (n < 200).
 - **Input → Output:** `hungarianMaxWeightMatching(candidates: FieldCandidates[]): Assignment[]`.
-- **Dependencies:** `constants.ts`, `types.ts`.
+- **Dependencies:** `constants.ts`, `types/index.ts`.
 
 #### `src/content/matching/scorer.ts`
 - **Objective:** implement §2.1 exactly.
 - **Core logic/algorithm:** as specified in §2.1 — scores every field, then delegates the global resolution step to `assignment.ts`, then applies sensitivity-tier gating.
 - **Input → Output:** `scoreField(signals: FieldSignals): Candidate[]`, `resolveAllFields(fieldsWithCandidates): ScoredField[]`.
-- **Dependencies:** `dictionary.ts`, `normalizer.ts`, `fuzzy.ts`, `assignment.ts`, `constants.ts`, `types.ts`.
+- **Dependencies:** `rules.ts` (via dictionary), `normalizer.ts`, `fuzzy.ts`, `assignment.ts`, `constants.ts`, `types/index.ts`.
 
 ### Phase 3 — DOM detection layer
 
@@ -420,19 +447,19 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 - **Objective:** enumerate every candidate fillable element on the page and in same-permission iframes.
 - **Core logic/algorithm:** query `input:not([type=hidden]), select, textarea, [contenteditable], [role=combobox], [role=radiogroup] input, [type=file]`; recurse into accessible iframes; catch and record blocked cross-origin frames; also detects three-part date groups (adjacent month/day/year `<select>`s in a common container) as a `DateFieldGroup`.
 - **Input → Output:** `scanForFields(root: Document | Element): (Element | DateFieldGroup)[]`.
-- **Dependencies:** `types.ts`.
+- **Dependencies:** `types/index.ts`.
 
-#### `src/content/dom/repeated-block-detector.ts`
+#### `src/content/dom/repeated-block.ts`
 - **Objective:** implement §2.5's `detectRepeatedBlocks` exactly — new file.
 - **Core logic/algorithm:** as specified in §2.5.
 - **Input → Output:** `detectRepeatedBlocks(root: Document | Element): RepeatedBlock[]`.
-- **Dependencies:** `field-scanner.ts`, `matching/dictionary.ts`, `matching/fuzzy.ts`, `matching/normalizer.ts`.
+- **Dependencies:** `field-scanner.ts`, `dictionary/rules.ts`, `matching/fuzzy.ts`, `matching/normalizer.ts`.
 
 #### `src/content/dom/signal-extractor.ts`
 - **Objective:** gather every signal for one element.
-- **Core logic/algorithm:** resolve label via `for`/wrapping `<label>`/`aria-label`/`aria-labelledby`; `placeholder`; `name`/`id` (tokenized); `autocomplete`; `type`/`tagName`; nearby text via `getBoundingClientRect()` proximity; closest `<legend>`; `<select>` option text list; `blockIndex`/`blockType` read directly from the `RepeatedBlock` the element belongs to (from `repeated-block-detector.ts`), not re-derived.
+- **Core logic/algorithm:** resolve label via `for`/wrapping `<label>`/`aria-label`/`aria-labelledby`; `placeholder`; `name`/`id` (tokenized); `autocomplete`; `type`/`tagName`; nearby text via `getBoundingClientRect()` proximity; closest `<legend>`; `<select>` option text list; `blockIndex`/`blockType` read directly from the `RepeatedBlock` the element belongs to (from `repeated-block.ts`), not re-derived.
 - **Input → Output:** `extractSignals(el: Element, blocks: RepeatedBlock[]): FieldSignals`. Pure read.
-- **Dependencies:** `types.ts`.
+- **Dependencies:** `types/index.ts`.
 
 #### `src/content/dom/mutation-watcher.ts`
 - **Objective:** implement §2.3 exactly.
@@ -477,7 +504,7 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 
 ### Phase 5 — Review overlay
 
-#### `src/content/overlay/review-highlighter.ts`
+#### `src/content/ui/review-highlighter.ts`
 - **Objective:** visually tag each processed field so the human reviews before submitting.
 - **Core logic/algorithm:** colored outline — green (confident/standard), amber (review or sensitive-tier), gray (unmapped) — fading after ~6s or on next focus; **plus** a distinct persistent badge + inline button for `needs-confirm` (critical-tier) fields that stays until clicked, since these must never fade away unfilled without the user noticing.
 - **Input → Output:** `tagField(el: Element, tier: 'confident' | 'review' | 'unmapped' | 'needs-confirm', onConfirm?: () => void): void`.
@@ -485,11 +512,11 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 
 ### Phase 6 — Orchestration
 
-#### `src/content/index.ts`
-- **Objective:** the content script's only entry point. Coordinates scan → group → score → fill → tag.
+#### `src/content/core/orchestrator.ts`
+- **Objective:** the content script's orchestrator. Coordinates scan → group → score → fill → tag.
 - **Core logic/algorithm:** on `START_FILL`: read profile → `scanForFields` → `detectRepeatedBlocks` → `extractSignals` per element → `scoreField` + `resolveAllFields` → loop through results sequentially with an animation-frame yield between each, dispatching to the matching `fill/*.ts` module (or `fillFileInput` for `documents.*` keys) for `gate in {confident, review}`, and to `overlay.tagField(..., 'needs-confirm', onConfirm)` for `gate === 'needs-confirm'` — the actual write only happens inside that `onConfirm` callback, on explicit user click. Registers `mutation-watcher.ts` once. Replies with `FillResultMessage`.
 - **Input → Output:** listens for `StartFillMessage`; emits `FillResultMessage`; otherwise its effect is DOM mutation.
-- **Dependencies:** everything in `dom/`, `matching/`, `fill/`, `overlay/`, `adapters/`, `shared/storage-client.ts`, `shared/messages.ts`.
+- **Dependencies:** everything in `dom/`, `matching/`, `fill/`, `ui/`, `adapters/`, `shared/storage/`, `shared/messaging/`.
 
 ### Phase 7 — Background service worker
 
@@ -497,7 +524,7 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 - **Objective:** lifecycle and relay only.
 - **Core logic/algorithm:** on install, seed an empty default profile if none exists; relay a popup→tab message only if the popup cannot reach the tab directly.
 - **Input → Output:** message in, message out; no persistent in-memory state.
-- **Dependencies:** `shared/messages.ts`, `shared/storage-client.ts`.
+- **Dependencies:** `shared/messaging/messages.ts`, `shared/storage/storage-client.ts`.
 
 ### Phase 8 — Popup UI
 
@@ -505,7 +532,7 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 - **Objective:** one "Fill this page" button and a last-run summary.
 - **Core logic/algorithm:** on click, send `START_FILL`, render `{confident, review, unmapped, needsConfirm}` counts. A link opens options.
 - **Input → Output:** sends `StartFillMessage`; receives `FillResultMessage`.
-- **Dependencies:** `shared/messages.ts`.
+- **Dependencies:** `shared/messaging/messages.ts`.
 
 ### Phase 9 — Options UI
 
@@ -513,14 +540,14 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 - **Objective:** a form-based editor over `Profile` — now including summary, references (with add/remove rows), family info, national ID, and file pickers for resume/CV/cover letter/photo — plus raw-JSON import/export.
 - **Core logic/algorithm:** on save, validate required fields and basic types (no schema-validation library), then `storageClient.saveProfile()`; each file picker reads its file as `ArrayBuffer` and calls `storageClient.saveFileBlob()` under its own key.
 - **Input → Output:** form state in; storage writes out via `storage-client.ts`.
-- **Dependencies:** `shared/types.ts`, `shared/storage-client.ts`.
+- **Dependencies:** `shared/types/index.ts`, `shared/storage/storage-client.ts`.
 
 ### Phase 10 — Platform adapters
 
-#### `src/content/adapters/generic.ts`
+#### `src/content/adapters/adapter.interface.ts`
 - **Objective:** defines the `PlatformAdapter` interface; the default.
 - **Input → Output:** `interface PlatformAdapter { matches(): boolean; beforeScan?(): void; scoreOverride?(signals: FieldSignals): ScoredField | null }`.
-- **Dependencies:** `types.ts`.
+- **Dependencies:** `types/index.ts`.
 
 #### `src/content/adapters/workday.ts`, `greenhouse.ts`, `lever.ts`
 - **Objective:** detect the platform via DOM fingerprint; supply hand-tuned overrides for known combobox quirks, layered on top of the generic scorer.
@@ -551,8 +578,8 @@ Firefox branch: replace `background.service_worker` with `background.scripts: ["
 | Synthetic file-input assignment rejected by strict site validation | Falls back to a synthesized `drop` event on any detected drop-zone; if both fail, flags for manual upload | `file-filler.ts` |
 | Photo rejected by client-side dimension/size validation | Treated identically to a rejected file assignment above — flagged for manual upload rather than reported as filled; the extension does not attempt image resizing | `file-filler.ts` |
 | Duplicate/mirror fields (`Email` + `Confirm Email`) | `resolveAllFields()` detects the confirm/repeat relationship via `CONFIRM_PATTERN` and fills both identically rather than treating them as competing claims | `scorer.ts` |
-| Repeated-block detection finds an unexpected shape (e.g. a form's "add another" pattern doesn't match the fingerprint heuristic) | Falls back to treating every field independently via the flat, non-block scoring path — degrades to pre-§2.5 behavior for that section rather than failing the whole page | `repeated-block-detector.ts`, `scorer.ts` |
-| Sensitive fields (`references[].*`, `family.*`) | `sensitivityTier: 'sensitive'` — only auto-fills at high confidence; always visibly tagged even when filled | `dictionary.ts`, `scorer.ts` |
-| Critical fields (`personal.nationalId`) | `sensitivityTier: 'critical'` — never auto-filled at any confidence; surfaced as a one-click confirm affordance, every time | `dictionary.ts`, `scorer.ts`, `review-highlighter.ts` |
-| Fill speed outrunning the page's own re-renders | `index.ts` awaits one animation-frame yield between each field write | `index.ts` |
+| Repeated-block detection finds an unexpected shape (e.g. a form's "add another" pattern doesn't match the fingerprint heuristic) | Falls back to treating every field independently via the flat, non-block scoring path — degrades to pre-§2.5 behavior for that section rather than failing the whole page | `repeated-block.ts`, `scorer.ts` |
+| Sensitive fields (`references[].*`, `family.*`) | `sensitivityTier: 'sensitive'` — only auto-fills at high confidence; always visibly tagged even when filled | `dictionary/rules.ts`, `scorer.ts` |
+| Critical fields (`personal.nationalId`) | `sensitivityTier: 'critical'` — never auto-filled at any confidence; surfaced as a one-click confirm affordance, every time | `dictionary/rules.ts`, `scorer.ts`, `review-highlighter.ts` |
+| Fill speed outrunning the page's own re-renders | `index.ts` awaits one animation-frame yield between each field write | `orchestrator.ts` |
 | Network disconnects | Out of scope by construction — zero `fetch`/`XHR` calls anywhere | — |
