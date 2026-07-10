@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new idea or improvement for JobApplier
+about: Suggest a new idea or improvement for FormFilla
 title: "[FEATURE] "
 labels: enhancement
 assignees: ""

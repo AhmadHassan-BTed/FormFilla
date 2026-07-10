@@ -14,4 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * **Global Resolver:** Kuhn-Munkres (Hungarian) bipartite matching algorithm to resolve competitive profile assignments.
 * **Injectors:** Framework-safe setter callbacks simulating native UI input/change event bubbles.
 * **UI Controls:** Options Dashboard page and a glassmorphic Popup trigger interface.
+* **Support & Feedback:** Activation status indicator (popup + options) and a Support & Feedback form that opens your GitHub issue-tracker with Bug/Feature templates prefilled.
 * **Tests:** Vitest harness with JSDOM and Chrome storage mocks verifying matching configurations.
+

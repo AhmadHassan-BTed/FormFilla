@@ -1,6 +1,11 @@
 import { getProfile, saveProfile, saveFileBlob } from '../shared/storage/storage-client.js';
 import { Profile, EducationEntry, ExperienceEntry, ReferenceEntry, DocumentFile, LanguageEntry, CertificationEntry, ProjectEntry, AwardEntry } from '../shared/types/index.js';
 import EXTENSIVE_PROFILE_TEMPLATE from '../shared/dictionary/profile-template.json' with { type: 'json' };
+import { getActivationStatus } from '../shared/storage/activation-status.js';
+import { setupActivationStatusUI } from './activation-status.js';
+
+import { buildNewIssueUrl } from '../shared/storage/feedback.js';
+
 
 let currentProfile: Profile;
 const uploadedFiles: Record<string, { file: File; buffer: ArrayBuffer }> = {};
@@ -12,10 +17,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupDynamicLists();
   setupFilePickers();
   setupGithubVerification();
+  await setupActivationStatusUI();
+
+  setupSupportFeedback();
+
   setupBackupRestore();
+
 
   const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
   saveBtn.addEventListener('click', saveAllProfileData);
+
 });
 
 function setupNavigation() {
@@ -25,7 +36,7 @@ function setupNavigation() {
   navItems.forEach(item => {
     item.addEventListener('click', () => {
       const targetSection = item.getAttribute('data-section');
-      
+
       navItems.forEach(nav => nav.classList.remove('active'));
       sections.forEach(sec => sec.classList.remove('active'));
 
@@ -181,8 +192,8 @@ async function loadProfileData() {
   renderFileDetails('researchProposal', currentProfile.documents?.['documents.researchProposal']);
   renderFileDetails('recommendationLetter', currentProfile.documents?.['documents.recommendationLetter']);
   // Load Portfolio & Skills tab fields
-  const skillsText = Array.isArray(currentProfile.skills) 
-    ? currentProfile.skills.join(', ') 
+  const skillsText = Array.isArray(currentProfile.skills)
+    ? currentProfile.skills.join(', ')
     : (currentProfile.skills ? JSON.stringify(currentProfile.skills) : '');
   setInputValue('portfolio-skills', skillsText);
 
@@ -219,7 +230,7 @@ function renderFileDetails(key: string, fileInfo: DocumentFile | undefined) {
 function setupDynamicLists() {
   const eduContainer = document.getElementById('education-list')!;
   const addEduBtn = document.getElementById('add-education-btn')!;
-  
+
   const expContainer = document.getElementById('experience-list')!;
   const addExpBtn = document.getElementById('add-experience-btn')!;
 
@@ -505,7 +516,7 @@ function setupFilePickers() {
 async function saveAllProfileData() {
   const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
   const statusEl = document.getElementById('save-status')!;
-  
+
   saveBtn.disabled = true;
   statusEl.textContent = 'Saving...';
   statusEl.style.color = '#f59e0b';
@@ -835,56 +846,66 @@ function setupGithubVerification() {
   const urlInput = document.getElementById('github-profile-url') as HTMLInputElement;
   const statusEl = document.getElementById('github-verify-status') as HTMLDivElement;
 
-  // Load saved GitHub URL
-  chrome.storage.local.get(['githubProfileUrl'], (result) => {
-    const savedUrl = (result as any).githubProfileUrl || '';
-    if (savedUrl) {
-      urlInput.value = savedUrl;
-      statusEl.textContent = '✅ GitHub profile saved';
-      statusEl.style.color = '#10b981';
-    }
+  if (!verifyBtn || !urlInput || !statusEl) return;
+
+  // Load saved GitHub username
+  import('../shared/storage/github-support.js').then(({ getGithubUsername }) => {
+    getGithubUsername().then(saved => {
+      if (saved) {
+        urlInput.value = saved;
+        statusEl.textContent = `✅ Saved as @${saved} — stars checked daily`;
+        statusEl.style.color = '#10b981';
+      }
+    });
   });
 
   verifyBtn.addEventListener('click', async () => {
-    const url = urlInput.value.trim();
-    if (!url) {
-      statusEl.textContent = '❌ Please enter your GitHub profile URL';
+    const raw = urlInput.value.trim();
+    if (!raw) {
+      statusEl.textContent = '❌ Please enter your GitHub username';
       statusEl.style.color = '#ef4444';
       return;
     }
 
-    // Extract username from URL
-    const match = url.match(/github\.com\/([a-zA-Z0-9_-]+)/);
-    if (!match) {
-      statusEl.textContent = '❌ Invalid GitHub URL format. Use: https://github.com/your-username';
-      statusEl.style.color = '#ef4444';
-      return;
-    }
+    // Accept both plain username and full URL
+    let username = raw.replace(/^@/, '');
+    const match = username.match(/github\.com\/([a-zA-Z0-9_-]+)/);
+    if (match) username = match[1];
 
-    const username = match[1];
     verifyBtn.disabled = true;
     verifyBtn.textContent = 'Verifying...';
-    statusEl.textContent = 'Checking GitHub...';
+    statusEl.textContent = `Checking @${username} on GitHub...`;
     statusEl.style.color = '#f59e0b';
 
     try {
-      // Verify the user exists
-      const userResp = await fetch(`https://api.github.com/users/${username}`, {
-        headers: { 'Accept': 'application/vnd.github.v3+json' }
-      });
+      const { validateGithubUsername, saveGithubUsername, verifySupportCompletion, markSupportCompleted } =
+        await import('../shared/storage/github-support.js');
 
-      if (!userResp.ok) {
-        statusEl.textContent = '❌ GitHub user not found. Check your URL.';
+      const isValid = await validateGithubUsername(username);
+      if (!isValid) {
+        statusEl.textContent = `❌ GitHub user "@${username}" not found.`;
         statusEl.style.color = '#ef4444';
         verifyBtn.disabled = false;
         verifyBtn.textContent = 'Verify';
         return;
       }
 
-      // Save the URL
-      await chrome.storage.local.set({ githubProfileUrl: url });
-      statusEl.textContent = `✅ Verified! Welcome @${username}! Stars checked daily.`;
-      statusEl.style.color = '#10b981';
+      await saveGithubUsername(username);
+      urlInput.value = username;
+
+      // Run full verification
+      const result = await verifySupportCompletion(username);
+      if (result.completed) {
+        await markSupportCompleted();
+        statusEl.textContent = `✅ Verified! All repos starred & following. Welcome @${username}!`;
+        statusEl.style.color = '#10b981';
+      } else {
+        const parts: string[] = [];
+        if (result.missingRepos.length > 0) parts.push(`${result.missingRepos.length} repo(s) not starred`);
+        if (result.missingFollows.length > 0) parts.push(`not following: ${result.missingFollows.join(', ')}`);
+        statusEl.textContent = `⚠️ @${username} saved. Missing: ${parts.join(' • ')}`;
+        statusEl.style.color = '#f59e0b';
+      }
     } catch {
       statusEl.textContent = '❌ Could not reach GitHub. Check your connection.';
       statusEl.style.color = '#ef4444';
@@ -895,7 +916,53 @@ function setupGithubVerification() {
   });
 }
 
+function setupSupportFeedback() {
+  const kindEl = document.getElementById('feedback-kind') as HTMLSelectElement | null;
+  const productEl = document.getElementById('feedback-product') as HTMLInputElement | null;
+  const countryEl = document.getElementById('feedback-country') as HTMLInputElement | null;
+  const titleEl = document.getElementById('feedback-title') as HTMLInputElement | null;
+  const descEl = document.getElementById('feedback-description') as HTMLTextAreaElement | null;
+  const openBtn = document.getElementById('feedback-open-issue') as HTMLButtonElement | null;
+
+  if (!kindEl || !productEl || !countryEl || !titleEl || !descEl || !openBtn) return;
+
+  // Basic defaults
+  if (!productEl.value) productEl.value = 'FormFilla';
+
+  openBtn.addEventListener('click', () => {
+    const kind = kindEl.value as 'bug' | 'feature';
+    const product = productEl.value.trim();
+    const country = countryEl.value.trim();
+    const title = titleEl.value.trim();
+    const description = descEl.value.trim();
+
+    if (!product) {
+      alert('Please fill Product / Extension.');
+      return;
+    }
+    if (!title) {
+      alert('Please fill Title.');
+      return;
+    }
+    if (!description) {
+      alert('Please fill Description / Steps.');
+      return;
+    }
+
+    const url = buildNewIssueUrl({
+      kind,
+      product,
+      country: country || undefined,
+      title,
+      description,
+    });
+
+    chrome.tabs.create({ url });
+  });
+}
+
 function setupBackupRestore() {
+
   const exportBtn = document.getElementById('export-btn')!;
   const templateBtn = document.getElementById('template-btn')!;
   const importBtn = document.getElementById('import-btn')!;
@@ -905,7 +972,7 @@ function setupBackupRestore() {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(currentProfile, null, 2));
     const dlAnchorElem = document.createElement('a');
     dlAnchorElem.setAttribute('href', dataStr);
-    dlAnchorElem.setAttribute('download', 'hired_profile.json');
+    dlAnchorElem.setAttribute('download', 'formfilla_profile.json');
     dlAnchorElem.click();
   });
 
@@ -914,7 +981,7 @@ function setupBackupRestore() {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(merged, null, 2));
     const dlAnchorElem = document.createElement('a');
     dlAnchorElem.setAttribute('href', dataStr);
-    dlAnchorElem.setAttribute('download', 'hired_extensive_template.json');
+    dlAnchorElem.setAttribute('download', 'formfilla_extensive_template.json');
     dlAnchorElem.click();
   });
 

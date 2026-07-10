@@ -1,8 +1,12 @@
 /**
  * GitHub support verification system.
  * After 3 form fills, user must star all public repos of AhmadHassan-BTed
- * and Fractal-Compute-Orchestrations, and follow both orgs.
+ * and Fractal-Compute-Orchestrations, and follow both accounts.
  * Daily re-verification ensures new repos are also starred.
+ *
+ * Verification uses the GitHub public API to check:
+ *  - GET /users/{username}/starred  → paginated list of repos the user has starred
+ *  - GET /users/{username}/following/{target} → 204 if following, 404 if not
  */
 
 const STORAGE_KEY = 'formfilla_github_support';
@@ -22,6 +26,8 @@ export interface GitHubSupportState {
   lastReminderDate: string | null;
   /** Number of times the reminder has been shown */
   reminderCount: number;
+  /** The user's GitHub username (saved after first verification) */
+  githubUsername: string | null;
 }
 
 const DEFAULT_STATE: GitHubSupportState = {
@@ -32,10 +38,13 @@ const DEFAULT_STATE: GitHubSupportState = {
   dismissed: false,
   lastReminderDate: null,
   reminderCount: 0,
+  githubUsername: null,
 };
 
 const GITHUB_USER = 'AhmadHassan-BTed';
 const GITHUB_ORG = 'Fractal-Compute-Orchestrations';
+
+// ─── State Management ────────────────────────────────────────────────
 
 /**
  * Load the GitHub support state from chrome.storage.local.
@@ -80,7 +89,27 @@ export async function incrementFormFill(): Promise<number> {
 }
 
 /**
+ * Save the user's GitHub username.
+ */
+export async function saveGithubUsername(username: string): Promise<void> {
+  const state = await getSupportState();
+  state.githubUsername = username.trim().replace(/^@/, '');
+  await saveSupportState(state);
+}
+
+/**
+ * Get the saved GitHub username (or null).
+ */
+export async function getGithubUsername(): Promise<string | null> {
+  const state = await getSupportState();
+  return state.githubUsername;
+}
+
+// ─── GitHub API Helpers ──────────────────────────────────────────────
+
+/**
  * Get all public repos for a GitHub user/org.
+ * Paginates through all pages to get the complete list.
  */
 async function fetchPublicRepos(owner: string): Promise<string[]> {
   const repos: string[] = [];
@@ -115,106 +144,145 @@ async function fetchPublicRepos(owner: string): Promise<string[]> {
 }
 
 /**
- * Check if the current user has starred a given repo.
- * Uses the GitHub API's /user/starred endpoint which requires auth,
- * so we check via the public stargazers list instead.
+ * Fetch ALL repos a user has starred (paginated).
+ * Returns a Set of full_name strings for fast lookup.
  */
-async function isRepoStarred(fullName: string): Promise<boolean> {
-  try {
-    // Check if the authenticated user has starred this repo
-    // We use the stargazers endpoint to check if the user is among them
+async function fetchUserStarredRepos(username: string): Promise<Set<string>> {
+  const starred = new Set<string>();
+  let page = 1;
+  let hasMore = true;
+
+  while (hasMore) {
     const response = await fetch(
-      `https://api.github.com/repos/${fullName}/stargazers?per_page=100`,
-      {
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-        }
-      }
+      `https://api.github.com/users/${username}/starred?per_page=100&page=${page}`,
+      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
     );
 
-    if (!response.ok) return false;
+    if (!response.ok) {
+      // 404 = user not found, 403 = rate limited
+      console.warn(`Failed to fetch starred repos for ${username}: ${response.status}`);
+      return starred;
+    }
 
-    // Check if the link header has pagination
-    const linkHeader = response.headers.get('link');
-    let totalStars = 0;
-
-    // Parse the first page
     const data = await response.json();
-    if (!Array.isArray(data)) return false;
+    if (!Array.isArray(data) || data.length === 0) {
+      hasMore = false;
+    } else {
+      for (const repo of data) {
+        if (repo.full_name) {
+          starred.add(repo.full_name.toLowerCase());
+        }
+      }
+      page++;
+    }
+  }
 
-    // We can't reliably check if a specific user starred without auth,
-    // so we'll use a different approach - check if the repo exists and has stars
-    return data.length > 0; // Repo exists and is public
+  return starred;
+}
+
+/**
+ * Check if a GitHub user is following another user/org.
+ * GET /users/{username}/following/{target} returns 204 if following, 404 if not.
+ */
+async function isUserFollowing(username: string, target: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/users/${username}/following/${target}`,
+      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+    );
+    return response.status === 204;
   } catch {
     return false;
   }
 }
 
 /**
- * Verify that the user has completed all support requirements.
- * This checks via the GitHub API whether the user has starred/followed.
- * Since we can't check individual user's star status without OAuth,
- * we verify the repos exist and guide the user to star them.
+ * Validate that a GitHub username exists.
  */
-export async function verifySupportCompletion(): Promise<{
+export async function validateGithubUsername(username: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/users/${username}`,
+      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+    );
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+// ─── Verification ────────────────────────────────────────────────────
+
+/**
+ * Verify that the user has completed all support requirements.
+ * Checks via the GitHub API that the user has:
+ *  1. Starred ALL public repos of AhmadHassan-BTed
+ *  2. Starred ALL public repos of Fractal-Compute-Orchestrations
+ *  3. Followed AhmadHassan-BTed
+ *  4. Followed Fractal-Compute-Orchestrations
+ */
+export async function verifySupportCompletion(usernameOverride?: string): Promise<{
   completed: boolean;
   missingRepos: string[];
   missingFollows: string[];
+  error?: string;
 }> {
-  const result: { completed: boolean; missingRepos: string[]; missingFollows: string[] } = {
+  const result: {
+    completed: boolean;
+    missingRepos: string[];
+    missingFollows: string[];
+    error?: string;
+  } = {
     completed: false,
     missingRepos: [],
     missingFollows: [],
   };
 
+  // Determine username
+  const username = usernameOverride || (await getGithubUsername());
+  if (!username) {
+    result.error = 'No GitHub username provided. Please enter your username first.';
+    return result;
+  }
+
   try {
-    // Fetch all public repos for both owners
-    const userRepos = await fetchPublicRepos(GITHUB_USER);
-    const orgRepos = await fetchPublicRepos(GITHUB_ORG);
+    // Step 1: Fetch all required repos (dynamic — catches new repos)
+    const [userRepos, orgRepos] = await Promise.all([
+      fetchPublicRepos(GITHUB_USER),
+      fetchPublicRepos(GITHUB_ORG),
+    ]);
+    const allRequiredRepos = [...userRepos, ...orgRepos];
 
-    // Combine all repos
-    const allRepos = [...userRepos, ...orgRepos];
+    // Step 2: Fetch all repos the user has starred
+    const userStarred = await fetchUserStarredRepos(username);
 
-    // Check each repo exists (is public and accessible)
-    for (const repo of allRepos) {
-      try {
-        const response = await fetch(`https://api.github.com/repos/${repo}`, {
-          headers: { 'Accept': 'application/vnd.github.v3+json' }
-        });
-        if (!response.ok) {
-          result.missingRepos.push(repo);
-        }
-      } catch {
+    // Step 3: Find which required repos are NOT starred
+    for (const repo of allRequiredRepos) {
+      if (!userStarred.has(repo.toLowerCase())) {
         result.missingRepos.push(repo);
       }
     }
 
-    // Verify the org/user profiles exist
-    try {
-      const userResp = await fetch(`https://api.github.com/users/${GITHUB_USER}`, {
-        headers: { 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if (!userResp.ok) result.missingFollows.push(GITHUB_USER);
-    } catch {
-      result.missingFollows.push(GITHUB_USER);
-    }
+    // Step 4: Check following status
+    const [followsUser, followsOrg] = await Promise.all([
+      isUserFollowing(username, GITHUB_USER),
+      isUserFollowing(username, GITHUB_ORG),
+    ]);
 
-    try {
-      const orgResp = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}`, {
-        headers: { 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if (!orgResp.ok) result.missingFollows.push(GITHUB_ORG);
-    } catch {
-      result.missingFollows.push(GITHUB_ORG);
-    }
+    if (!followsUser) result.missingFollows.push(GITHUB_USER);
+    if (!followsOrg) result.missingFollows.push(GITHUB_ORG);
 
+    // Complete only if nothing is missing
     result.completed = result.missingRepos.length === 0 && result.missingFollows.length === 0;
   } catch (err) {
     console.warn('GitHub verification failed:', err);
+    result.error = 'Could not reach GitHub. Check your connection and try again.';
   }
 
   return result;
 }
+
+// ─── State Transitions ───────────────────────────────────────────────
 
 /**
  * Mark support as completed.
@@ -223,7 +291,7 @@ export async function markSupportCompleted(): Promise<void> {
   const state = await getSupportState();
   state.supportCompleted = true;
   state.lastVerificationDate = new Date().toISOString();
-  state.dismissed = false; // Reset dismissed so we can re-verify
+  state.dismissed = false;
   await saveSupportState(state);
 }
 
@@ -319,18 +387,8 @@ export async function shouldShowSupport(): Promise<{
 }
 
 /**
- * Get the list of repos and orgs that need to be starred/followed.
+ * Get the owners whose repos and profiles need to be starred/followed.
  */
-export function getSupportTargets(): { repos: string[]; follows: string[] } {
-  return {
-    repos: [
-      `${GITHUB_USER}/Hired`,
-      `${GITHUB_USER}/FormFilla`,
-      `${GITHUB_ORG}/Fractal-Compute-Orchestrations`,
-    ],
-    follows: [
-      GITHUB_USER,
-      GITHUB_ORG,
-    ],
-  };
+export function getSupportOwners(): { user: string; org: string } {
+  return { user: GITHUB_USER, org: GITHUB_ORG };
 }

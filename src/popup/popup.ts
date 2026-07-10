@@ -7,8 +7,10 @@ import {
   dismissSupport,
   recordReminderShown,
   verifySupportCompletion,
-  getSupportTargets,
   needsDailyVerification,
+  saveGithubUsername,
+  getGithubUsername,
+  validateGithubUsername,
 } from '../shared/storage/github-support.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -38,14 +40,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   const supportVerifyBtn = document.getElementById('support-verify-btn') as HTMLButtonElement;
   const supportFillsCount = document.getElementById('support-fills-count') as HTMLSpanElement;
   const newReposContainer = document.getElementById('new-repos-container') as HTMLDivElement;
+  const usernameInput = document.getElementById('support-github-username') as HTMLInputElement;
+  const usernameError = document.getElementById('support-username-error') as HTMLParagraphElement;
 
   // Daily panel elements
   const dailyConfirmBtn = document.getElementById('daily-confirm-btn') as HTMLButtonElement;
   const dailyNewReposContainer = document.getElementById('daily-new-repos-container') as HTMLDivElement;
   const dailyReposList = document.getElementById('daily-repos-list') as HTMLDivElement;
+  const dailyFollowMissing = document.getElementById('daily-follow-missing') as HTMLDivElement;
+  const dailyFollowList = document.getElementById('daily-follow-list') as HTMLDivElement;
 
   // Initialize support state
   await initSupportState();
+
+  // Pre-fill username if saved
+  const savedUsername = await getGithubUsername();
+  if (savedUsername && usernameInput) {
+    usernameInput.value = savedUsername;
+  }
+
+  // ===== Activation status (activated vs not) =====
+  const { getActivationStatus } = await import('../shared/storage/activation-status.js');
+  const activation = await getActivationStatus();
+  statusText.textContent = `${activation.label} • ${activation.detail}`;
+
 
   // Determine which panel to show
   const supportStatus = await shouldShowSupport();
@@ -60,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Daily check: show daily panel, hide main content
       mainContent.classList.add('hidden');
       dailyPanel.classList.remove('hidden');
-      // Check for new repos
+      // Pre-run verification to show what's missing
       try {
         const verification = await verifySupportCompletion();
         if (verification.missingRepos.length > 0) {
@@ -71,6 +89,21 @@ document.addEventListener('DOMContentLoaded', async () => {
               ${repo}
             </a>`)
             .join('');
+        }
+        if (verification.missingFollows.length > 0 && dailyFollowMissing && dailyFollowList) {
+          dailyFollowMissing.classList.remove('hidden');
+          dailyFollowList.innerHTML = verification.missingFollows
+            .map(target => `<a href="https://github.com/${target}" target="_blank" class="support-target-link" style="color:var(--warning)">
+              <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M5.5 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM2 5.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0zm11 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-2.5 2a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0z"/></svg>
+              @${target}
+            </a>`)
+            .join('');
+        }
+        // If nothing is missing, auto-pass
+        if (verification.completed) {
+          await markSupportCompleted();
+          dailyPanel.classList.add('hidden');
+          mainContent.classList.remove('hidden');
         }
       } catch {
         // Silently handle verification errors
@@ -100,18 +133,45 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ===== REQUIRED PANEL HANDLERS =====
 
   supportVerifyBtn.addEventListener('click', async () => {
+    const username = usernameInput.value.trim().replace(/^@/, '');
+
+    // Validate username is provided
+    if (!username) {
+      usernameError.textContent = 'Please enter your GitHub username first.';
+      usernameError.classList.remove('hidden');
+      usernameInput.focus();
+      return;
+    }
+
+    // Hide previous errors
+    usernameError.classList.add('hidden');
+
     supportVerifyBtn.classList.add('loading');
     const btnText = supportVerifyBtn.querySelector('.btn-text');
-    if (btnText) btnText.textContent = 'Verifying...';
+    if (btnText) btnText.textContent = 'Verifying @' + username + '...';
 
     try {
-      const verification = await verifySupportCompletion();
+      // First validate the username exists
+      const isValid = await validateGithubUsername(username);
+      if (!isValid) {
+        supportVerifyBtn.classList.remove('loading');
+        usernameError.textContent = `GitHub user "@${username}" not found. Check the spelling.`;
+        usernameError.classList.remove('hidden');
+        if (btnText) btnText.textContent = "✓ I've starred & followed — verify me";
+        return;
+      }
+
+      // Save the username
+      await saveGithubUsername(username);
+
+      // Run real verification
+      const verification = await verifySupportCompletion(username);
 
       if (verification.completed) {
         await markSupportCompleted();
         supportVerifyBtn.classList.remove('loading');
         supportVerifyBtn.classList.add('success');
-        if (btnText) btnText.textContent = '✓ Verified! Thank you!';
+        if (btnText) btnText.textContent = '✓ Verified! Thank you, @' + username + '!';
 
         // Show main content after brief delay
         setTimeout(() => {
@@ -120,29 +180,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 1200);
       } else {
         supportVerifyBtn.classList.remove('loading');
-        if (btnText) btnText.textContent = "✗ Not yet — please star & follow all repos above";
+
+        // Build detailed error message
+        const parts: string[] = [];
+        if (verification.missingRepos.length > 0) {
+          parts.push(`${verification.missingRepos.length} repo(s) not starred`);
+        }
+        if (verification.missingFollows.length > 0) {
+          parts.push(`not following: ${verification.missingFollows.join(', ')}`);
+        }
+        if (btnText) btnText.textContent = '✗ ' + parts.join(' • ');
 
         // Show which repos are missing
         if (verification.missingRepos.length > 0) {
           newReposContainer.classList.remove('hidden');
-          newReposContainer.innerHTML = verification.missingRepos
-            .map(repo => `<a href="https://github.com/${repo}" target="_blank" class="support-target-link" style="color:var(--warning)">
-              <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
-              ${repo}
-            </a>`)
-            .join('');
+          newReposContainer.innerHTML = '<p class="support-target-label" style="color:var(--warning)">Missing stars:</p>' +
+            verification.missingRepos
+              .map(repo => `<a href="https://github.com/${repo}" target="_blank" class="support-target-link" style="color:var(--warning)">
+                <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+                ${repo}
+              </a>`)
+              .join('');
         }
 
-        // Reset button text after 3 seconds
+        // Reset button text after 4 seconds
         setTimeout(() => {
-          if (btnText) btnText.textContent = "✓ I've starred & followed all";
-        }, 3000);
+          if (btnText) btnText.textContent = "✓ I've starred & followed — verify me";
+        }, 4000);
       }
     } catch (err) {
       supportVerifyBtn.classList.remove('loading');
       if (btnText) btnText.textContent = 'Verification failed — try again';
+      usernameError.textContent = 'Could not reach GitHub. Check your connection.';
+      usernameError.classList.remove('hidden');
       setTimeout(() => {
-        if (btnText) btnText.textContent = "✓ I've starred & followed all";
+        if (btnText) btnText.textContent = "✓ I've starred & followed — verify me";
       }, 3000);
     }
   });
@@ -169,7 +241,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 1000);
       } else {
         dailyConfirmBtn.classList.remove('loading');
-        if (btnText) btnText.textContent = 'Please star the new repos first';
+
+        const parts: string[] = [];
+        if (verification.missingRepos.length > 0) parts.push(`${verification.missingRepos.length} repo(s) unstarred`);
+        if (verification.missingFollows.length > 0) parts.push(`not following: ${verification.missingFollows.join(', ')}`);
+        if (btnText) btnText.textContent = parts.join(' • ') || 'Please star the repos first';
 
         if (verification.missingRepos.length > 0) {
           dailyNewReposContainer.classList.remove('hidden');
@@ -181,9 +257,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             .join('');
         }
 
+        if (verification.missingFollows.length > 0 && dailyFollowMissing && dailyFollowList) {
+          dailyFollowMissing.classList.remove('hidden');
+          dailyFollowList.innerHTML = verification.missingFollows
+            .map(target => `<a href="https://github.com/${target}" target="_blank" class="support-target-link" style="color:var(--warning)">
+              <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M5.5 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM2 5.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0zm11 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-2.5 2a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0z"/></svg>
+              @${target}
+            </a>`)
+            .join('');
+        }
+
         setTimeout(() => {
           if (btnText) btnText.textContent = "✓ I'm all caught up";
-        }, 3000);
+        }, 4000);
       }
     } catch {
       dailyConfirmBtn.classList.remove('loading');
