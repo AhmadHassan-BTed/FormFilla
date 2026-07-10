@@ -19,19 +19,20 @@
 
 <body>
   <div class="card">
+    <!-- ===== STANDARD HEADER ===== -->
     <div class="header">
       <div class="logo">
         <img class="logo-svg" src="../assets/logo.svg" alt="FormFilla logo" width="20" height="20">
       </div>
       <button id="options-btn" class="icon-btn" type="button" aria-label="Open settings" title="Open settings">
         <svg class="options-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path
-            d="M19.14,12.94a7.43,7.43,0,0,0,.05-.94,7.43,7.43,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65a.5.5,0,0,0-.5-.42H10.22a.5.5,0,0,0-.5.42L9.34,4.11a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L4.85,10.6a7.43,7.43,0,0,0-.05.94,7.43,7.43,0,0,0,.05.94L2.74,14.13a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.5.42h4.56a.5.5,0,0,0,.5-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+          <path d="M19.14,12.94a7.43,7.43,0,0,0,.05-.94,7.43,7.43,0,0,0-.05-.94l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.6-.22l-2.49,1a7.28,7.28,0,0,0-1.63-.94l-.38-2.65a.5.5,0,0,0-.5-.42H10.22a.5.5,0,0,0-.5.42L9.34,4.11a7.28,7.28,0,0,0-1.63.94l-2.49-1a.5.5,0,0,0-.6.22l-2,3.46a.5.5,0,0,0,.12.64L4.85,10.6a7.43,7.43,0,0,0-.05.94,7.43,7.43,0,0,0,.05.94L2.74,14.13a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.6.22l2.49-1a7.28,7.28,0,0,0,1.63.94l.38,2.65a.5.5,0,0,0,.5.42h4.56a.5.5,0,0,0,.5-.42l.38-2.65a7.28,7.28,0,0,0,1.63-.94l2.49,1a.5.5,0,0,0,.6-.22l2-3.46a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
         </svg>
       </button>
     </div>
 
-    <div class="content">
+    <!-- ===== MAIN CONTENT (hidden when support is blocking) ===== -->
+    <div id="main-content" class="content">
       <p class="description">
         Local-first, deterministic form autofiller. No AI models or network requests.
       </p>
@@ -64,26 +65,108 @@
       </div>
     </div>
 
-    <div id="support-panel" class="support-panel hidden">
+    <!-- ===== GENTLE SUPPORT PANEL (shown before 3 fills) ===== -->
+    <div id="support-gentle-panel" class="support-panel gentle hidden">
       <div class="support-content">
-        <p class="support-text">Support this project — <strong>star & follow</strong> to help it grow</p>
+        <p class="support-text">Love FormFilla? <strong>Star & follow</strong> on GitHub to support the project</p>
         <div class="support-actions">
-          <a id="star-btn" href="https://github.com/AhmadHassan-BTed/Hired" target="_blank" class="support-link star-link" title="Star on GitHub">
+          <a id="gentle-star-btn" href="https://github.com/AhmadHassan-BTed/Hired" target="_blank" class="support-link star-link" title="Star on GitHub">
             <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
             <span>Star</span>
           </a>
-          <a id="follow-btn" href="https://github.com/AhmadHassan-BTed" target="_blank" class="support-link follow-link" title="Follow on GitHub">
+          <a id="gentle-follow-btn" href="https://github.com/AhmadHassan-BTed" target="_blank" class="support-link follow-link" title="Follow on GitHub">
             <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M5.5 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM2 5.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0zm11 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-2.5 2a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zM2 12.5c0-.836.321-1.576.94-2.138A3.126 3.126 0 0 1 5.5 9.5c.849 0 1.648.316 2.27.89A2.926 2.926 0 0 1 8.5 11.5v.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-.5zm2.5-2a2.126 2.126 0 0 0-1.347.489A2.066 2.066 0 0 0 3 12.5h4c0-.472-.168-.892-.464-1.226A1.87 1.87 0 0 0 5.5 11zm7.5 2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zm1-2.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 .5.5z"/></svg>
             <span>Follow</span>
           </a>
-          <button id="support-dismiss-btn" class="support-dismiss" title="Dismiss" aria-label="Dismiss support prompt">
+          <button id="gentle-dismiss-btn" class="support-dismiss" title="Dismiss" aria-label="Dismiss">
             <svg viewBox="0 0 16 16" class="dismiss-icon" aria-hidden="true"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
           </button>
         </div>
-        <p class="support-extra">Already supported? Open the popup again to dismiss.</p>
       </div>
     </div>
 
+    <!-- ===== REQUIRED SUPPORT PANEL (shown after 3 fills) ===== -->
+    <div id="support-required-panel" class="support-panel required hidden">
+      <div class="support-content">
+        <div class="support-required-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="var(--warning)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="support-required-title">Support Required to Continue</p>
+        <p class="support-required-desc">
+          You've used FormFilla for <strong id="support-fills-count">3</strong> forms!
+          To keep using it for free, please support the project:
+        </p>
+        <div class="support-targets">
+          <div class="support-target-group">
+            <p class="support-target-label">Star all public repos:</p>
+            <div id="repos-list" class="support-links-list">
+              <a href="https://github.com/AhmadHassan-BTed/Hired" target="_blank" class="support-target-link">
+                <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+                AhmadHassan-BTed/Hired
+              </a>
+              <a href="https://github.com/AhmadHassan-BTed/FormFilla" target="_blank" class="support-target-link">
+                <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+                AhmadHassan-BTed/FormFilla
+              </a>
+              <a href="https://github.com/Fractal-Compute-Orchestrations/Fractal-Compute-Orchestrations" target="_blank" class="support-target-link">
+                <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+                Fractal-Compute-Orchestrations/Fractal-Compute-Orchestrations
+              </a>
+              <div id="new-repos-container" class="hidden"></div>
+            </div>
+          </div>
+          <div class="support-target-group">
+            <p class="support-target-label">Follow on GitHub:</p>
+            <div class="support-links-list">
+              <a href="https://github.com/AhmadHassan-BTed" target="_blank" class="support-target-link">
+                <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M5.5 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM2 5.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0zm11 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-2.5 2a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zM2 12.5c0-.836.321-1.576.94-2.138A3.126 3.126 0 0 1 5.5 9.5c.849 0 1.648.316 2.27.89A2.926 2.926 0 0 1 8.5 11.5v.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-.5zm2.5-2a2.126 2.126 0 0 0-1.347.489A2.066 2.066 0 0 0 3 12.5h4c0-.472-.168-.892-.464-1.226A1.87 1.87 0 0 0 5.5 11zm7.5 2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zm1-2.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 .5.5z"/></svg>
+                @AhmadHassan-BTed
+              </a>
+              <a href="https://github.com/Fractal-Compute-Orchestrations" target="_blank" class="support-target-link">
+                <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M5.5 3.5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM2 5.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0zm11 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-2.5 2a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zM2 12.5c0-.836.321-1.576.94-2.138A3.126 3.126 0 0 1 5.5 9.5c.849 0 1.648.316 2.27.89A2.926 2.926 0 0 1 8.5 11.5v.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5v-.5zm2.5-2a2.126 2.126 0 0 0-1.347.489A2.066 2.066 0 0 0 3 12.5h4c0-.472-.168-.892-.464-1.226A1.87 1.87 0 0 0 5.5 11zm7.5 2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zm1-2.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 .5.5z"/></svg>
+                @Fractal-Compute-Orchestrations
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="support-required-actions">
+          <button id="support-verify-btn" class="primary-btn verify-btn">
+            <span class="btn-text">✓ I've starred & followed all</span>
+          </button>
+        </div>
+        <p class="support-required-note">
+          This ensures the project stays free and sustainable. Verification repeats daily to catch new repos.
+        </p>
+      </div>
+    </div>
+
+    <!-- ===== DAILY VERIFICATION PANEL ===== -->
+    <div id="support-daily-panel" class="support-panel daily hidden">
+      <div class="support-content">
+        <div class="support-required-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="var(--accent-indigo)"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-8 3.58-8 8s3.58 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        </div>
+        <p class="support-required-title">Daily Support Check</p>
+        <p class="support-required-desc">
+          Just confirming you're still supporting the project! Please check for any <strong>new repos</strong> you haven't starred yet.
+        </p>
+        <div id="daily-new-repos-container" class="hidden">
+          <p class="support-target-label">New repos detected:</p>
+          <div id="daily-repos-list" class="support-links-list"></div>
+        </div>
+        <div class="support-required-actions">
+          <a href="https://github.com/AhmadHassan-BTed?tab=repositories" target="_blank" class="support-link star-link daily-check-link">
+            <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+            Check & Star New Repos
+          </a>
+          <button id="daily-confirm-btn" class="primary-btn verify-btn">
+            <span class="btn-text">✓ I'm all caught up</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
     <div class="footer">
       <div class="footer-status">
         <span class="status-dot"></span>

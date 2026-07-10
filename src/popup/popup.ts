@@ -2,15 +2,19 @@ import { FillResult } from '../shared/types/index.js';
 import {
   initSupportState,
   shouldShowSupport,
-  markStarred,
-  markFollowed,
+  incrementFormFill,
+  markSupportCompleted,
   dismissSupport,
   recordReminderShown,
+  verifySupportCompletion,
+  getSupportTargets,
+  needsDailyVerification,
 } from '../shared/storage/github-support.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const fillBtn = document.getElementById('fill-btn') as HTMLButtonElement;
   const optionsBtn = document.getElementById('options-btn') as HTMLButtonElement | null;
+  const mainContent = document.getElementById('main-content') as HTMLDivElement;
   const resultsPanel = document.getElementById('results-panel') as HTMLDivElement;
   const statusDot = document.querySelector('.status-dot') as HTMLSpanElement;
   const statusText = document.getElementById('status-text') as HTMLSpanElement;
@@ -20,58 +24,185 @@ document.addEventListener('DOMContentLoaded', async () => {
   const countConfirm = document.getElementById('count-confirm') as HTMLSpanElement;
   const countUnmapped = document.getElementById('count-unmapped') as HTMLSpanElement;
 
-  // GitHub support panel
-  const supportPanel = document.getElementById('support-panel') as HTMLDivElement;
-  const starBtn = document.getElementById('star-btn') as HTMLAnchorElement;
-  const followBtn = document.getElementById('follow-btn') as HTMLAnchorElement;
-  const dismissBtn = document.getElementById('support-dismiss-btn') as HTMLButtonElement;
+  // Panels
+  const gentlePanel = document.getElementById('support-gentle-panel') as HTMLDivElement;
+  const requiredPanel = document.getElementById('support-required-panel') as HTMLDivElement;
+  const dailyPanel = document.getElementById('support-daily-panel') as HTMLDivElement;
 
-  // Initialize support state and show prompt if needed
+  // Gentle panel elements
+  const gentleStarBtn = document.getElementById('gentle-star-btn') as HTMLAnchorElement;
+  const gentleFollowBtn = document.getElementById('gentle-follow-btn') as HTMLAnchorElement;
+  const gentleDismissBtn = document.getElementById('gentle-dismiss-btn') as HTMLButtonElement;
+
+  // Required panel elements
+  const supportVerifyBtn = document.getElementById('support-verify-btn') as HTMLButtonElement;
+  const supportFillsCount = document.getElementById('support-fills-count') as HTMLSpanElement;
+  const newReposContainer = document.getElementById('new-repos-container') as HTMLDivElement;
+
+  // Daily panel elements
+  const dailyConfirmBtn = document.getElementById('daily-confirm-btn') as HTMLButtonElement;
+  const dailyNewReposContainer = document.getElementById('daily-new-repos-container') as HTMLDivElement;
+  const dailyReposList = document.getElementById('daily-repos-list') as HTMLDivElement;
+
+  // Initialize support state
   await initSupportState();
-  const showSupport = await shouldShowSupport();
-  if (showSupport) {
-    supportPanel.classList.remove('hidden');
+
+  // Determine which panel to show
+  const supportStatus = await shouldShowSupport();
+
+  if (supportStatus.show) {
+    if (supportStatus.reason === 'required') {
+      // Blocking: show required panel, hide main content
+      mainContent.classList.add('hidden');
+      requiredPanel.classList.remove('hidden');
+      supportFillsCount.textContent = '3+';
+    } else if (supportStatus.reason === 'daily-verification') {
+      // Daily check: show daily panel, hide main content
+      mainContent.classList.add('hidden');
+      dailyPanel.classList.remove('hidden');
+      // Check for new repos
+      try {
+        const verification = await verifySupportCompletion();
+        if (verification.missingRepos.length > 0) {
+          dailyNewReposContainer.classList.remove('hidden');
+          dailyReposList.innerHTML = verification.missingRepos
+            .map(repo => `<a href="https://github.com/${repo}" target="_blank" class="support-target-link">
+              <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+              ${repo}
+            </a>`)
+            .join('');
+        }
+      } catch {
+        // Silently handle verification errors
+      }
+    } else {
+      // Gentle prompt: show gentle panel, keep main content visible
+      gentlePanel.classList.remove('hidden');
+    }
     await recordReminderShown();
   }
 
-  // Star button — mark as starred when clicked
-  starBtn.addEventListener('click', async () => {
-    await markStarred();
-    starBtn.style.opacity = '0.5';
-    starBtn.style.pointerEvents = 'none';
-    checkSupportComplete();
+  // ===== GENTLE PANEL HANDLERS =====
+
+  gentleStarBtn.addEventListener('click', () => {
+    // Just opens the link, no tracking needed for gentle prompt
   });
 
-  // Follow button — mark as followed when clicked
-  followBtn.addEventListener('click', async () => {
-    await markFollowed();
-    followBtn.style.opacity = '0.5';
-    followBtn.style.pointerEvents = 'none';
-    checkSupportComplete();
+  gentleFollowBtn.addEventListener('click', () => {
+    // Just opens the link, no tracking needed for gentle prompt
   });
 
-  // Dismiss button
-  dismissBtn.addEventListener('click', async () => {
+  gentleDismissBtn.addEventListener('click', async () => {
     await dismissSupport();
-    supportPanel.classList.add('hidden');
+    gentlePanel.classList.add('hidden');
   });
 
-  // Check if both actions completed and auto-dismiss
-  async function checkSupportComplete() {
-    const state = await shouldShowSupport();
-    if (!state) {
-      // Both done or dismissed — hide with a brief delay for visual feedback
+  // ===== REQUIRED PANEL HANDLERS =====
+
+  supportVerifyBtn.addEventListener('click', async () => {
+    supportVerifyBtn.classList.add('loading');
+    const btnText = supportVerifyBtn.querySelector('.btn-text');
+    if (btnText) btnText.textContent = 'Verifying...';
+
+    try {
+      const verification = await verifySupportCompletion();
+
+      if (verification.completed) {
+        await markSupportCompleted();
+        supportVerifyBtn.classList.remove('loading');
+        supportVerifyBtn.classList.add('success');
+        if (btnText) btnText.textContent = '✓ Verified! Thank you!';
+
+        // Show main content after brief delay
+        setTimeout(() => {
+          requiredPanel.classList.add('hidden');
+          mainContent.classList.remove('hidden');
+        }, 1200);
+      } else {
+        supportVerifyBtn.classList.remove('loading');
+        if (btnText) btnText.textContent = "✗ Not yet — please star & follow all repos above";
+
+        // Show which repos are missing
+        if (verification.missingRepos.length > 0) {
+          newReposContainer.classList.remove('hidden');
+          newReposContainer.innerHTML = verification.missingRepos
+            .map(repo => `<a href="https://github.com/${repo}" target="_blank" class="support-target-link" style="color:var(--warning)">
+              <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+              ${repo}
+            </a>`)
+            .join('');
+        }
+
+        // Reset button text after 3 seconds
+        setTimeout(() => {
+          if (btnText) btnText.textContent = "✓ I've starred & followed all";
+        }, 3000);
+      }
+    } catch (err) {
+      supportVerifyBtn.classList.remove('loading');
+      if (btnText) btnText.textContent = 'Verification failed — try again';
       setTimeout(() => {
-        supportPanel.classList.add('hidden');
-      }, 600);
+        if (btnText) btnText.textContent = "✓ I've starred & followed all";
+      }, 3000);
     }
-  }
+  });
+
+  // ===== DAILY PANEL HANDLERS =====
+
+  dailyConfirmBtn.addEventListener('click', async () => {
+    dailyConfirmBtn.classList.add('loading');
+    const btnText = dailyConfirmBtn.querySelector('.btn-text');
+    if (btnText) btnText.textContent = 'Verifying...';
+
+    try {
+      const verification = await verifySupportCompletion();
+
+      if (verification.completed) {
+        await markSupportCompleted();
+        dailyConfirmBtn.classList.remove('loading');
+        dailyConfirmBtn.classList.add('success');
+        if (btnText) btnText.textContent = '✓ All good!';
+
+        setTimeout(() => {
+          dailyPanel.classList.add('hidden');
+          mainContent.classList.remove('hidden');
+        }, 1000);
+      } else {
+        dailyConfirmBtn.classList.remove('loading');
+        if (btnText) btnText.textContent = 'Please star the new repos first';
+
+        if (verification.missingRepos.length > 0) {
+          dailyNewReposContainer.classList.remove('hidden');
+          dailyReposList.innerHTML = verification.missingRepos
+            .map(repo => `<a href="https://github.com/${repo}" target="_blank" class="support-target-link" style="color:var(--warning)">
+              <svg viewBox="0 0 16 16" class="support-icon" aria-hidden="true"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.612L7.327.668A.75.75 0 0 1 8 .25z"/></svg>
+              ${repo}
+            </a>`)
+            .join('');
+        }
+
+        setTimeout(() => {
+          if (btnText) btnText.textContent = "✓ I'm all caught up";
+        }, 3000);
+      }
+    } catch {
+      dailyConfirmBtn.classList.remove('loading');
+      if (btnText) btnText.textContent = 'Verification failed — try again';
+      setTimeout(() => {
+        if (btnText) btnText.textContent = "✓ I'm all caught up";
+      }, 3000);
+    }
+  });
+
+  // ===== OPTIONS BUTTON =====
 
   if (optionsBtn) {
     optionsBtn.addEventListener('click', () => {
       chrome.runtime.openOptionsPage();
     });
   }
+
+  // ===== FILL BUTTON =====
 
   fillBtn.addEventListener('click', async () => {
     fillBtn.disabled = true;
@@ -93,7 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         throw new Error('Cannot fill forms on system pages.');
       }
 
-      chrome.tabs.sendMessage(tab.id, { type: 'START_FILL', tabId: tab.id }, (response) => {
+      chrome.tabs.sendMessage(tab.id, { type: 'START_FILL', tabId: tab.id }, async (response) => {
         fillBtn.disabled = false;
         if (btnText) btnText.textContent = originalText;
         statusDot.className = 'status-dot';
@@ -114,6 +245,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           resultsPanel.classList.remove('hidden');
           statusText.textContent = 'Fill process completed!';
+
+          // Increment form fill counter and check if support is now required
+          const totalFills = await incrementFormFill();
+          if (totalFills >= 3) {
+            const supportStatus = await shouldShowSupport();
+            if (supportStatus.show && supportStatus.reason === 'required') {
+              mainContent.classList.add('hidden');
+              requiredPanel.classList.remove('hidden');
+              supportFillsCount.textContent = '3+';
+            }
+          }
         } else {
           statusText.textContent = 'Error: Fill operation did not complete.';
         }

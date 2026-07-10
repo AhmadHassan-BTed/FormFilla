@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadProfileData();
   setupDynamicLists();
   setupFilePickers();
+  setupGithubVerification();
   setupBackupRestore();
 
   const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
@@ -827,6 +828,71 @@ function mergeProfileWithTemplate(profile: Profile, template: any): any {
     result.optIns = { ...result.optIns, ...profile.optIns };
   }
   return result;
+}
+
+function setupGithubVerification() {
+  const verifyBtn = document.getElementById('verify-github-btn') as HTMLButtonElement;
+  const urlInput = document.getElementById('github-profile-url') as HTMLInputElement;
+  const statusEl = document.getElementById('github-verify-status') as HTMLDivElement;
+
+  // Load saved GitHub URL
+  chrome.storage.local.get(['githubProfileUrl'], (result) => {
+    const savedUrl = (result as any).githubProfileUrl || '';
+    if (savedUrl) {
+      urlInput.value = savedUrl;
+      statusEl.textContent = '✅ GitHub profile saved';
+      statusEl.style.color = '#10b981';
+    }
+  });
+
+  verifyBtn.addEventListener('click', async () => {
+    const url = urlInput.value.trim();
+    if (!url) {
+      statusEl.textContent = '❌ Please enter your GitHub profile URL';
+      statusEl.style.color = '#ef4444';
+      return;
+    }
+
+    // Extract username from URL
+    const match = url.match(/github\.com\/([a-zA-Z0-9_-]+)/);
+    if (!match) {
+      statusEl.textContent = '❌ Invalid GitHub URL format. Use: https://github.com/your-username';
+      statusEl.style.color = '#ef4444';
+      return;
+    }
+
+    const username = match[1];
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = 'Verifying...';
+    statusEl.textContent = 'Checking GitHub...';
+    statusEl.style.color = '#f59e0b';
+
+    try {
+      // Verify the user exists
+      const userResp = await fetch(`https://api.github.com/users/${username}`, {
+        headers: { 'Accept': 'application/vnd.github.v3+json' }
+      });
+
+      if (!userResp.ok) {
+        statusEl.textContent = '❌ GitHub user not found. Check your URL.';
+        statusEl.style.color = '#ef4444';
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Verify';
+        return;
+      }
+
+      // Save the URL
+      await chrome.storage.local.set({ githubProfileUrl: url });
+      statusEl.textContent = `✅ Verified! Welcome @${username}! Stars checked daily.`;
+      statusEl.style.color = '#10b981';
+    } catch {
+      statusEl.textContent = '❌ Could not reach GitHub. Check your connection.';
+      statusEl.style.color = '#ef4444';
+    }
+
+    verifyBtn.disabled = false;
+    verifyBtn.textContent = 'Verify';
+  });
 }
 
 function setupBackupRestore() {

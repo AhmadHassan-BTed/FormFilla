@@ -189,11 +189,21 @@ export function startOrchestrator() {
 
   watch(document.body, async (newFields) => {
     try {
+      // Guard: extension context may have been invalidated (e.g. after reload)
+      if (!chrome?.runtime?.id) {
+        console.warn('FormFilla: Extension context invalidated, skipping dynamic fill.');
+        return;
+      }
       const profile = await getProfile();
       if (profile && profile.personal && profile.personal.email) {
         await processFields(newFields, profile);
       }
     } catch (err) {
+      // Suppress "Extension context invalidated" errors silently
+      if (err instanceof Error && err.message.includes('Extension context invalidated')) {
+        console.warn('FormFilla: Extension context invalidated, dynamic fill stopped.');
+        return;
+      }
       console.error('Error filling dynamic fields:', err);
     }
   });
