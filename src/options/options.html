@@ -916,196 +916,7 @@
           </div>
         </section>
 
-        <!-- SECTION: Activation -->
-        <section id="section-activation" class="content-section">
-          <h2 class="section-title">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--accent-indigo)"
-              style="display: inline-block; vertical-align: middle; margin-right: 8px;">
-              <path
-                d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
-            </svg>
-            Activation — Keep FormFilla Free
-          </h2>
-
-
-          <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Your activation status</h3>
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <div style="font-size: 13px; color: var(--text-secondary);">Status:</div>
-            <div id="activation-status-label" style="font-size: 16px; font-weight: 800;">Loading...</div>
-            <div id="activation-status-detail" style="font-size: 12px; color: var(--text-secondary);">Please wait.</div>
-          </div>
-          <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
-            <div style="font-size: 12px; color: var(--text-secondary);">Need help or want to report a bug?</div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <a href="https://wa.me/923225522383" target="_blank" rel="noopener noreferrer"
-                style="color: var(--accent-indigo); text-decoration: none; font-weight: 600;">WhatsApp</a>
-              <a href="mailto:ahmadhassan.bted@gmail.com"
-                style="color: var(--accent-indigo); text-decoration: none; font-weight: 600;">Email</a>
-            </div>
-          </div>
-  </div>
-
-  <div class="card" style="margin-bottom: 20px; line-height: 1.6;">
-    <p class="welcome-subtitle">Support the Project in 2 Minutes</p>
-    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 12px;">
-      FormFilla is and always will be <strong>completely free</strong>. The only thing we ask is that you
-      show your support on GitHub — this helps the project grow and reach more people.
-    </p>
-    <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
-      <h3
-        style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--success)">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-        </svg>
-        What you need to do:
-      </h3>
-      <ol style="margin-left: 20px; color: var(--text-secondary); font-size: 13px; line-height: 2;">
-        <li>
-          <strong>Star all public repos</strong> under
-          <a href="https://github.com/AhmadHassan-BTed?tab=repositories" target="_blank"
-            style="color: var(--accent-indigo);">@AhmadHassan-BTed</a>
-          and also star
-          <a href="https://github.com/Fractal-Compute-Orchestrations/Fractal-Compute-Orchestrations" target="_blank"
-            style="color: var(--accent-indigo);">Fractal-Compute-Orchestrations/Fractal-Compute-Orchestrations</a>.
-        </li>
-        <li>
-          <strong>Follow</strong>
-          <a href="https://github.com/AhmadHassan-BTed" target="_blank"
-            style="color: var(--accent-indigo);">@AhmadHassan-BTed</a>
-          and
-          <a href="https://github.com/Fractal-Compute-Orchestrations" target="_blank"
-            style="color: var(--accent-indigo);">@Fractal-Compute-Orchestrations</a>
-          on GitHub
-        </li>
-        <li>
-          <strong>Paste your GitHub profile URL</strong> below so we can verify (optional — helps us confirm new
-          repos are starred)
-        </li>
-      </ol>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom: 20px;">
-    <h3
-      style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--accent-indigo)">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17h-2v-6h2v6zm0-8h-2V7h2v2z" />
-      </svg>
-      Your GitHub Profile
-    </h3>
-    <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 8px;">
-      Enter your GitHub profile URL so the extension can verify your support:
-    </p>
-    <div style="display: flex; gap: 10px; align-items: center;">
-      <input type="url" id="github-profile-url" placeholder="https://github.com/your-username"
-        style="flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-color);
-                       background: var(--bg-color); color: var(--text-primary); font-family: inherit; font-size: 13px;">
-      <button type="button" id="verify-github-btn" class="secondary-btn" style="white-space: nowrap;">
-        Verify
-      </button>
-    </div>
-    <div id="github-verify-status" style="margin-top: 8px; font-size: 13px;"></div>
-    <p style="color: var(--muted); font-size: 11px; margin-top: 8px;">
-      Your GitHub URL is stored locally and never sent anywhere. It's only used to check that you've starred the
-      repos.
-    </p>
-  </div>
-
-  <div class="grid-2">
-    <div class="card activation-step-card">
-      <div class="activation-step-number">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-indigo)">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-      </div>
-      <h3>Star the Repos</h3>
-      <p>
-        Star all public repos in your GitHub profile (open the repositories tab below), plus star:
-        <a href="https://github.com/Fractal-Compute-Orchestrations/Fractal-Compute-Orchestrations" target="_blank"
-          style="color: var(--accent-indigo);">Fractal-Compute-Orchestrations/Fractal-Compute-Orchestrations</a>.
-      </p>
-      <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 8px;">
-        <a href="https://github.com/AhmadHassan-BTed?tab=repositories" target="_blank" class="activation-link"
-          style="color: var(--accent-indigo); display: flex; align-items: center; gap: 6px;">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-          AhmadHassan-BTed (Repositories)
-        </a>
-        <a href="https://github.com/Fractal-Compute-Orchestrations/Fractal-Compute-Orchestrations" target="_blank"
-          class="activation-link" style="color: var(--accent-indigo); display: flex; align-items: center; gap: 6px;">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-          </svg>
-          Fractal-Compute-Orchestrations/Fractal-Compute-Orchestrations
-        </a>
-      </div>
-    </div>
-
-    <div class="card activation-step-card">
-      <div class="activation-step-number">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-indigo)">
-          <path
-            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-        </svg>
-      </div>
-      <h3>Follow on GitHub</h3>
-      <p>Click "Follow" on each profile to stay updated.</p>
-      <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 8px;">
-        <a href="https://github.com/AhmadHassan-BTed" target="_blank" class="activation-link"
-          style="color: var(--accent-indigo); display: flex; align-items: center; gap: 6px;">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path
-              d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-          </svg>
-          Follow @AhmadHassan-BTed
-        </a>
-        <a href="https://github.com/Fractal-Compute-Orchestrations" target="_blank" class="activation-link"
-          style="color: var(--accent-indigo); display: flex; align-items: center; gap: 6px;">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path
-              d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-          </svg>
-          Follow @Fractal-Compute-Orchestrations
-        </a>
-      </div>
-    </div>
-
-    <div class="card activation-step-card">
-      <div class="activation-step-number">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-indigo)">
-          <path
-            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
-        </svg>
-      </div>
-      <h3>Enter Your GitHub</h3>
-      <p>Paste your GitHub profile URL above and click Verify.</p>
-      <p style="color: var(--muted); font-size: 11px;">This step is optional but helps with daily
-        re-verification.</p>
-    </div>
-
-    <div class="card activation-step-card">
-      <div class="activation-step-number">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-indigo)">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-        </svg>
-      </div>
-      <h3>Daily Re-Verification</h3>
-      <p>Once a day, the extension checks for new repos. Just star any new ones to keep using it!</p>
-      <p style="color: var(--muted); font-size: 11px;">This ensures the project stays sustainable.</p>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top: 20px; text-align: center; padding: 20px;">
-    <p
-      style="color: var(--text-secondary); font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--accent-indigo)">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
-      </svg>
-      <strong>Tip:</strong> Use the popup panel to check your activation status and complete the steps.
-    </p>
-  </div>
-  </section>
+        <!-- END of Academics section -->
 
   <!-- SECTION: Support & Feedback -->
   <section id="section-support" class="content-section">
@@ -1125,14 +936,14 @@
           </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="display: none;">
           <label for="feedback-product">Product / Extension</label>
-          <input type="text" id="feedback-product" placeholder="e.g. FormFilla" />
+          <input type="text" id="feedback-product" value="FormFilla" />
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="display: none;">
           <label for="feedback-country">Country (optional)</label>
-          <input type="text" id="feedback-country" placeholder="e.g. Pakistan" />
+          <input type="text" id="feedback-country" />
         </div>
 
         <div class="form-group">
@@ -1212,10 +1023,10 @@
       <div class="form-group" style="max-width: 300px;">
         <label for="settings-theme">Active Theme</label>
         <select id="settings-theme">
-          <option value="dark">Dark Theme (Default)</option>
-          <option value="light">Light Theme</option>
-          <option value="brutalist-dark">Godzilla Brutalist (Dark)</option>
+          <option value="brutalist-dark">Godzilla Brutalist (Dark) (Default)</option>
           <option value="brutalist-light">Godzilla Brutalist (Light)</option>
+          <option value="dark">Dark Theme</option>
+          <option value="light">Light Theme</option>
         </select>
       </div>
     </div>

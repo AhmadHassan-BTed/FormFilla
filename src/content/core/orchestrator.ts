@@ -165,6 +165,40 @@ export async function processFields(
   return { confident, review, unmapped, needsConfirm };
 }
 
+let mutationWatcherCleanup: (() => void) | null = null;
+let watcherActivated = false;
+
+/**
+ * Activate the mutation watcher to handle dynamically-loaded fields.
+ * This is called after the first user-initiated fill so the watcher
+ * does not run on irrelevant pages (e.g. WhatsApp, email, etc.).
+ */
+function activateWatcher(): void {
+  if (watcherActivated) return;
+  watcherActivated = true;
+
+  mutationWatcherCleanup = watch(document.body, async (newFields) => {
+    try {
+      // Guard: extension context may have been invalidated (e.g. after reload)
+      if (!chrome?.runtime?.id) {
+        if (mutationWatcherCleanup) mutationWatcherCleanup();
+        return;
+      }
+      const profile = await getProfile();
+      if (profile && profile.personal && profile.personal.email) {
+        await processFields(newFields, profile);
+      }
+    } catch (err) {
+      // Suppress "Extension context invalidated" errors silently
+      if (err instanceof Error && err.message.includes('Extension context invalidated')) {
+        if (mutationWatcherCleanup) mutationWatcherCleanup();
+        return;
+      }
+      // Silently ignore — not all pages are relevant form pages
+    }
+  });
+}
+
 export function startOrchestrator() {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'START_FILL') {
@@ -173,6 +207,10 @@ export function startOrchestrator() {
           const profile = await getProfile();
           const fields = scanForFields(document.body);
           const results = await processFields(fields, profile);
+
+          // Activate the mutation watcher after the first fill
+          // so that multi-step forms are handled on subsequent steps
+          activateWatcher();
 
           sendResponse({ type: 'FILL_RESULT', result: results });
         } catch (err) {
@@ -187,27 +225,9 @@ export function startOrchestrator() {
     }
   });
 
-  watch(document.body, async (newFields) => {
-    try {
-      // Guard: extension context may have been invalidated (e.g. after reload)
-      if (!chrome?.runtime?.id) {
-        console.warn('FormFilla: Extension context invalidated, skipping dynamic fill.');
-        return;
-      }
-      const profile = await getProfile();
-      if (profile && profile.personal && profile.personal.email) {
-        await processFields(newFields, profile);
-      }
-    } catch (err) {
-      // Suppress "Extension context invalidated" errors silently
-      if (err instanceof Error && err.message.includes('Extension context invalidated')) {
-        console.warn('FormFilla: Extension context invalidated, dynamic fill stopped.');
-        return;
-      }
-      console.error('Error filling dynamic fields:', err);
-    }
-  });
+  // No mutation watcher on startup — only activates after user triggers first fill.
+  // This avoids running DOM observers on irrelevant pages (WhatsApp, email, etc.).
 
-  console.log('FormFilla content script active.');
+  console.log('FormFilla content script active. Use the popup to fill forms.');
 }
 export { getValueByPath };

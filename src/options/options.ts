@@ -65,7 +65,7 @@ function setupThemeSelection() {
   if (!themeSelect) return;
 
   chrome.storage.local.get(['theme'], (result) => {
-    const theme = (result as any).theme || 'dark';
+    const theme = (result as any).theme || 'brutalist-dark';
     themeSelect.value = theme as string;
   });
 
@@ -926,8 +926,30 @@ function setupSupportFeedback() {
 
   if (!kindEl || !productEl || !countryEl || !titleEl || !descEl || !openBtn) return;
 
-  // Basic defaults
-  if (!productEl.value) productEl.value = 'FormFilla';
+  // Auto-set product name (static)
+  productEl.value = 'FormFilla';
+
+  // Auto-detect country from browser timezone
+  try {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Extract country from timezone like "America/New_York" → "United States"
+    // or use a segment-based approach
+    const region = timeZone.split('/')[0];
+    const countryMap: Record<string, string> = {
+      'America': 'United States',
+      'Europe': 'Europe',
+      'Asia': 'Asia',
+      'Africa': 'Africa',
+      'Australia': 'Australia',
+      'Pacific': 'Pacific',
+      'Atlantic': 'Atlantic',
+      'Indian': 'Indian',
+      'Etc': 'UTC',
+    };
+    countryEl.value = countryMap[region] || region;
+  } catch {
+    // Fallback: leave empty
+  }
 
   openBtn.addEventListener('click', () => {
     const kind = kindEl.value as 'bug' | 'feature';
