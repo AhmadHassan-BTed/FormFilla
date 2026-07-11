@@ -1,1228 +1,1125 @@
-import { getProfile, saveProfile, saveFileBlob } from '../shared/storage/storage-client.js';
-import { Profile, EducationEntry, ExperienceEntry, ReferenceEntry, DocumentFile, LanguageEntry, CertificationEntry, ProjectEntry, AwardEntry } from '../shared/types/index.js';
-import EXTENSIVE_PROFILE_TEMPLATE from '../shared/dictionary/profile-template.json' with { type: 'json' };
-import { getActivationStatus } from '../shared/storage/activation-status.js';
-import { setupActivationStatusUI } from './activation-status.js';
+<!DOCTYPE html>
+<html lang="en">
 
-import { buildNewIssueUrl } from '../shared/storage/feedback.js';
-
-
-let currentProfile: Profile;
-const uploadedFiles: Record<string, { file: File; buffer: ArrayBuffer }> = {};
-
-document.addEventListener('DOMContentLoaded', async () => {
-  setupNavigation();
-  setupThemeSelection();
-  await loadProfileData();
-  setupDynamicLists();
-  setupFilePickers();
-  setupGithubVerification();
-  setupGithubDeviceAuth();
-  await setupActivationStatusUI();
-
-  setupSupportFeedback();
-
-  setupBackupRestore();
-
-
-  const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
-  saveBtn.addEventListener('click', saveAllProfileData);
-
-});
-
-function setupNavigation() {
-  const navItems = document.querySelectorAll('.nav-item');
-  const sections = document.querySelectorAll('.content-section');
-
-  navItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const targetSection = item.getAttribute('data-section');
-
-      navItems.forEach(nav => nav.classList.remove('active'));
-      sections.forEach(sec => sec.classList.remove('active'));
-
-      item.classList.add('active');
-      const activeSection = document.getElementById(`section-${targetSection}`);
-      if (activeSection) {
-        activeSection.classList.add('active');
-      }
-    });
-  });
-}
-
-function applyTheme(theme: string) {
-  let themeLink = document.getElementById('theme-link') as HTMLLinkElement;
-  if (!themeLink) {
-    themeLink = document.createElement('link');
-    themeLink.id = 'theme-link';
-    themeLink.rel = 'stylesheet';
-    document.head.appendChild(themeLink);
-  }
-  themeLink.href = `../themes/theme-${theme}.css`;
-}
-
-function setupThemeSelection() {
-  const themeSelect = document.getElementById('settings-theme') as HTMLSelectElement;
-  if (!themeSelect) return;
-
-  chrome.storage.local.get(['theme'], (result) => {
-    const theme = (result as any).theme || 'brutalist-dark';
-    themeSelect.value = theme as string;
-  });
-
-  themeSelect.addEventListener('change', () => {
-    const selectedTheme = themeSelect.value;
-    chrome.storage.local.set({ theme: selectedTheme }, () => {
-      applyTheme(selectedTheme);
-    });
-  });
-}
-
-async function loadProfileData() {
-  currentProfile = await getProfile();
-
-  setInputValue('personal-firstName', currentProfile.personal.firstName);
-  setInputValue('personal-lastName', currentProfile.personal.lastName);
-  setInputValue('personal-middleName', currentProfile.personal.middleName);
-  setInputValue('personal-email', currentProfile.personal.email);
-  setInputValue('personal-phone', currentProfile.personal.phone);
-  setInputValue('personal-nationalId', currentProfile.personal.nationalId);
-  setInputValue('personal-namePrefix', currentProfile.personal.namePrefix);
-  setInputValue('personal-dateOfBirth', currentProfile.personal.dateOfBirth);
-  setInputValue('personal-cnicNumber', currentProfile.personal.cnicNumber);
-  setInputValue('personal-passportNumber', currentProfile.personal.passportNumber);
-  setInputValue('personal-summary', currentProfile.personal.summary);
-
-  if (currentProfile.address) {
-    setInputValue('address-street', currentProfile.address.street);
-    setInputValue('address-city', currentProfile.address.city);
-    setInputValue('address-state', currentProfile.address.state);
-    setInputValue('address-postalCode', currentProfile.address.postalCode);
-    setInputValue('address-country', currentProfile.address.country);
-  }
-
-  if (currentProfile.links) {
-    setInputValue('links-linkedin', currentProfile.links.linkedin);
-    setInputValue('links-github', currentProfile.links.github);
-    setInputValue('links-portfolio', currentProfile.links.portfolio);
-  }
-
-  if (currentProfile.workAuthorization) {
-    setCheckboxValue('work-authorized', currentProfile.workAuthorization.authorizedInUS);
-    setCheckboxValue('work-sponsorship', currentProfile.workAuthorization.requiresSponsorship);
-    setInputValue('work-visaType', currentProfile.workAuthorization.visaType);
-  }
-
-  if (currentProfile.academics) {
-    setInputValue('academics-greVerbal', currentProfile.academics.greVerbal);
-    setInputValue('academics-greQuant', currentProfile.academics.greQuant);
-    setInputValue('academics-greWriting', currentProfile.academics.greWriting);
-    setInputValue('academics-greTotal', currentProfile.academics.greTotal);
-    setInputValue('academics-toeflTotal', currentProfile.academics.toeflTotal);
-    setInputValue('academics-ieltsBand', currentProfile.academics.ieltsBand);
-    setInputValue('academics-satTotal', currentProfile.academics.satTotal);
-    setInputValue('academics-actTotal', currentProfile.academics.actTotal);
-    setInputValue('academics-classRank', currentProfile.academics.classRank);
-    setInputValue('academics-proposedAdvisor', currentProfile.academics.proposedAdvisor);
-    setInputValue('academics-researchInterests', currentProfile.academics.researchInterests);
-    setInputValue('academics-annualHouseholdIncome', currentProfile.academics.annualHouseholdIncome);
-    setCheckboxValue('academics-fundingRequired', currentProfile.academics.fundingRequired);
-
-    // GKS & Scholarship specific
-    setInputValue('academics-applicationTrack', currentProfile.academics.applicationTrack);
-    setInputValue('academics-recommendedEmbassy', currentProfile.academics.recommendedEmbassy);
-    setInputValue('academics-applicationProgram', currentProfile.academics.applicationProgram);
-    setInputValue('academics-degreeProgram', currentProfile.academics.degreeProgram);
-    setInputValue('academics-desiredFieldOfStudy', currentProfile.academics.desiredFieldOfStudy);
-    setInputValue('academics-koreanCitizenshipApplicant', currentProfile.academics.koreanCitizenshipApplicant);
-    setInputValue('academics-koreanCitizenshipParent', currentProfile.academics.koreanCitizenshipParent);
-    setInputValue('academics-topikLevel', currentProfile.academics.topikLevel);
-    setInputValue('academics-topikTestHeld', currentProfile.academics.topikTestHeld);
-    setInputValue('academics-topikTestDate', currentProfile.academics.topikTestDate);
-    setInputValue('academics-highSchoolName', currentProfile.academics.highSchoolName);
-    setInputValue('academics-highSchoolLocation', currentProfile.academics.highSchoolLocation);
-    setInputValue('academics-highSchoolGraduationYear', currentProfile.academics.highSchoolGraduationYear);
-    setInputValue('academics-bachelorsThesisTitle', currentProfile.academics.bachelorsThesisTitle);
-    setInputValue('academics-bachelorsPublications', currentProfile.academics.bachelorsPublications);
-    setInputValue('academics-mastersUniversityName', currentProfile.academics.mastersUniversityName);
-    setInputValue('academics-mastersLocation', currentProfile.academics.mastersLocation);
-    setInputValue('academics-mastersMajor', currentProfile.academics.mastersMajor);
-    setInputValue('academics-mastersGraduationDate', currentProfile.academics.mastersGraduationDate);
-    setInputValue('academics-mastersThesisTitle', currentProfile.academics.mastersThesisTitle);
-    setInputValue('academics-mastersPublications', currentProfile.academics.mastersPublications);
-    setInputValue('academics-doctoralUniversityName', currentProfile.academics.doctoralUniversityName);
-    setInputValue('academics-doctoralLocation', currentProfile.academics.doctoralLocation);
-    setInputValue('academics-doctoralMajor', currentProfile.academics.doctoralMajor);
-    setInputValue('academics-doctoralGraduationDate', currentProfile.academics.doctoralGraduationDate);
-    setInputValue('academics-doctoralDissertationTitle', currentProfile.academics.doctoralDissertationTitle);
-    setInputValue('academics-doctoralPublications', currentProfile.academics.doctoralPublications);
-    setInputValue('academics-cgpaScale', currentProfile.academics.cgpaScale);
-    setInputValue('academics-scorePercentile', currentProfile.academics.scorePercentile);
-    setInputValue('academics-personalStatement', currentProfile.academics.personalStatement);
-    setInputValue('academics-studyPlan', currentProfile.academics.studyPlan);
-    setInputValue('academics-futurePlanAfterStudy', currentProfile.academics.futurePlanAfterStudy);
-
-    // Medical Evaluations
-    setInputValue('academics-medicalInfectious', currentProfile.academics.medicalInfectious);
-    setInputValue('academics-medicalAllergies', currentProfile.academics.medicalAllergies);
-    setInputValue('academics-medicalHypertension', currentProfile.academics.medicalHypertension);
-    setInputValue('academics-medicalDiabetes', currentProfile.academics.medicalDiabetes);
-    setInputValue('academics-medicalHepatitis', currentProfile.academics.medicalHepatitis);
-    setInputValue('academics-medicalMental', currentProfile.academics.medicalMental);
-    setInputValue('academics-medicalAlcohol', currentProfile.academics.medicalAlcohol);
-    setInputValue('academics-medicalNarcotics', currentProfile.academics.medicalNarcotics);
-    setInputValue('academics-medicalHospitalized', currentProfile.academics.medicalHospitalized);
-    setInputValue('academics-medicalSeriousInjury', currentProfile.academics.medicalSeriousInjury);
-    setInputValue('academics-medicalVisualHearing', currentProfile.academics.medicalVisualHearing);
-    setInputValue('academics-medicalPhysicalDisability', currentProfile.academics.medicalPhysicalDisability);
-    setInputValue('academics-medicalCognitiveDisability', currentProfile.academics.medicalCognitiveDisability);
-    setInputValue('academics-medicalPrescribedMedication', currentProfile.academics.medicalPrescribedMedication);
-    setInputValue('academics-medicalSpecialDiet', currentProfile.academics.medicalSpecialDiet);
-  }
-
-  setCheckboxValue('settings-sensitiveEeo', currentProfile.optIns?.sensitiveEeo ?? true);
-  setCheckboxValue('settings-autoFillCritical', currentProfile.optIns?.autoFillCritical ?? true);
-  setCheckboxValue('settings-sensitiveFinancials', currentProfile.optIns?.sensitiveFinancials ?? true);
-  setCheckboxValue('settings-sensitiveCompensation', currentProfile.optIns?.sensitiveCompensation ?? true);
-  setCheckboxValue('settings-sensitiveMedical', currentProfile.optIns?.sensitiveMedical ?? true);
-
-  renderFileDetails('resume', currentProfile.documents?.['documents.resume']);
-  renderFileDetails('coverLetter', currentProfile.documents?.['documents.coverLetter']);
-  renderFileDetails('photo', currentProfile.documents?.['documents.photo']);
-  renderFileDetails('sop', currentProfile.documents?.['documents.sop']);
-  renderFileDetails('researchProposal', currentProfile.documents?.['documents.researchProposal']);
-  renderFileDetails('recommendationLetter', currentProfile.documents?.['documents.recommendationLetter']);
-  // Load Portfolio & Skills tab fields
-  const skillsText = Array.isArray(currentProfile.skills)
-    ? currentProfile.skills.join(', ')
-    : (currentProfile.skills ? JSON.stringify(currentProfile.skills) : '');
-  setInputValue('portfolio-skills', skillsText);
-
-  const courseworkText = Array.isArray(currentProfile.coursework)
-    ? currentProfile.coursework.join(', ')
-    : '';
-  setInputValue('portfolio-coursework', courseworkText);
-}
-
-function setInputValue(id: string, value: any) {
-  const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-  if (el) el.value = value || '';
-}
-
-function setCheckboxValue(id: string, checked: any) {
-  const el = document.getElementById(id) as HTMLInputElement;
-  if (el) el.checked = !!checked;
-}
-
-function renderFileDetails(key: string, fileInfo: DocumentFile | undefined) {
-  const detailsEl = document.getElementById(`${key}-details`);
-  if (detailsEl) {
-    if (fileInfo) {
-      const sizeKB = Math.round(fileInfo.size / 1024);
-      detailsEl.textContent = `Uploaded: ${fileInfo.name} (${sizeKB} KB)`;
-      detailsEl.style.color = '#10b981';
-    } else {
-      detailsEl.textContent = 'No file uploaded';
-      detailsEl.style.color = '';
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FormFilla - Profile Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <link rel="stylesheet" href="options.css">
+  <style id="fouc-preventer">
+    body {
+      visibility: hidden !important;
     }
-  }
-}
+  </style>
+  <script src="theme-loader.js"></script>
+</head>
 
-function setupDynamicLists() {
-  const eduContainer = document.getElementById('education-list')!;
-  const addEduBtn = document.getElementById('add-education-btn')!;
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo-icon" src="../assets/logo.svg" alt="FormFilla logo" width="24" height="24">
+        <span class="brand-name">FormFilla</span>
+      </div>
+      <nav class="nav-menu">
+        <button class="nav-item active" data-section="intro">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+          </svg>
+          Getting Started
+        </button>
+        <button class="nav-item" data-section="activation">
 
-  const expContainer = document.getElementById('experience-list')!;
-  const addExpBtn = document.getElementById('add-experience-btn')!;
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path
+              d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+          </svg>
+          Activation
+        </button>
+        <button class="nav-item" data-section="personal">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path
+              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+          </svg>
+          Personal Info
+        </button>
+        <button class="nav-item" data-section="education">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" />
+          </svg>
+          Education
+        </button>
+        <button class="nav-item" data-section="experience">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path
+              d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z" />
+          </svg>
+          Experience
+        </button>
+        <button class="nav-item" data-section="references">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path
+              d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+          </svg>
+          References
+        </button>
+        <button class="nav-item" data-section="academics">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M12 3L1 9h22L12 3zm1 10h-2v8h2v-8zm4 0h-2v8h2v-8zm4 0h-2v8h2v-8zM4 13H2v8h2v-8zm4 0H6v8h2v-8z" />
+          </svg>
+          Academics & Scholarships
+        </button>
+        <button class="nav-item" data-section="portfolio">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path
+              d="M12 11.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.2 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55zM12 8c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z" />
+          </svg>
+          Portfolio & Skills
+        </button>
+        <button class="nav-item" data-section="documents">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path
+              d="M14 2H6c-1.1 0-1.99.89-1.99 1.99L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.89 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+          </svg>
+          Documents & Files
+        </button>
+        <button class="nav-item" data-section="support">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M4 4h16v12H5.17L4 17.17V4zm2 3v2h12V7H6zm0 4v2h8v-2H6z" />
+          </svg>
+          Support & Feedback
+        </button>
+        <button class="nav-item" data-section="settings">
 
-  const refContainer = document.getElementById('references-list')!;
-  const addRefBtn = document.getElementById('add-reference-btn')!;
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path
+              d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+          </svg>
+          Settings & Import
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="save-btn" class="save-button">Save Changes</button>
+        <span id="save-status" class="save-status"></span>
+        <a href="https://github.com/AhmadHassan-BTed" target="_blank" class="credit-link"
+          title="Created by AhmadHassan-BTed">Created by <strong>@AhmadHassan-BTed</strong></a>
+      </div>
+    </aside>
 
-  const langContainer = document.getElementById('languages-list')!;
-  const addLangBtn = document.getElementById('add-language-btn')!;
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <form id="profile-form" onsubmit="return false;">
 
-  const certContainer = document.getElementById('certifications-list')!;
-  const addCertBtn = document.getElementById('add-certification-btn')!;
+        <!-- SECTION: Getting Started -->
+        <section id="section-intro" class="content-section active">
+          <h2 class="section-title">Welcome to FormFilla</h2>
+          <div class="card" style="margin-bottom: 20px; line-height: 1.6;">
+            <p class="welcome-subtitle">Getting Started with FormFilla</p>
+            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;">
+              FormFilla is a secure, local-first browser extension designed to eliminate repetitive copy-pasting from
+              job and scholarship applications. It uses a custom fuzzy matching engine to identify labels and
+              autocomplete form fields instantly.
+            </p>
+            <div style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+              <h3
+                style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-indigo)"
+                  style="display: inline-block; vertical-align: text-bottom;">
+                  <path
+                    d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
+                </svg>
+                Core Features
+              </h3>
+              <ul
+                style="list-style-type: disc; margin-left: 20px; color: var(--text-secondary); font-size: 13px; line-height: 1.8;">
+                <li><strong>No AI Required:</strong> Operates 100% locally and deterministically. No API keys or remote
+                  calls required.</li>
+                <li><strong>Dynamic Lists:</strong> Handles repeated application blocks such as education history,
+                  experience rows, language levels, and awards.</li>
+                <li><strong>Pakistan CNIC & Scholarship Mappings:</strong> Tailored support for South Asia, GKS, and
+                  Commonwealth application forms.</li>
+              </ul>
+            </div>
+          </div>
 
-  const projContainer = document.getElementById('projects-list')!;
-  const addProjBtn = document.getElementById('add-project-btn')!;
+          <div class="grid-2">
+            <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
+              <h3
+                style="font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-indigo)">
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                </svg>
+                1. You Don't Have to Fill Everything
+              </h3>
+              <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">
+                FormFilla is designed to be highly flexible. You only need to fill out the settings or fields that you
+                want to automate. If a field is empty in your profile, the extension simply skips it and leaves the
+                corresponding form input untouched.
+              </p>
+            </div>
 
-  const awardContainer = document.getElementById('awards-list')!;
-  const addAwardBtn = document.getElementById('add-award-btn')!;
+            <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
+              <h3
+                style="font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-indigo)">
+                  <path
+                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
+                </svg>
+                2. Power of the Local JSON Profile
+              </h3>
+              <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">
+                Instead of using this dashboard to type out your information, you can manage your data as a clean JSON
+                profile. Go to the <strong>Backup & Restore</strong> section, download a blank profile template,
+                populate it on your computer, and import it here to load everything at once!
+              </p>
+            </div>
 
-  if (currentProfile.education) {
-    currentProfile.education.forEach(entry => addEducationRow(eduContainer, entry));
-  }
-  if (currentProfile.experience) {
-    currentProfile.experience.forEach(entry => addExperienceRow(expContainer, entry));
-  }
-  if (currentProfile.references) {
-    currentProfile.references.forEach(entry => addReferenceRow(refContainer, entry));
-  }
-  if (currentProfile.languages) {
-    currentProfile.languages.forEach(entry => addLanguageRow(langContainer, entry));
-  }
-  if (currentProfile.certifications) {
-    currentProfile.certifications.forEach(entry => addCertificationRow(certContainer, entry));
-  }
-  if (currentProfile.projects) {
-    currentProfile.projects.forEach(entry => addProjectRow(projContainer, entry));
-  }
-  if (currentProfile.awardsAndAchievements) {
-    currentProfile.awardsAndAchievements.forEach(entry => addAwardRow(awardContainer, entry));
-  }
+            <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
+              <h3
+                style="font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-indigo)">
+                  <path
+                    d="M12 11.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.2 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55z" />
+                </svg>
+                3. How to Fill Application Pages
+              </h3>
+              <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">
+                Open any job board or university scholarship application form. Click the FormFilla icon in the Chrome
+                toolbar, then click <strong>"Fill this page"</strong>. The matching engine will instantly locate form
+                fields and populate them.
+              </p>
+            </div>
 
-  addEduBtn.addEventListener('click', () => addEducationRow(eduContainer));
-  addExpBtn.addEventListener('click', () => addExperienceRow(expContainer));
-  addRefBtn.addEventListener('click', () => addReferenceRow(refContainer));
-  addLangBtn.addEventListener('click', () => addLanguageRow(langContainer));
-  addCertBtn.addEventListener('click', () => addCertificationRow(certContainer));
-  addProjBtn.addEventListener('click', () => addProjectRow(projContainer));
-  addAwardBtn.addEventListener('click', () => addAwardRow(awardContainer));
-}
+            <div class="card" style="display: flex; flex-direction: column; gap: 8px;">
+              <h3
+                style="font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--accent-indigo)">
+                  <path
+                    d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+                </svg>
+                4. Dynamic Document Uploads
+              </h3>
+              <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">
+                Store your Resume, Cover Letter, photo assets, SOPs, and research proposals locally in the
+                <strong>Documents & Files</strong> tab. FormFilla matches file upload buttons on applications and
+                attaches them automatically.
+              </p>
+            </div>
+          </div>
+        </section>
 
-function addEducationRow(container: HTMLElement, data?: EducationEntry) {
-  const card = document.createElement('div');
-  card.className = 'card list-item-card grid-3';
-  card.innerHTML = `
-    <button type="button" class="remove-btn">Remove</button>
-    <div class="form-group span-2">
-      <label>School Name</label>
-      <input type="text" class="edu-school" required placeholder="Harvard University" value="${data?.school || ''}">
+        <!-- SECTION: Activation -->
+        <section id="section-activation" class="content-section">
+          <h2 class="section-title">Activation &amp; GitHub Verification</h2>
+
+          <div class="card" style="margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--accent-indigo)">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+              </svg>
+              <div>
+                <span id="activation-status-label" style="font-size: 15px; font-weight: 700; color: var(--text-primary);">Checking...</span>
+                <br>
+                <span id="activation-status-detail" style="font-size: 12px; color: var(--text-secondary);">Loading activation status...</span>
+              </div>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 12px;">
+              FormFilla is <strong>free forever</strong> — we just ask you to support the project by
+              starring all public repos and following the accounts below. After 3 form fills, this becomes
+              a requirement. A quick daily check ensures new repos are starred too.
+            </p>
+            
+            <!-- Deactivate Button - Only visible when activated -->
+            <button type="button" id="deactivate-btn" class="deactivation-btn hidden" 
+              style="display: flex; align-items: center; gap: 8px; background: #ef4444; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; margin-top: 8px;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+              </svg>
+              Deactivate FormFilla
+            </button>
+          </div>
+
+          <div class="card" style="margin-bottom: 16px;">
+            <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+              <svg viewBox="0 0 16 16" width="16" height="16" fill="var(--text-primary)">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+              </svg>
+              Verify Your GitHub Account
+            </h3>
+            <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 14px;">
+              Connect your GitHub account below to activate FormFilla — sign in with GitHub directly, or enter your username manually.
+            </p>
+
+            <!-- One-click GitHub sign-in (device auth flow) -->
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <button type="button" id="github-auth-btn" class="primary-btn">
+                <span class="btn-text">Connect with GitHub</span>
+              </button>
+              <button type="button" id="disconnect-github-btn" class="secondary-btn hidden">Disconnect</button>
+            </div>
+
+            <div id="device-code-container" class="hidden"
+              style="margin-top: 14px; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;">
+              <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">
+                Enter this code on GitHub to finish connecting:
+              </p>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <code id="device-user-code"
+                  style="font-size: 18px; font-weight: 700; letter-spacing: 2px; color: var(--text-primary); background: rgba(99, 102, 241, 0.1); padding: 6px 12px; border-radius: 6px;"></code>
+                <button type="button" id="copy-code-btn" class="secondary-btn" style="padding: 6px 10px; font-size: 12px;">Copy</button>
+              </div>
+              <a id="device-verify-link" href="#" target="_blank" rel="noopener noreferrer" class="primary-btn"
+                style="align-self: flex-start; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                Open GitHub to Authorize
+              </a>
+            </div>
+
+            <p id="device-status" style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; min-height: 14px;"></p>
+
+            <div style="display: flex; align-items: center; gap: 10px; margin: 16px 0; color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+              or enter manually
+              <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+            </div>
+
+            <!-- Manual username entry (alternate path) -->
+            <div class="form-group">
+              <label for="github-profile-url">GitHub username</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="github-profile-url" placeholder="e.g. octocat or github.com/octocat" style="flex: 1;">
+                <button type="button" id="verify-github-btn" class="secondary-btn">Verify</button>
+              </div>
+            </div>
+            <p id="github-verify-status" style="font-size: 12px; margin-top: 8px; min-height: 14px; color: var(--text-secondary);"></p>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary);">Support Requirements</h3>
+            <div class="grid-2" style="gap: 10px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <p style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.3px;">Star all public repos:</p>
+                <a href="https://github.com/AhmadHassan-BTed?tab=repositories" target="_blank"
+                  style="color: var(--accent-indigo); text-decoration: none; font-size: 13px; font-weight: 500;">
+                  ⭐ @AhmadHassan-BTed repos
+                </a>
+                <a href="https://github.com/orgs/Fractal-Compute-Orchestrations/repositories" target="_blank"
+                  style="color: var(--accent-indigo); text-decoration: none; font-size: 13px; font-weight: 500;">
+                  ⭐ @Fractal-Compute-Orchestrations repos
+                </a>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <p style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.3px;">Follow on GitHub:</p>
+                <a href="https://github.com/AhmadHassan-BTed" target="_blank"
+                  style="color: var(--accent-indigo); text-decoration: none; font-size: 13px; font-weight: 500;">
+                  👤 @AhmadHassan-BTed
+                </a>
+                <a href="https://github.com/Fractal-Compute-Orchestrations" target="_blank"
+                  style="color: var(--accent-indigo); text-decoration: none; font-size: 13px; font-weight: 500;">
+                  👤 @Fractal-Compute-Orchestrations
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: Personal Info -->
+        <section id="section-personal" class="content-section">
+          <h2 class="section-title">Personal Information</h2>
+          <div class="card grid-2">
+            <div class="form-group">
+              <label for="personal-firstName">First Name</label>
+              <input type="text" id="personal-firstName" required placeholder="John">
+            </div>
+            <div class="form-group">
+              <label for="personal-lastName">Last Name</label>
+              <input type="text" id="personal-lastName" required placeholder="Doe">
+            </div>
+            <div class="form-group">
+              <label for="personal-middleName">Middle Name</label>
+              <input type="text" id="personal-middleName" placeholder="Fitzgerald">
+            </div>
+            <div class="form-group">
+              <label for="personal-email">Email Address</label>
+              <input type="email" id="personal-email" required placeholder="john.doe@example.com">
+            </div>
+            <div class="form-group">
+              <label for="personal-phone">Phone Number</label>
+              <input type="tel" id="personal-phone" required placeholder="+1 (555) 019-2834">
+            </div>
+            <div class="form-group">
+              <label for="personal-nationalId">National ID / SSN</label>
+              <input type="text" id="personal-nationalId" placeholder="e.g. 12345-6789012-3">
+            </div>
+            <div class="form-group">
+              <label for="personal-namePrefix">Title / Salutation (Mr/Mrs/Ms/Dr)</label>
+              <input type="text" id="personal-namePrefix" placeholder="e.g. Mr.">
+            </div>
+            <div class="form-group">
+              <label for="personal-dateOfBirth">Date of Birth</label>
+              <input type="text" id="personal-dateOfBirth" placeholder="e.g. 2004-02-23">
+            </div>
+            <div class="form-group">
+              <label for="personal-cnicNumber">CNIC Number (Pakistan ID)</label>
+              <input type="text" id="personal-cnicNumber" placeholder="e.g. 12345-6789012-3">
+            </div>
+            <div class="form-group">
+              <label for="personal-passportNumber">Passport Number</label>
+              <input type="text" id="personal-passportNumber" placeholder="e.g. AB1234567">
+            </div>
+            <div class="form-group span-2">
+              <label for="personal-summary">Professional Summary</label>
+              <textarea id="personal-summary" rows="4"
+                placeholder="Experienced software engineer specializing in..."></textarea>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Address</h3>
+          <div class="card grid-3">
+            <div class="form-group span-2">
+              <label for="address-street">Street Address</label>
+              <input type="text" id="address-street" placeholder="123 Main St, Apt 4B">
+            </div>
+            <div class="form-group">
+              <label for="address-city">City</label>
+              <input type="text" id="address-city" placeholder="New York">
+            </div>
+            <div class="form-group">
+              <label for="address-state">State / Province</label>
+              <input type="text" id="address-state" placeholder="NY">
+            </div>
+            <div class="form-group">
+              <label for="address-postalCode">Postal / ZIP Code</label>
+              <input type="text" id="address-postalCode" placeholder="10001">
+            </div>
+            <div class="form-group">
+              <label for="address-country">Country</label>
+              <input type="text" id="address-country" placeholder="United States">
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Links & Portfolios</h3>
+          <div class="card grid-3">
+            <div class="form-group">
+              <label for="links-linkedin">LinkedIn URL</label>
+              <input type="url" id="links-linkedin" placeholder="https://linkedin.com/in/johndoe">
+            </div>
+            <div class="form-group">
+              <label for="links-github">GitHub URL</label>
+              <input type="url" id="links-github" placeholder="https://github.com/johndoe">
+            </div>
+            <div class="form-group">
+              <label for="links-portfolio">Portfolio Website</label>
+              <input type="url" id="links-portfolio" placeholder="https://johndoe.dev">
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Work Authorization</h3>
+          <div class="card grid-2">
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="work-authorized">
+              <label for="work-authorized">Legally authorized to work in target country</label>
+            </div>
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="work-sponsorship">
+              <label for="work-sponsorship">Will require visa sponsorship now or in the future</label>
+            </div>
+            <div class="form-group">
+              <label for="work-visaType">Current Visa Type (if applicable)</label>
+              <input type="text" id="work-visaType" placeholder="F-1 STEM OPT, H-1B, etc.">
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: Education (Dynamic List) -->
+        <section id="section-education" class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">Education History</h2>
+            <button type="button" id="add-education-btn" class="secondary-btn">+ Add School</button>
+          </div>
+          <div id="education-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+        </section>
+
+        <!-- SECTION: Experience (Dynamic List) -->
+        <section id="section-experience" class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">Work Experience</h2>
+            <button type="button" id="add-experience-btn" class="secondary-btn">+ Add Job</button>
+          </div>
+          <div id="experience-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+        </section>
+
+        <!-- SECTION: References (Dynamic List) -->
+        <section id="section-references" class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">References</h2>
+            <button type="button" id="add-reference-btn" class="secondary-btn">+ Add Reference</button>
+          </div>
+          <div id="references-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+        </section>
+
+        <!-- SECTION: Portfolio & Skills (Dynamic Lists) -->
+        <section id="section-portfolio" class="content-section">
+          <div class="section-header">
+            <h2 class="section-title">Portfolio, Skills & Achievements</h2>
+          </div>
+
+          <!-- Skills Section -->
+          <h3 class="subsection-title">Technical Skills</h3>
+          <div class="card">
+            <div class="form-group">
+              <label for="portfolio-skills">Skills (comma-separated list of programming languages, tools, etc.)</label>
+              <textarea id="portfolio-skills" rows="3"
+                placeholder="e.g. JavaScript, Python, TensorFlow, Git, Docker, System Architecture"></textarea>
+            </div>
+          </div>
+
+          <!-- Coursework Section -->
+          <h3 class="subsection-title" style="margin-top: 24px;">Relevant Coursework</h3>
+          <div class="card">
+            <div class="form-group">
+              <label for="portfolio-coursework">Coursework (comma-separated list of key courses)</label>
+              <textarea id="portfolio-coursework" rows="3"
+                placeholder="e.g. Software Design & Architecture, Data Structures & Algorithms, NLP"></textarea>
+            </div>
+          </div>
+
+          <!-- Languages Section -->
+          <div class="section-header" style="margin-top: 24px;">
+            <h3 class="subsection-title">Languages</h3>
+            <button type="button" id="add-language-btn" class="secondary-btn">+ Add Language</button>
+          </div>
+          <div id="languages-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+
+          <!-- Certifications Section -->
+          <div class="section-header" style="margin-top: 24px;">
+            <h3 class="subsection-title">Certifications</h3>
+            <button type="button" id="add-certification-btn" class="secondary-btn">+ Add Certification</button>
+          </div>
+          <div id="certifications-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+
+          <!-- Projects Section -->
+          <div class="section-header" style="margin-top: 24px;">
+            <h3 class="subsection-title">Projects</h3>
+            <button type="button" id="add-project-btn" class="secondary-btn">+ Add Project</button>
+          </div>
+          <div id="projects-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+
+          <!-- Awards Section -->
+          <div class="section-header" style="margin-top: 24px;">
+            <h3 class="subsection-title">Awards & Leadership</h3>
+            <button type="button" id="add-award-btn" class="secondary-btn">+ Add Award</button>
+          </div>
+          <div id="awards-list" class="list-container">
+            <!-- Dynamic items loaded by JS -->
+          </div>
+        </section>
+
+        <!-- SECTION: Documents -->
+        <section id="section-documents" class="content-section">
+          <h2 class="section-title">Documents & Uploads</h2>
+          <p class="section-subtitle">
+            Upload files here. These are stored locally in your browser's IndexedDB database and are never uploaded to
+            any servers.
+          </p>
+          <div class="card grid-2">
+            <div class="file-upload-card">
+              <svg class="file-card-icon" viewBox="0 0 24 24">
+                <path
+                  d="M14 2H6c-1.1 0-1.99.89-1.99 1.99L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.89 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+              </svg>
+              <h3>Resume / CV</h3>
+              <label for="file-resume" class="custom-file-upload-btn">Choose File</label>
+              <input type="file" id="file-resume" accept=".pdf,.doc,.docx" style="display: none;">
+              <div class="file-details" id="resume-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <svg class="file-card-icon" viewBox="0 0 24 24">
+                <path
+                  d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+              </svg>
+              <h3>Cover Letter</h3>
+              <label for="file-coverLetter" class="custom-file-upload-btn">Choose File</label>
+              <input type="file" id="file-coverLetter" accept=".pdf,.doc,.docx,.txt" style="display: none;">
+              <div class="file-details" id="coverLetter-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <svg class="file-card-icon" viewBox="0 0 24 24">
+                <path
+                  d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+              </svg>
+              <h3>Photo</h3>
+              <label for="file-photo" class="custom-file-upload-btn">Choose File</label>
+              <input type="file" id="file-photo" accept="image/*" style="display: none;">
+              <div class="file-details" id="photo-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <svg class="file-card-icon" viewBox="0 0 24 24">
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+              </svg>
+              <h3>Statement of Purpose (SOP)</h3>
+              <label for="file-sop" class="custom-file-upload-btn">Choose File</label>
+              <input type="file" id="file-sop" accept=".pdf,.doc,.docx,.txt" style="display: none;">
+              <div class="file-details" id="sop-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <svg class="file-card-icon" viewBox="0 0 24 24">
+                <path
+                  d="M6 22h12a1 1 0 0 0 .8-1.6L14 13.62V5h1V3H9v2h1v8.62L5.2 20.4A1 1 0 0 0 6 22zm5.7-10.43V5h.6v6.57l3.6 4.8-.6.63H6.7l-.6-.63 3.6-4.8z" />
+              </svg>
+              <h3>Research Proposal / Study Plan</h3>
+              <label for="file-researchProposal" class="custom-file-upload-btn">Choose File</label>
+              <input type="file" id="file-researchProposal" accept=".pdf,.doc,.docx,.txt" style="display: none;">
+              <div class="file-details" id="researchProposal-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <svg class="file-card-icon" viewBox="0 0 24 24">
+                <path
+                  d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+              </svg>
+              <h3>Recommendation Letter</h3>
+              <label for="file-recommendationLetter" class="custom-file-upload-btn">Choose File</label>
+              <input type="file" id="file-recommendationLetter" accept=".pdf,.doc,.docx" style="display: none;">
+              <div class="file-details" id="recommendationLetter-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card">
+              <svg class="file-card-icon" viewBox="0 0 24 24">
+                <path
+                  d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2-.9-2-2V7c0-1.1.89-2 2-2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+              </svg>
+              <h3>Financial Statement / Proof of Income</h3>
+              <label for="file-financialStatement" class="custom-file-upload-btn">Choose File</label>
+              <input type="file" id="file-financialStatement" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                style="display: none;">
+              <div class="file-details" id="financialStatement-details">No file chosen</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: Academics & Scholarships -->
+        <section id="section-academics" class="content-section">
+          <h2 class="section-title">Academics & Scholarships</h2>
+
+          <h3 class="subsection-title">Application Track & Citizenship</h3>
+          <div class="card grid-3">
+            <div class="form-group">
+              <label for="academics-applicationTrack">Application Track</label>
+              <input type="text" id="academics-applicationTrack" placeholder="e.g. Embassy Track">
+            </div>
+            <div class="form-group span-2">
+              <label for="academics-recommendedEmbassy">Recommended Embassy</label>
+              <input type="text" id="academics-recommendedEmbassy"
+                placeholder="e.g. Embassy of the Republic of Korea to Pakistan">
+            </div>
+            <div class="form-group">
+              <label for="academics-applicationProgram">Application Program</label>
+              <input type="text" id="academics-applicationProgram" placeholder="e.g. General">
+            </div>
+            <div class="form-group">
+              <label for="academics-degreeProgram">Degree Program to Apply</label>
+              <input type="text" id="academics-degreeProgram" placeholder="e.g. Master's Degree">
+            </div>
+            <div class="form-group">
+              <label for="academics-desiredFieldOfStudy">Desired Field of Study (Division)</label>
+              <input type="text" id="academics-desiredFieldOfStudy"
+                placeholder="e.g. Engineering (Artificial Intelligence)">
+            </div>
+            <div class="form-group">
+              <label for="academics-koreanCitizenshipApplicant">Korean Citizenship (Applicant)</label>
+              <select id="academics-koreanCitizenshipApplicant">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-koreanCitizenshipParent">Korean Citizenship (Parent/s)</label>
+              <select id="academics-koreanCitizenshipParent">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Standardized Test Scores & TOPIK</h3>
+          <div class="card grid-3">
+            <div class="form-group">
+              <label for="academics-greVerbal">GRE Verbal Score</label>
+              <input type="text" id="academics-greVerbal" placeholder="e.g. 160">
+            </div>
+            <div class="form-group">
+              <label for="academics-greQuant">GRE Quantitative Score</label>
+              <input type="text" id="academics-greQuant" placeholder="e.g. 165">
+            </div>
+            <div class="form-group">
+              <label for="academics-greWriting">GRE Analytical Writing</label>
+              <input type="text" id="academics-greWriting" placeholder="e.g. 4.5">
+            </div>
+            <div class="form-group">
+              <label for="academics-greTotal">GRE Total Score</label>
+              <input type="text" id="academics-greTotal" placeholder="e.g. 325">
+            </div>
+            <div class="form-group">
+              <label for="academics-toeflTotal">TOEFL Total Score</label>
+              <input type="text" id="academics-toeflTotal" placeholder="e.g. 110">
+            </div>
+            <div class="form-group">
+              <label for="academics-ieltsBand">IELTS Band Score</label>
+              <input type="text" id="academics-ieltsBand" placeholder="e.g. 8.0">
+            </div>
+            <div class="form-group">
+              <label for="academics-satTotal">SAT Total Score</label>
+              <input type="text" id="academics-satTotal" placeholder="e.g. 1520">
+            </div>
+            <div class="form-group">
+              <label for="academics-actTotal">ACT Total Score</label>
+              <input type="text" id="academics-actTotal" placeholder="e.g. 34">
+            </div>
+            <div class="form-group">
+              <label for="academics-topikLevel">TOPIK Level</label>
+              <input type="text" id="academics-topikLevel" placeholder="e.g. Level 5">
+            </div>
+            <div class="form-group">
+              <label for="academics-topikTestHeld">TOPIK Test Round</label>
+              <input type="text" id="academics-topikTestHeld" placeholder="e.g. 81st">
+            </div>
+            <div class="form-group">
+              <label for="academics-topikTestDate">TOPIK Test Date</label>
+              <input type="text" id="academics-topikTestDate" placeholder="e.g. 2026-07-06">
+            </div>
+          </div>
+
+          <h3 class="subsection-title">High School & Degree History</h3>
+          <div class="card grid-3">
+            <!-- High School -->
+            <div class="form-group">
+              <label for="academics-highSchoolName">High School Name</label>
+              <input type="text" id="academics-highSchoolName" placeholder="Punjab Group of Colleges">
+            </div>
+            <div class="form-group">
+              <label for="academics-highSchoolLocation">Location (Country)</label>
+              <input type="text" id="academics-highSchoolLocation" placeholder="Pakistan">
+            </div>
+            <div class="form-group">
+              <label for="academics-highSchoolGraduationYear">Year of Graduation</label>
+              <input type="text" id="academics-highSchoolGraduationYear" placeholder="2022">
+            </div>
+
+            <!-- Bachelors Thesis & Pubs -->
+            <div class="form-group span-2">
+              <label for="academics-bachelorsThesisTitle">Bachelor's Degree Thesis Title</label>
+              <input type="text" id="academics-bachelorsThesisTitle" placeholder="e.g. Fractal Framework">
+            </div>
+            <div class="form-group span-3">
+              <label for="academics-bachelorsPublications">Bachelor's Published Books & Research Papers</label>
+              <textarea id="academics-bachelorsPublications" rows="3"
+                placeholder="List any publications during bachelor's degree..."></textarea>
+            </div>
+
+            <!-- Masters Degree -->
+            <div class="form-group">
+              <label for="academics-mastersUniversityName">Master's University Name</label>
+              <input type="text" id="academics-mastersUniversityName" placeholder="e.g. Air University">
+            </div>
+            <div class="form-group">
+              <label for="academics-mastersLocation">Location (Country)</label>
+              <input type="text" id="academics-mastersLocation" placeholder="e.g. Pakistan">
+            </div>
+            <div class="form-group">
+              <label for="academics-mastersMajor">Major</label>
+              <input type="text" id="academics-mastersMajor" placeholder="e.g. Software Engineering">
+            </div>
+            <div class="form-group">
+              <label for="academics-mastersGraduationDate">Graduation/Award Date</label>
+              <input type="text" id="academics-mastersGraduationDate" placeholder="e.g. 2026-07">
+            </div>
+            <div class="form-group span-2">
+              <label for="academics-mastersThesisTitle">Master's Degree Thesis Title</label>
+              <input type="text" id="academics-mastersThesisTitle" placeholder="e.g. Advanced Federated Architectures">
+            </div>
+            <div class="form-group span-3">
+              <label for="academics-mastersPublications">Master's Published Books & Research Papers</label>
+              <textarea id="academics-mastersPublications" rows="3"
+                placeholder="List any publications during master's degree..."></textarea>
+            </div>
+
+            <!-- Doctoral Degree -->
+            <div class="form-group">
+              <label for="academics-doctoralUniversityName">Doctoral University Name</label>
+              <input type="text" id="academics-doctoralUniversityName" placeholder="e.g. KAIST">
+            </div>
+            <div class="form-group">
+              <label for="academics-doctoralLocation">Location (Country)</label>
+              <input type="text" id="academics-doctoralLocation" placeholder="e.g. South Korea">
+            </div>
+            <div class="form-group">
+              <label for="academics-doctoralMajor">Major</label>
+              <input type="text" id="academics-doctoralMajor" placeholder="e.g. Computing">
+            </div>
+            <div class="form-group">
+              <label for="academics-doctoralGraduationDate">Graduation/Award Date</label>
+              <input type="text" id="academics-doctoralGraduationDate" placeholder="e.g. 2030-07">
+            </div>
+            <div class="form-group span-2">
+              <label for="academics-doctoralDissertationTitle">Doctoral Dissertation Title</label>
+              <input type="text" id="academics-doctoralDissertationTitle"
+                placeholder="e.g. Decentralized Edge Frameworks">
+            </div>
+            <div class="form-group span-3">
+              <label for="academics-doctoralPublications">Doctoral Published Books & Research Papers</label>
+              <textarea id="academics-doctoralPublications" rows="3"
+                placeholder="List any publications during doctoral degree..."></textarea>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Academic Transcript & Grades</h3>
+          <div class="card grid-2">
+            <div class="form-group">
+              <label for="academics-cgpaScale">CGPA indicated on Transcript / scale</label>
+              <input type="text" id="academics-cgpaScale" placeholder="e.g. 3.67 / 4.00">
+            </div>
+            <div class="form-group">
+              <label for="academics-scorePercentile">Score Percentile</label>
+              <input type="text" id="academics-scorePercentile" placeholder="e.g. 92.00 / 100">
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Personal Statement & Study Plans</h3>
+          <div class="card">
+            <div class="form-group">
+              <label for="academics-personalStatement">Personal Statement</label>
+              <textarea id="academics-personalStatement" rows="8"
+                placeholder="Introduce yourself, your motivation, academic backgrounds, hobbies..."></textarea>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+              <label for="academics-studyPlan">Study Plan (Language Study & Research Goals)</label>
+              <textarea id="academics-studyPlan" rows="8"
+                placeholder="Describe your language learning plan and master's/doctoral research objectives..."></textarea>
+            </div>
+            <div class="form-group" style="margin-top: 15px;">
+              <label for="academics-futurePlanAfterStudy">Future Plan after Study</label>
+              <textarea id="academics-futurePlanAfterStudy" rows="6"
+                placeholder="Detail your plans after graduation (job search, research, PhD)..."></textarea>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Research & Advising</h3>
+          <div class="card grid-2">
+            <div class="form-group">
+              <label for="academics-proposedAdvisor">Proposed Advisor / Supervisor</label>
+              <input type="text" id="academics-proposedAdvisor" placeholder="e.g. Dr. Sarah Jenkins">
+            </div>
+            <div class="form-group span-2">
+              <label for="academics-researchInterests">Research Interests Topic</label>
+              <textarea id="academics-researchInterests" rows="3"
+                placeholder="Describe your areas of interest, research goals, or publication summaries..."></textarea>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Financial & Funding Details</h3>
+          <div class="card grid-2">
+            <div class="form-group">
+              <label for="academics-annualHouseholdIncome">Annual Household Income (USD/Equivalent)</label>
+              <input type="text" id="academics-annualHouseholdIncome" placeholder="e.g. 25000">
+            </div>
+            <div class="form-group checkbox-group" style="margin-top: 30px;">
+              <input type="checkbox" id="academics-fundingRequired">
+              <label for="academics-fundingRequired">Funding / Scholarship Support Required</label>
+            </div>
+          </div>
+
+          <h3 class="subsection-title">Personal Medical Assessment</h3>
+          <div class="card grid-2">
+            <div class="form-group">
+              <label for="academics-medicalInfectious">Had infectious diseases? (e.g. tuberculosis)</label>
+              <select id="academics-medicalInfectious">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalAllergies">Have allergies?</label>
+              <select id="academics-medicalAllergies">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalHypertension">Have hypertension?</label>
+              <select id="academics-medicalHypertension">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalDiabetes">Have diabetes?</label>
+              <select id="academics-medicalDiabetes">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalHepatitis">Have any type of Hepatitis?</label>
+              <select id="academics-medicalHepatitis">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalMental">Treated for depression/anxiety/mood disorder?</label>
+              <select id="academics-medicalMental">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalAlcohol">Ever been addicted to alcohol?</label>
+              <select id="academics-medicalAlcohol">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalNarcotics">Abused narcotics/stimulants/hallucinogens?</label>
+              <select id="academics-medicalNarcotics">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalHospitalized">Hospitalized in the last 2 years?</label>
+              <select id="academics-medicalHospitalized">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalSeriousInjury">Serious injury/ailment/sickness in last 5 years?</label>
+              <select id="academics-medicalSeriousInjury">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalVisualHearing">Have visual or hearing impairment?</label>
+              <select id="academics-medicalVisualHearing">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalPhysicalDisability">Have physical disabilities?</label>
+              <select id="academics-medicalPhysicalDisability">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalCognitiveDisability">Have cognitive/mental disabilities?</label>
+              <select id="academics-medicalCognitiveDisability">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalPrescribedMedication">Taking any prescribed medication?</label>
+              <select id="academics-medicalPrescribedMedication">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="academics-medicalSpecialDiet">Are you on a special diet?</label>
+              <select id="academics-medicalSpecialDiet">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- END of Academics section -->
+
+  <!-- SECTION: Support & Feedback -->
+  <section id="section-support" class="content-section">
+    <h2 class="section-title">Support & Feedback</h2>
+
+    <div class="card" style="margin-bottom: 16px;">
+      <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin: 0 0 12px 0;">
+        Want a new feature? Found a bug? Report it here so you don’t need to leave a bad rating.
+      </p>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="feedback-kind">Type</label>
+          <select id="feedback-kind">
+            <option value="bug">Bug</option>
+            <option value="feature">Feature Request</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="display: none;">
+          <label for="feedback-product">Product / Extension</label>
+          <input type="text" id="feedback-product" value="FormFilla" />
+        </div>
+
+        <div class="form-group" style="display: none;">
+          <label for="feedback-country">Country (optional)</label>
+          <input type="text" id="feedback-country" />
+        </div>
+
+        <div class="form-group">
+          <label for="feedback-title">Title (user written)</label>
+          <input type="text" id="feedback-title" placeholder="e.g. Autofill fails on Workday" />
+        </div>
+
+        <div class="form-group span-2">
+          <label for="feedback-description">Description / Steps (user written)</label>
+          <textarea id="feedback-description" rows="8"
+            placeholder="Tell us what happened and how to reproduce..."></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; align-items:center;">
+        <button type="button" id="feedback-open-issue" class="primary-btn">
+          <span class="btn-text">Open GitHub Issue</span>
+        </button>
+        <a href="https://github.com/AhmadHassan-BTed/FormFilla" target="_blank" rel="noopener noreferrer"
+          class="secondary-btn" style="display:inline-flex;align-items:center;justify-content:center;">Open Repo</a>
+      </div>
+
+      <p style="color: var(--muted); font-size: 11px; margin-top: 10px;">
+        This opens GitHub in your browser with your title & description prefilled.
+      </p>
     </div>
-    <div class="form-group">
-      <label>Degree</label>
-      <input type="text" class="edu-degree" required placeholder="Bachelor of Science" value="${data?.degree || ''}">
+
+    <div class="card">
+      <div style="display:flex; flex-direction:column; gap: 6px;">
+        <div style="font-size: 12px; color: var(--text-secondary);">Need quick help?</div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="https://wa.me/923225522383" target="_blank" rel="noopener noreferrer"
+            style="color: var(--accent-indigo); text-decoration: none; font-weight: 600;">WhatsApp</a>
+          <a href="mailto:ahmadhassan.bted@gmail.com"
+            style="color: var(--accent-indigo); text-decoration: none; font-weight: 600;">Email</a>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Field of Study (Major)</label>
-      <input type="text" class="edu-major" required placeholder="Computer Science" value="${data?.fieldOfStudy || ''}">
+  </section>
+
+  <!-- SECTION: Settings & Import/Export -->
+  <section id="section-settings" class="content-section">
+
+    <h2 class="section-title">Settings & Backup</h2>
+
+    <h3 class="subsection-title">Matching Preferences</h3>
+    <div class="card">
+      <div class="form-group checkbox-group">
+        <input type="checkbox" id="settings-sensitiveEeo" checked>
+        <label for="settings-sensitiveEeo">Enable auto-filling of sensitive EEO fields (Gender, Race, Veteran,
+          Disability)</label>
+      </div>
+      <div class="form-group checkbox-group" style="margin-top: 15px;">
+        <input type="checkbox" id="settings-autoFillCritical" checked>
+        <label for="settings-autoFillCritical">Enable auto-filling of critical fields (CNIC, National ID,
+          Passport) without confirmation</label>
+      </div>
+      <div class="form-group checkbox-group" style="margin-top: 15px;">
+        <input type="checkbox" id="settings-sensitiveFinancials" checked>
+        <label for="settings-sensitiveFinancials">Enable auto-filling of sensitive financial details (Household
+          Income, Financial Statements)</label>
+      </div>
+      <div class="form-group checkbox-group" style="margin-top: 15px;">
+        <input type="checkbox" id="settings-sensitiveCompensation" checked>
+        <label for="settings-sensitiveCompensation">Enable auto-filling of sensitive compensation fields (Current
+          Salary, Desired Salary)</label>
+      </div>
+      <div class="form-group checkbox-group" style="margin-top: 15px;">
+        <input type="checkbox" id="settings-sensitiveMedical" checked>
+        <label for="settings-sensitiveMedical">Enable auto-filling of sensitive personal medical assessments
+          (Infectious diseases, allergies, history)</label>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Start Date</label>
-      <input type="text" class="edu-start" placeholder="yyyy-MM or Present" value="${data?.startDate || ''}">
+
+    <h3 class="subsection-title">Theme Customization</h3>
+    <div class="card" style="margin-bottom: 20px;">
+      <div class="form-group" style="max-width: 300px;">
+        <label for="settings-theme">Active Theme</label>
+        <select id="settings-theme">
+          <option value="brutalist-dark">Godzilla Brutalist (Dark) (Default)</option>
+          <option value="brutalist-light">Godzilla Brutalist (Light)</option>
+          <option value="dark">Dark Theme</option>
+          <option value="light">Light Theme</option>
+        </select>
+      </div>
     </div>
-    <div class="form-group">
-      <label>End/Graduation Date</label>
-      <input type="text" class="edu-end" placeholder="yyyy-MM or Present" value="${data?.endDate || ''}">
+
+    <h3 class="subsection-title">Data Backup & Restore</h3>
+    <div class="card grid-3">
+      <div class="backup-card">
+        <h3>Export Profile</h3>
+        <p>Download your complete profile data as a JSON file to keep a backup.</p>
+        <button type="button" id="export-btn" class="secondary-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor" />
+          </svg>
+          Export to JSON
+        </button>
+      </div>
+      <div class="backup-card">
+        <h3>Download Template</h3>
+        <p>Download an extensive blank profile JSON template with all supported fields.</p>
+        <button type="button" id="template-btn" class="secondary-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+            <path
+              d="M14 2H6c-1.1 0-1.99.89-1.99 1.99L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.89 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
+              fill="currentColor" />
+          </svg>
+          Download Template
+        </button>
+      </div>
+      <div class="backup-card">
+        <h3>Import Profile</h3>
+        <p>Load your profile data from a previously exported JSON backup file.</p>
+        <input type="file" id="import-file" accept=".json" style="display: none;">
+        <button type="button" id="import-btn" class="secondary-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+            <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" fill="currentColor" />
+          </svg>
+          Import JSON File
+        </button>
+      </div>
     </div>
-    <div class="form-group">
-      <label>GPA</label>
-      <input type="text" class="edu-gpa" placeholder="3.8 / 4.0" value="${data?.gpa || ''}">
-    </div>
-  `;
-  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
-  container.appendChild(card);
-}
+  </section>
 
-function addExperienceRow(container: HTMLElement, data?: ExperienceEntry) {
-  const card = document.createElement('div');
-  card.className = 'card list-item-card grid-3';
-  card.innerHTML = `
-    <button type="button" class="remove-btn">Remove</button>
-    <div class="form-group">
-      <label>Company / Employer</label>
-      <input type="text" class="exp-company" required placeholder="Google" value="${data?.company || ''}">
-    </div>
-    <div class="form-group">
-      <label>Job Title</label>
-      <input type="text" class="exp-title" required placeholder="Software Engineer" value="${data?.title || ''}">
-    </div>
-    <div class="form-group">
-      <label>Location</label>
-      <input type="text" class="exp-location" placeholder="Mountain View, CA" value="${data?.location || ''}">
-    </div>
-    <div class="form-group">
-      <label>Start Date</label>
-      <input type="text" class="exp-start" placeholder="yyyy-MM or Present" value="${data?.startDate || ''}">
-    </div>
-    <div class="form-group">
-      <label>End Date</label>
-      <input type="text" class="exp-end" placeholder="yyyy-MM or Present" value="${data?.endDate || ''}">
-    </div>
-    <div class="form-group">
-      <label>Role Description</label>
-      <textarea class="exp-desc span-3" rows="3" placeholder="Designed and built scalable microservices...">${data?.description || ''}</textarea>
-    </div>
-  `;
-  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
-  container.appendChild(card);
-}
+  </form>
+  </main>
+  </div>
 
-function addReferenceRow(container: HTMLElement, data?: ReferenceEntry) {
-  const card = document.createElement('div');
-  card.className = 'card list-item-card grid-3';
-  card.innerHTML = `
-    <button type="button" class="remove-btn">Remove</button>
-    <div class="form-group">
-      <label>Full Name</label>
-      <input type="text" class="ref-name" required placeholder="Alice Smith" value="${data?.name || ''}">
-    </div>
-    <div class="form-group">
-      <label>Relationship</label>
-      <input type="text" class="ref-relationship" required placeholder="Former Manager" value="${data?.relationship || ''}">
-    </div>
-    <div class="form-group">
-      <label>Company</label>
-      <input type="text" class="ref-company" placeholder="Acme Corp" value="${data?.company || ''}">
-    </div>
-    <div class="form-group">
-      <label>Job Title</label>
-      <input type="text" class="ref-title" placeholder="Engineering Director" value="${data?.title || ''}">
-    </div>
-    <div class="form-group">
-      <label>Email Address</label>
-      <input type="email" class="ref-email" placeholder="alice@acme.com" value="${data?.email || ''}">
-    </div>
-    <div class="form-group">
-      <label>Phone Number</label>
-      <input type="tel" class="ref-phone" placeholder="+1 (555) 012-3456" value="${data?.phone || ''}">
-    </div>
-  `;
-  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
-  container.appendChild(card);
-}
+  <script type="module" src="options.js"></script>
+</body>
 
-function addLanguageRow(container: HTMLElement, data?: LanguageEntry) {
-  const card = document.createElement('div');
-  card.className = 'card list-item-card grid-2';
-  card.innerHTML = `
-    <button type="button" class="remove-btn">Remove</button>
-    <div class="form-group">
-      <label>Language</label>
-      <input type="text" class="lang-name" required placeholder="English" value="${data?.language || ''}">
-    </div>
-    <div class="form-group">
-      <label>Proficiency / Level</label>
-      <input type="text" class="lang-proficiency" placeholder="e.g. Native, Professional Working, TOPIK Level 5" value="${data?.proficiency || ''}">
-    </div>
-  `;
-  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
-  container.appendChild(card);
-}
-
-function addCertificationRow(container: HTMLElement, data?: CertificationEntry) {
-  const card = document.createElement('div');
-  card.className = 'card list-item-card grid-3';
-  card.innerHTML = `
-    <button type="button" class="remove-btn">Remove</button>
-    <div class="form-group span-2">
-      <label>Certification Name</label>
-      <input type="text" class="cert-name" required placeholder="e.g. PMI Generative AI Certified" value="${data?.name || ''}">
-    </div>
-    <div class="form-group">
-      <label>Issuing Organization</label>
-      <input type="text" class="cert-org" required placeholder="e.g. Project Management Institute" value="${data?.issuingOrganization || ''}">
-    </div>
-    <div class="form-group">
-      <label>Issue Date</label>
-      <input type="text" class="cert-issue-date" placeholder="e.g. 2024-05" value="${data?.issueDate || ''}">
-    </div>
-    <div class="form-group">
-      <label>Expiration Date (if any)</label>
-      <input type="text" class="cert-exp-date" placeholder="e.g. 2026-05" value="${data?.expirationDate || ''}">
-    </div>
-    <div class="form-group">
-      <label>Credential ID</label>
-      <input type="text" class="cert-id" placeholder="e.g. ID-123456" value="${data?.credentialId || ''}">
-    </div>
-  `;
-  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
-  container.appendChild(card);
-}
-
-function addProjectRow(container: HTMLElement, data?: ProjectEntry) {
-  const card = document.createElement('div');
-  card.className = 'card list-item-card grid-3';
-  card.innerHTML = `
-    <button type="button" class="remove-btn">Remove</button>
-    <div class="form-group">
-      <label>Project Name</label>
-      <input type="text" class="proj-name" required placeholder="e.g. Fractal" value="${data?.name || ''}">
-    </div>
-    <div class="form-group">
-      <label>Role</label>
-      <input type="text" class="proj-role" placeholder="e.g. Head Architect" value="${data?.role || ''}">
-    </div>
-    <div class="form-group">
-      <label>Project URL</label>
-      <input type="text" class="proj-url" placeholder="e.g. https://github.com/..." value="${data?.url || ''}">
-    </div>
-    <div class="form-group span-3">
-      <label>Description</label>
-      <textarea class="proj-desc" rows="3" placeholder="Describe the project objective, tech stack, and architect details...">${data?.description || ''}</textarea>
-    </div>
-  `;
-  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
-  container.appendChild(card);
-}
-
-function addAwardRow(container: HTMLElement, data?: AwardEntry) {
-  const card = document.createElement('div');
-  card.className = 'card list-item-card grid-3';
-  card.innerHTML = `
-    <button type="button" class="remove-btn">Remove</button>
-    <div class="form-group">
-      <label>Award / Honor Title</label>
-      <input type="text" class="award-title" required placeholder="e.g. 1st Place UI/UX Design" value="${data?.title || ''}">
-    </div>
-    <div class="form-group">
-      <label>Issuing Organization</label>
-      <input type="text" class="award-org" placeholder="e.g. Air University SE Society" value="${data?.organization || ''}">
-    </div>
-    <div class="form-group">
-      <label>Date Awarded</label>
-      <input type="text" class="award-date" placeholder="e.g. 2023-11" value="${data?.date || ''}">
-    </div>
-    <div class="form-group span-3">
-      <label>Description / Details</label>
-      <textarea class="award-desc" rows="2" placeholder="Provide extra detail about the achievement...">${data?.description || ''}</textarea>
-    </div>
-  `;
-  card.querySelector('.remove-btn')!.addEventListener('click', () => card.remove());
-  container.appendChild(card);
-}
-
-
-function setupFilePickers() {
-  const filesList = ['resume', 'coverLetter', 'photo', 'sop', 'researchProposal', 'recommendationLetter', 'financialStatement'];
-  filesList.forEach(key => {
-    const picker = document.getElementById(`file-${key}`) as HTMLInputElement;
-    if (picker) {
-      picker.addEventListener('change', () => {
-        const file = picker.files?.[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = async () => {
-            if (reader.result instanceof ArrayBuffer) {
-              uploadedFiles[`documents.${key}`] = {
-                file,
-                buffer: reader.result
-              };
-              renderFileDetails(key, {
-                name: file.name,
-                type: file.type,
-                size: file.size,
-                lastModified: file.lastModified
-              });
-            }
-          };
-          reader.readAsArrayBuffer(file);
-        }
-      });
-    }
-  });
-}
-
-async function saveAllProfileData() {
-  const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
-  const statusEl = document.getElementById('save-status')!;
-
-  saveBtn.disabled = true;
-  statusEl.textContent = 'Saving...';
-  statusEl.style.color = '#f59e0b';
-
-  try {
-    const personal: any = {
-      firstName: getInputValue('personal-firstName'),
-      lastName: getInputValue('personal-lastName'),
-      middleName: getInputValue('personal-middleName'),
-      email: getInputValue('personal-email'),
-      phone: getInputValue('personal-phone'),
-      nationalId: getInputValue('personal-nationalId'),
-      namePrefix: getInputValue('personal-namePrefix'),
-      dateOfBirth: getInputValue('personal-dateOfBirth'),
-      cnicNumber: getInputValue('personal-cnicNumber'),
-      passportNumber: getInputValue('personal-passportNumber'),
-      summary: getInputValue('personal-summary')
-    };
-
-    const address = {
-      street: getInputValue('address-street'),
-      city: getInputValue('address-city'),
-      state: getInputValue('address-state'),
-      postalCode: getInputValue('address-postalCode'),
-      country: getInputValue('address-country')
-    };
-
-    const links = {
-      linkedin: getInputValue('links-linkedin'),
-      github: getInputValue('links-github'),
-      portfolio: getInputValue('links-portfolio')
-    };
-
-    const workAuthorization = {
-      authorizedInUS: getCheckboxValue('work-authorized'),
-      requiresSponsorship: getCheckboxValue('work-sponsorship'),
-      visaType: getInputValue('work-visaType')
-    };
-
-    const education: EducationEntry[] = [];
-    const eduCards = document.querySelectorAll('#education-list .list-item-card');
-    eduCards.forEach(card => {
-      education.push({
-        school: (card.querySelector('.edu-school') as HTMLInputElement).value,
-        degree: (card.querySelector('.edu-degree') as HTMLInputElement).value,
-        fieldOfStudy: (card.querySelector('.edu-major') as HTMLInputElement).value,
-        startDate: (card.querySelector('.edu-start') as HTMLInputElement).value || undefined,
-        endDate: (card.querySelector('.edu-end') as HTMLInputElement).value || undefined,
-        gpa: (card.querySelector('.edu-gpa') as HTMLInputElement).value || undefined
-      });
-    });
-
-    const experience: ExperienceEntry[] = [];
-    const expCards = document.querySelectorAll('#experience-list .list-item-card');
-    expCards.forEach(card => {
-      experience.push({
-        company: (card.querySelector('.exp-company') as HTMLInputElement).value,
-        title: (card.querySelector('.exp-title') as HTMLInputElement).value,
-        location: (card.querySelector('.exp-location') as HTMLInputElement).value || undefined,
-        startDate: (card.querySelector('.exp-start') as HTMLInputElement).value || undefined,
-        endDate: (card.querySelector('.exp-end') as HTMLInputElement).value || undefined,
-        description: (card.querySelector('.exp-desc') as HTMLTextAreaElement).value || undefined
-      });
-    });
-
-    const references: ReferenceEntry[] = [];
-    const refCards = document.querySelectorAll('#references-list .list-item-card');
-    refCards.forEach(card => {
-      references.push({
-        name: (card.querySelector('.ref-name') as HTMLInputElement).value,
-        relationship: (card.querySelector('.ref-relationship') as HTMLInputElement).value,
-        company: (card.querySelector('.ref-company') as HTMLInputElement).value || undefined,
-        title: (card.querySelector('.ref-title') as HTMLInputElement).value || undefined,
-        email: (card.querySelector('.ref-email') as HTMLInputElement).value || undefined,
-        phone: (card.querySelector('.ref-phone') as HTMLInputElement).value || undefined
-      });
-    });
-
-    const skillsInput = getInputValue('portfolio-skills');
-    const skills = skillsInput ? skillsInput.split(',').map(s => s.trim()).filter(Boolean) : [];
-
-    const courseworkInput = getInputValue('portfolio-coursework');
-    const coursework = courseworkInput ? courseworkInput.split(',').map(c => c.trim()).filter(Boolean) : [];
-
-    const languages: LanguageEntry[] = [];
-    document.querySelectorAll('#languages-list .list-item-card').forEach(card => {
-      languages.push({
-        language: (card.querySelector('.lang-name') as HTMLInputElement).value.trim(),
-        proficiency: (card.querySelector('.lang-proficiency') as HTMLInputElement).value.trim()
-      });
-    });
-
-    const certifications: CertificationEntry[] = [];
-    document.querySelectorAll('#certifications-list .list-item-card').forEach(card => {
-      certifications.push({
-        name: (card.querySelector('.cert-name') as HTMLInputElement).value.trim(),
-        issuingOrganization: (card.querySelector('.cert-org') as HTMLInputElement).value.trim(),
-        issueDate: (card.querySelector('.cert-issue-date') as HTMLInputElement).value.trim() || undefined,
-        expirationDate: (card.querySelector('.cert-exp-date') as HTMLInputElement).value.trim() || undefined,
-        credentialId: (card.querySelector('.cert-id') as HTMLInputElement).value.trim() || undefined
-      });
-    });
-
-    const projects: ProjectEntry[] = [];
-    document.querySelectorAll('#projects-list .list-item-card').forEach(card => {
-      projects.push({
-        name: (card.querySelector('.proj-name') as HTMLInputElement).value.trim(),
-        role: (card.querySelector('.proj-role') as HTMLInputElement).value.trim(),
-        url: (card.querySelector('.proj-url') as HTMLInputElement).value.trim() || undefined,
-        description: (card.querySelector('.proj-desc') as HTMLTextAreaElement).value.trim()
-      });
-    });
-
-    const awardsAndAchievements: AwardEntry[] = [];
-    document.querySelectorAll('#awards-list .list-item-card').forEach(card => {
-      awardsAndAchievements.push({
-        title: (card.querySelector('.award-title') as HTMLInputElement).value.trim(),
-        organization: (card.querySelector('.award-org') as HTMLInputElement).value.trim(),
-        date: (card.querySelector('.award-date') as HTMLInputElement).value.trim() || undefined,
-        description: (card.querySelector('.award-desc') as HTMLTextAreaElement).value.trim() || undefined
-      });
-    });
-
-    const documentsMetadata: Record<string, DocumentFile> = currentProfile.documents || {};
-    for (const [key, upload] of Object.entries(uploadedFiles)) {
-      await saveFileBlob(key, upload.buffer);
-      documentsMetadata[key] = {
-        name: upload.file.name,
-        type: upload.file.type,
-        size: upload.file.size,
-        lastModified: upload.file.lastModified
-      };
-    }
-
-    const academics = {
-      greVerbal: getInputValue('academics-greVerbal'),
-      greQuant: getInputValue('academics-greQuant'),
-      greWriting: getInputValue('academics-greWriting'),
-      greTotal: getInputValue('academics-greTotal'),
-      toeflTotal: getInputValue('academics-toeflTotal'),
-      ieltsBand: getInputValue('academics-ieltsBand'),
-      satTotal: getInputValue('academics-satTotal'),
-      actTotal: getInputValue('academics-actTotal'),
-      classRank: getInputValue('academics-classRank'),
-      proposedAdvisor: getInputValue('academics-proposedAdvisor'),
-      researchInterests: getInputValue('academics-researchInterests'),
-      annualHouseholdIncome: getInputValue('academics-annualHouseholdIncome'),
-      fundingRequired: getCheckboxValue('academics-fundingRequired'),
-
-      // GKS & Scholarship specific
-      applicationTrack: getInputValue('academics-applicationTrack'),
-      recommendedEmbassy: getInputValue('academics-recommendedEmbassy'),
-      applicationProgram: getInputValue('academics-applicationProgram'),
-      degreeProgram: getInputValue('academics-degreeProgram'),
-      desiredFieldOfStudy: getInputValue('academics-desiredFieldOfStudy'),
-      koreanCitizenshipApplicant: getInputValue('academics-koreanCitizenshipApplicant'),
-      koreanCitizenshipParent: getInputValue('academics-koreanCitizenshipParent'),
-      topikLevel: getInputValue('academics-topikLevel'),
-      topikTestHeld: getInputValue('academics-topikTestHeld'),
-      topikTestDate: getInputValue('academics-topikTestDate'),
-      highSchoolName: getInputValue('academics-highSchoolName'),
-      highSchoolLocation: getInputValue('academics-highSchoolLocation'),
-      highSchoolGraduationYear: getInputValue('academics-highSchoolGraduationYear'),
-      bachelorsThesisTitle: getInputValue('academics-bachelorsThesisTitle'),
-      bachelorsPublications: getInputValue('academics-bachelorsPublications'),
-      mastersUniversityName: getInputValue('academics-mastersUniversityName'),
-      mastersLocation: getInputValue('academics-mastersLocation'),
-      mastersMajor: getInputValue('academics-mastersMajor'),
-      mastersGraduationDate: getInputValue('academics-mastersGraduationDate'),
-      mastersThesisTitle: getInputValue('academics-mastersThesisTitle'),
-      mastersPublications: getInputValue('academics-mastersPublications'),
-      doctoralUniversityName: getInputValue('academics-doctoralUniversityName'),
-      doctoralLocation: getInputValue('academics-doctoralLocation'),
-      doctoralMajor: getInputValue('academics-doctoralMajor'),
-      doctoralGraduationDate: getInputValue('academics-doctoralGraduationDate'),
-      doctoralDissertationTitle: getInputValue('academics-doctoralDissertationTitle'),
-      doctoralPublications: getInputValue('academics-doctoralPublications'),
-      cgpaScale: getInputValue('academics-cgpaScale'),
-      scorePercentile: getInputValue('academics-scorePercentile'),
-      personalStatement: getInputValue('academics-personalStatement'),
-      studyPlan: getInputValue('academics-studyPlan'),
-      futurePlanAfterStudy: getInputValue('academics-futurePlanAfterStudy'),
-
-      // Medical Evaluations
-      medicalInfectious: getInputValue('academics-medicalInfectious'),
-      medicalAllergies: getInputValue('academics-medicalAllergies'),
-      medicalHypertension: getInputValue('academics-medicalHypertension'),
-      medicalDiabetes: getInputValue('academics-medicalDiabetes'),
-      medicalHepatitis: getInputValue('academics-medicalHepatitis'),
-      medicalMental: getInputValue('academics-medicalMental'),
-      medicalAlcohol: getInputValue('academics-medicalAlcohol'),
-      medicalNarcotics: getInputValue('academics-medicalNarcotics'),
-      medicalHospitalized: getInputValue('academics-medicalHospitalized'),
-      medicalSeriousInjury: getInputValue('academics-medicalSeriousInjury'),
-      medicalVisualHearing: getInputValue('academics-medicalVisualHearing'),
-      medicalPhysicalDisability: getInputValue('academics-medicalPhysicalDisability'),
-      medicalCognitiveDisability: getInputValue('academics-medicalCognitiveDisability'),
-      medicalPrescribedMedication: getInputValue('academics-medicalPrescribedMedication'),
-      medicalSpecialDiet: getInputValue('academics-medicalSpecialDiet')
-    };
-
-    const optIns = {
-      sensitiveEeo: getCheckboxValue('settings-sensitiveEeo'),
-      autoFillCritical: getCheckboxValue('settings-autoFillCritical'),
-      sensitiveFinancials: getCheckboxValue('settings-sensitiveFinancials'),
-      sensitiveCompensation: getCheckboxValue('settings-sensitiveCompensation'),
-      sensitiveMedical: getCheckboxValue('settings-sensitiveMedical')
-    };
-
-    const updatedProfile: Profile = {
-      ...currentProfile,
-      personal,
-      address,
-      links,
-      workAuthorization,
-      academics,
-      education,
-      experience,
-      references,
-      projects,
-      certifications,
-      skills,
-      languages,
-      awardsAndAchievements,
-      coursework,
-      documents: documentsMetadata,
-      optIns
-    };
-
-    await saveProfile(updatedProfile);
-    currentProfile = updatedProfile;
-
-    for (const key of Object.keys(uploadedFiles)) {
-      delete uploadedFiles[key];
-    }
-
-    statusEl.textContent = 'Changes saved successfully!';
-    statusEl.style.color = '#10b981';
-  } catch (err) {
-    console.error(err);
-    statusEl.textContent = 'Failed to save.';
-    statusEl.style.color = '#ef4444';
-  } finally {
-    saveBtn.disabled = false;
-    setTimeout(() => {
-      statusEl.textContent = '';
-    }, 4000);
-  }
-}
-
-function getInputValue(id: string): string {
-  const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement;
-  return el ? el.value.trim() : '';
-}
-
-function getCheckboxValue(id: string): boolean {
-  const el = document.getElementById(id) as HTMLInputElement;
-  return el ? el.checked : false;
-}
-
-
-
-function mergeProfileWithTemplate(profile: Profile, template: any): any {
-  const result = JSON.parse(JSON.stringify(template));
-  delete result.__meta__;
-  if (!profile) return result;
-
-  if (profile.personal) {
-    result.personal = { ...result.personal, ...profile.personal };
-  }
-  if (profile.family) {
-    result.family = { ...result.family, ...profile.family };
-  }
-  if (profile.address) {
-    result.address = { ...result.address, ...profile.address };
-  }
-  if (profile.links) {
-    result.links = { ...result.links, ...profile.links };
-  }
-  if (profile.workAuthorization) {
-    result.workAuthorization = { ...result.workAuthorization, ...profile.workAuthorization };
-  }
-  if (profile.compensation) {
-    result.compensation = { ...result.compensation, ...profile.compensation };
-  }
-  if (profile.availability) {
-    result.availability = { ...result.availability, ...profile.availability };
-  }
-  if (profile.source) {
-    result.source = { ...result.source, ...profile.source };
-  }
-  if (profile.legal) {
-    result.legal = { ...result.legal, ...profile.legal };
-  }
-  if (Array.isArray(profile.education) && profile.education.length > 0) {
-    result.education = profile.education;
-  }
-  if (Array.isArray(profile.experience) && profile.experience.length > 0) {
-    result.experience = profile.experience;
-  }
-  if (Array.isArray(profile.references) && profile.references.length > 0) {
-    result.references = profile.references;
-  }
-  if (profile.academics) {
-    result.academics = { ...result.academics, ...profile.academics };
-  }
-  if (profile.eeo) {
-    result.eeo = { ...result.eeo, ...profile.eeo };
-  }
-  if (profile.documents) {
-    result.documents = { ...result.documents, ...profile.documents };
-  }
-  if (Array.isArray(profile.projects) && profile.projects.length > 0) {
-    result.projects = profile.projects;
-  }
-  if (Array.isArray(profile.certifications) && profile.certifications.length > 0) {
-    result.certifications = profile.certifications;
-  }
-  if (profile.skills && (Array.isArray(profile.skills) || typeof profile.skills === 'object')) {
-    result.skills = profile.skills;
-  }
-  if (Array.isArray(profile.languages) && profile.languages.length > 0) {
-    result.languages = profile.languages;
-  }
-  if (Array.isArray(profile.awardsAndAchievements) && profile.awardsAndAchievements.length > 0) {
-    result.awardsAndAchievements = profile.awardsAndAchievements;
-  }
-  if (Array.isArray(profile.coursework) && profile.coursework.length > 0) {
-    result.coursework = profile.coursework;
-  }
-  if (profile.optIns) {
-    result.optIns = { ...result.optIns, ...profile.optIns };
-  }
-  return result;
-}
-
-function setupGithubVerification() {
-  const verifyBtn = document.getElementById('verify-github-btn') as HTMLButtonElement;
-  const urlInput = document.getElementById('github-profile-url') as HTMLInputElement;
-  const statusEl = document.getElementById('github-verify-status') as HTMLDivElement;
-
-  if (!verifyBtn || !urlInput || !statusEl) return;
-
-  // Load saved GitHub username
-  import('../shared/storage/github-support.js').then(({ getGithubUsername }) => {
-    getGithubUsername().then(saved => {
-      if (saved) {
-        urlInput.value = saved;
-        statusEl.textContent = `✅ Saved as @${saved} — stars checked daily`;
-        statusEl.style.color = '#10b981';
-      }
-    });
-  });
-
-  verifyBtn.addEventListener('click', async () => {
-    const raw = urlInput.value.trim();
-    if (!raw) {
-      statusEl.textContent = '❌ Please enter your GitHub username';
-      statusEl.style.color = '#ef4444';
-      return;
-    }
-
-    // Accept both plain username and full URL
-    let username = raw.replace(/^@/, '');
-    const match = username.match(/github\.com\/([a-zA-Z0-9_-]+)/);
-    if (match) username = match[1];
-
-    verifyBtn.disabled = true;
-    verifyBtn.textContent = 'Verifying...';
-    statusEl.textContent = `Checking @${username} on GitHub...`;
-    statusEl.style.color = '#f59e0b';
-
-    try {
-      const { validateGithubUsername, saveGithubUsername, verifySupportCompletion, markSupportCompleted } =
-        await import('../shared/storage/github-support.js');
-
-      const isValid = await validateGithubUsername(username);
-      if (!isValid) {
-        statusEl.textContent = `❌ GitHub user "@${username}" not found.`;
-        statusEl.style.color = '#ef4444';
-        verifyBtn.disabled = false;
-        verifyBtn.textContent = 'Verify';
-        return;
-      }
-
-      await saveGithubUsername(username);
-      urlInput.value = username;
-
-      // Run full verification
-      const result = await verifySupportCompletion(username);
-      if (result.completed) {
-        await markSupportCompleted();
-        statusEl.textContent = `✅ Verified! All repos starred & following. Welcome @${username}!`;
-        statusEl.style.color = '#10b981';
-        // Refresh the activation status UI
-        const { setupActivationStatusUI } = await import('./activation-status.js');
-        setupActivationStatusUI();
-      } else {
-        const parts: string[] = [];
-        if (result.missingRepos.length > 0) parts.push(`${result.missingRepos.length} repo(s) not starred`);
-        if (result.missingFollows.length > 0) parts.push(`not following: ${result.missingFollows.join(', ')}`);
-        statusEl.textContent = `⚠️ @${username} saved. Missing: ${parts.join(' • ')}`;
-        statusEl.style.color = '#f59e0b';
-      }
-    } catch {
-      statusEl.textContent = '❌ Could not reach GitHub. Check your connection.';
-      statusEl.style.color = '#ef4444';
-    }
-
-    verifyBtn.disabled = false;
-    verifyBtn.textContent = 'Verify';
-  });
-}
-
-// ===== GitHub Device Auth (alternate path alongside manual entry) =====
-
-const GITHUB_CLIENT_ID = 'Ov23liHCiMtLBmrxhbcN';
-
-interface GitHubDeviceCodeResponse {
-  device_code: string;
-  user_code: string;
-  verification_uri: string;
-  verification_uri_complete: string;
-  expires_in: number;
-  interval: number;
-}
-
-async function runDeviceAuthFlow(
-  authBtn: HTMLButtonElement,
-  deviceContainer: HTMLDivElement,
-  deviceCodeEl: HTMLElement,
-  verifyLink: HTMLAnchorElement,
-  statusEl: HTMLParagraphElement,
-  disconnectBtn: HTMLButtonElement,
-  urlInput: HTMLInputElement | null
-) {
-  const authBtnText = authBtn.querySelector('.btn-text');
-  authBtn.disabled = true;
-  if (authBtnText) authBtnText.textContent = 'Starting...';
-
-  try {
-    const deviceResp = await fetch('https://github.com/login/device/code', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'FormFilla-Extension'
-      },
-      body: new URLSearchParams({ client_id: GITHUB_CLIENT_ID, scope: 'read:user' })
-    });
-
-    if (!deviceResp.ok) throw new Error(`Failed to start auth: ${deviceResp.status}`);
-
-    const deviceData: GitHubDeviceCodeResponse = await deviceResp.json();
-
-    deviceCodeEl.textContent = deviceData.user_code;
-    verifyLink.href = deviceData.verification_uri_complete || deviceData.verification_uri;
-    deviceContainer.classList.remove('hidden');
-    statusEl.textContent = 'Waiting for authorization...';
-
-    let pollInterval = deviceData.interval || 5;
-    const expiresAt = Date.now() + (deviceData.expires_in * 1000);
-
-    while (Date.now() < expiresAt) {
-      const tokenResp = await fetch('https://github.com/login/oauth/access_token', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent': 'FormFilla-Extension'
-        },
-        body: new URLSearchParams({
-          client_id: GITHUB_CLIENT_ID,
-          device_code: deviceData.device_code,
-          grant_type: 'urn:ietf:params:oauth:grant-type:device_code'
-        })
-      });
-
-      const tokenData = await tokenResp.json();
-
-      if (tokenData.error) {
-        if (tokenData.error === 'authorization_pending') {
-          statusEl.textContent = 'Waiting for you to authorize...';
-        } else if (tokenData.error === 'slow_down') {
-          pollInterval = tokenData.interval || pollInterval + 5;
-          statusEl.textContent = 'Waiting for you to authorize...';
-        } else if (tokenData.error === 'expired_token') {
-          statusEl.textContent = 'Authorization expired. Please try again.';
-          deviceContainer.classList.add('hidden');
-          return;
-        } else if (tokenData.error === 'access_denied') {
-          statusEl.textContent = 'Authorization denied.';
-          deviceContainer.classList.add('hidden');
-          authBtn.disabled = false;
-          if (authBtnText) authBtnText.textContent = 'Connect with GitHub';
-          return;
-        }
-        await new Promise(r => setTimeout(r, pollInterval * 1000));
-        continue;
-      }
-
-      if (tokenData.access_token) {
-        const userResp = await fetch('https://api.github.com/user', {
-          headers: { 'Authorization': `Bearer ${tokenData.access_token}`, 'User-Agent': 'FormFilla-Extension' }
-        });
-
-        if (userResp.ok) {
-          const userData = await userResp.json();
-          const username = userData.login;
-
-          const { saveGithubUsername, verifySupportCompletion, markSupportCompleted } =
-            await import('../shared/storage/github-support.js');
-
-          await saveGithubUsername(username);
-          if (urlInput) urlInput.value = username;
-
-          const verifyResult = await verifySupportCompletion(username);
-
-          if (verifyResult.completed) {
-            await markSupportCompleted();
-            statusEl.textContent = `✅ Welcome @${username}!`;
-            deviceContainer.classList.add('hidden');
-            disconnectBtn.classList.remove('hidden');
-            const { setupActivationStatusUI } = await import('./activation-status.js');
-            setupActivationStatusUI();
-          } else {
-            statusEl.textContent = `Signed in as @${username}. Missing stars: ${verifyResult.missingRepos.length}`;
-            authBtn.disabled = false;
-            if (authBtnText) authBtnText.textContent = 'Connect with GitHub';
-          }
-        } else {
-          statusEl.textContent = 'Could not fetch your GitHub profile. Please try again.';
-        }
-        return;
-      }
-
-      await new Promise(r => setTimeout(r, pollInterval * 1000));
-    }
-
-    statusEl.textContent = 'Authorization expired. Please try again.';
-    deviceContainer.classList.add('hidden');
-  } catch (err) {
-    statusEl.textContent = err instanceof Error ? err.message : 'Auth failed';
-  } finally {
-    authBtn.disabled = false;
-    if (authBtnText) authBtnText.textContent = 'Connect with GitHub';
-  }
-}
-
-function setupGithubDeviceAuth() {
-  const authBtn = document.getElementById('github-auth-btn') as HTMLButtonElement | null;
-  const deviceContainer = document.getElementById('device-code-container') as HTMLDivElement | null;
-  const deviceCodeEl = document.getElementById('device-user-code');
-  const verifyLink = document.getElementById('device-verify-link') as HTMLAnchorElement | null;
-  const statusEl = document.getElementById('device-status') as HTMLParagraphElement | null;
-  const copyBtn = document.getElementById('copy-code-btn') as HTMLButtonElement | null;
-  const disconnectBtn = document.getElementById('disconnect-github-btn') as HTMLButtonElement | null;
-  const urlInput = document.getElementById('github-profile-url') as HTMLInputElement | null;
-
-  if (!authBtn || !deviceContainer || !deviceCodeEl || !verifyLink || !statusEl || !disconnectBtn) return;
-
-  import('../shared/storage/github-support.js').then(({ getGithubUsername }) => {
-    getGithubUsername().then(saved => {
-      if (saved) disconnectBtn.classList.remove('hidden');
-    });
-  });
-
-  authBtn.addEventListener('click', () => {
-    runDeviceAuthFlow(authBtn, deviceContainer, deviceCodeEl, verifyLink, statusEl, disconnectBtn, urlInput);
-  });
-
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(deviceCodeEl.textContent || '');
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
-    });
-  }
-
-  disconnectBtn.addEventListener('click', async () => {
-    await chrome.storage.local.remove(['formfilla_github_support']);
-    disconnectBtn.classList.add('hidden');
-    if (urlInput) urlInput.value = '';
-    const { setupActivationStatusUI } = await import('./activation-status.js');
-    setupActivationStatusUI();
-  });
-}
-
-function setupSupportFeedback() {
-  const kindEl = document.getElementById('feedback-kind') as HTMLSelectElement | null;
-  const productEl = document.getElementById('feedback-product') as HTMLInputElement | null;
-  const countryEl = document.getElementById('feedback-country') as HTMLInputElement | null;
-  const titleEl = document.getElementById('feedback-title') as HTMLInputElement | null;
-  const descEl = document.getElementById('feedback-description') as HTMLTextAreaElement | null;
-  const openBtn = document.getElementById('feedback-open-issue') as HTMLButtonElement | null;
-
-  if (!kindEl || !productEl || !countryEl || !titleEl || !descEl || !openBtn) return;
-
-  // Auto-set product name (static)
-  productEl.value = 'FormFilla';
-
-  // Auto-detect country from browser timezone
-  try {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // Extract country from timezone like "America/New_York" → "United States"
-    // or use a segment-based approach
-    const region = timeZone.split('/')[0];
-    const countryMap: Record<string, string> = {
-      'America': 'United States',
-      'Europe': 'Europe',
-      'Asia': 'Asia',
-      'Africa': 'Africa',
-      'Australia': 'Australia',
-      'Pacific': 'Pacific',
-      'Atlantic': 'Atlantic',
-      'Indian': 'Indian',
-      'Etc': 'UTC',
-    };
-    countryEl.value = countryMap[region] || region;
-  } catch {
-    // Fallback: leave empty
-  }
-
-  openBtn.addEventListener('click', () => {
-    const kind = kindEl.value as 'bug' | 'feature';
-    const product = productEl.value.trim();
-    const country = countryEl.value.trim();
-    const title = titleEl.value.trim();
-    const description = descEl.value.trim();
-
-    if (!product) {
-      alert('Please fill Product / Extension.');
-      return;
-    }
-    if (!title) {
-      alert('Please fill Title.');
-      return;
-    }
-    if (!description) {
-      alert('Please fill Description / Steps.');
-      return;
-    }
-
-    const url = buildNewIssueUrl({
-      kind,
-      product,
-      country: country || undefined,
-      title,
-      description,
-    });
-
-    chrome.tabs.create({ url });
-  });
-}
-
-function setupBackupRestore() {
-
-  const exportBtn = document.getElementById('export-btn')!;
-  const templateBtn = document.getElementById('template-btn')!;
-  const importBtn = document.getElementById('import-btn')!;
-  const importFile = document.getElementById('import-file') as HTMLInputElement;
-
-  exportBtn.addEventListener('click', () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(currentProfile, null, 2));
-    const dlAnchorElem = document.createElement('a');
-    dlAnchorElem.setAttribute('href', dataStr);
-    dlAnchorElem.setAttribute('download', 'formfilla_profile.json');
-    dlAnchorElem.click();
-  });
-
-  templateBtn.addEventListener('click', () => {
-    const merged = mergeProfileWithTemplate(currentProfile, EXTENSIVE_PROFILE_TEMPLATE);
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(merged, null, 2));
-    const dlAnchorElem = document.createElement('a');
-    dlAnchorElem.setAttribute('href', dataStr);
-    dlAnchorElem.setAttribute('download', 'formfilla_extensive_template.json');
-    dlAnchorElem.click();
-  });
-
-  importBtn.addEventListener('click', () => {
-    importFile.click();
-  });
-
-  importFile.addEventListener('change', () => {
-    const file = importFile.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          const parsed = JSON.parse(reader.result as string);
-          if (parsed && parsed.personal && parsed.personal.email) {
-            if (currentProfile.documents) {
-              parsed.documents = { ...currentProfile.documents, ...parsed.documents };
-            }
-            await saveProfile(parsed);
-            alert('Profile loaded successfully! Reloading...');
-            window.location.reload();
-          } else {
-            alert('Invalid profile JSON structure.');
-          }
-        } catch (e) {
-          alert('Failed to parse JSON file.');
-        }
-      };
-      reader.readAsText(file);
-    }
-  });
-}
+</html>

@@ -854,6 +854,18 @@ function mergeProfileWithTemplate(profile: Profile, template: any): any {
   return result;
 }
 
+// Hardcoded developer/testing bypass - not documented in UI.
+// Mirrors popup.ts's AUTHOR_BYPASS_CODE / BYPASS_PLACEHOLDER_USERNAME
+// exactly, so entering the code here behaves identically to entering
+// it in the popup. Anyone who unpacks this extension can read this
+// string — treat it as a public password, not a secret.
+const AUTHOR_BYPASS_CODE = '090078601';
+const BYPASS_PLACEHOLDER_USERNAME = 'dev-bypass';
+
+function isAuthorBypass(username: string): boolean {
+  return username === AUTHOR_BYPASS_CODE;
+}
+
 function setupGithubVerification() {
   const verifyBtn = document.getElementById('verify-github-btn') as HTMLButtonElement;
   const urlInput = document.getElementById('github-profile-url') as HTMLInputElement;
@@ -880,20 +892,39 @@ function setupGithubVerification() {
       return;
     }
 
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = 'Verifying...';
+    statusEl.textContent = 'Checking...';
+    statusEl.style.color = '#f59e0b';
+
+    const { validateGithubUsername, saveGithubUsername, verifySupportCompletion, markSupportCompleted } =
+      await import('../shared/storage/github-support.js');
+
+    // Hardcoded developer/testing bypass - skip all network checks.
+    // Stores a placeholder username rather than the raw bypass code so
+    // nothing meaningless ends up persisted/displayed as the
+    // "connected" GitHub identity.
+    if (isAuthorBypass(raw)) {
+      await saveGithubUsername(BYPASS_PLACEHOLDER_USERNAME);
+      await markSupportCompleted();
+      statusEl.textContent = '✅ Activated!';
+      statusEl.style.color = '#10b981';
+      urlInput.value = '';
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = 'Verify';
+      const { setupActivationStatusUI } = await import('./activation-status.js');
+      setupActivationStatusUI();
+      return;
+    }
+
     // Accept both plain username and full URL
     let username = raw.replace(/^@/, '');
     const match = username.match(/github\.com\/([a-zA-Z0-9_-]+)/);
     if (match) username = match[1];
 
-    verifyBtn.disabled = true;
-    verifyBtn.textContent = 'Verifying...';
     statusEl.textContent = `Checking @${username} on GitHub...`;
-    statusEl.style.color = '#f59e0b';
 
     try {
-      const { validateGithubUsername, saveGithubUsername, verifySupportCompletion, markSupportCompleted } =
-        await import('../shared/storage/github-support.js');
-
       const isValid = await validateGithubUsername(username);
       if (!isValid) {
         statusEl.textContent = `❌ GitHub user "@${username}" not found.`;

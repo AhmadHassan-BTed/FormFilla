@@ -1,5 +1,6 @@
 :root {
   --bg-color: #0d0e15;
+  --svg-icon-color: var(--text-primary);
   --card-bg: rgba(22, 23, 34, 0.7);
   --border-color: rgba(255, 255, 255, 0.08);
   --text-primary: #f3f4f6;
@@ -91,6 +92,14 @@ body {
   height: 16px;
   fill: currentColor;
   flex-shrink: 0;
+}
+
+.github-svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+  color: var(--svg-icon-color, var(--text-primary));
 }
 
 .icon-btn {

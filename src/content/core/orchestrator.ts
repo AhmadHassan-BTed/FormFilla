@@ -169,6 +169,37 @@ let mutationWatcherCleanup: (() => void) | null = null;
 let watcherActivated = false;
 
 /**
+ * Returns true once the extension's own context is gone — e.g. the
+ * extension was reloaded/updated while this tab was already open.
+ * Long-lived SPAs (WhatsApp Web, Gmail, Notion, etc.) never navigate,
+ * so a content script injected before an update/reload just keeps
+ * running with a dead connection to the extension.
+ *
+ * chrome.runtime.id is the reliable signal: it throws synchronously
+ * the moment the context is invalidated. Other chrome.* calls (like
+ * chrome.storage.local.get, used inside getProfile()) fail in less
+ * consistent ways across Chrome versions — sometimes a rejected
+ * promise, sometimes a synchronous throw, with wording that has
+ * changed between releases — so they aren't safe to string-match on.
+ * Checking chrome.runtime.id directly, at each point we care about,
+ * is what actually catches every case.
+ */
+function isExtensionContextInvalidated(): boolean {
+  try {
+    return !chrome?.runtime?.id;
+  } catch {
+    return true;
+  }
+}
+
+function stopWatcher(): void {
+  if (mutationWatcherCleanup) {
+    mutationWatcherCleanup();
+    mutationWatcherCleanup = null;
+  }
+}
+
+/**
  * Activate the mutation watcher to handle dynamically-loaded fields.
  * This is called after the first user-initiated fill so the watcher
  * does not run on irrelevant pages (e.g. WhatsApp, email, etc.).
@@ -178,35 +209,38 @@ function activateWatcher(): void {
   watcherActivated = true;
 
   mutationWatcherCleanup = watch(document.body, async (newFields) => {
-    try {
-      // Guard: extension context may have been invalidated (e.g. after reload)
-      if (!chrome?.runtime?.id) {
-        if (mutationWatcherCleanup) mutationWatcherCleanup();
-        return;
-      }
-    } catch {
-      // Extension context invalidated - stop watching
-      if (mutationWatcherCleanup) mutationWatcherCleanup();
-      return;
-    }
-
-    // Additional guard: check if we can access extension APIs
-    if (typeof chrome === 'undefined' || !chrome.runtime) {
+    // Check #1: bail before touching any chrome.* API at all.
+    if (isExtensionContextInvalidated()) {
+      console.log('FormFilla: extension context invalidated, stopping dynamic fill watcher.');
+      stopWatcher();
       return;
     }
 
     try {
       const profile = await getProfile();
-      if (profile && profile.personal && profile.personal.email) {
+
+      // Check #2: getProfile() awaits a chrome.storage call, so the
+      // context can go invalid in the gap between check #1 and here.
+      if (isExtensionContextInvalidated()) {
+        console.log('FormFilla: extension context invalidated, stopping dynamic fill watcher.');
+        stopWatcher();
+        return;
+      }
+
+      if (profile?.personal?.email) {
         await processFields(newFields, profile);
       }
     } catch (err) {
-      // Suppress "Extension context invalidated" errors silently
-      if (err instanceof Error && err.message.includes('Extension context invalidated')) {
-        if (mutationWatcherCleanup) mutationWatcherCleanup();
+      // Check #3: if the context is confirmed dead, this error is
+      // expected — stop the watcher instead of retrying on every
+      // subsequent DOM mutation (WhatsApp Web mutates constantly, so
+      // without this the same failure would otherwise repeat forever).
+      if (isExtensionContextInvalidated()) {
+        stopWatcher();
         return;
       }
-      // Silently ignore — not all pages are relevant form pages
+      // Context is still alive, so this is a real, unexpected failure.
+      console.error('FormFilla: dynamic fill failed', err);
     }
   });
 }

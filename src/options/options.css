@@ -1,5 +1,6 @@
 :root {
   --bg-color: #07080C;
+  --svg-icon-color: var(--text-primary);
   --sidebar-bg: #0C0E17;
   --card-bg: rgba(20, 22, 34, 0.6);
   --border-color: rgba(255, 255, 255, 0.06);

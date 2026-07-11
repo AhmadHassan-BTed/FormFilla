@@ -252,11 +252,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const activation = await getActivationStatus();
 
   if (activation.activated) {
-    statusText.textContent = `Activated ✅ • Last check: ${formatDate(activation.lastCheckDate)}`;
+    // statusText.textContent = `✅ Activated • Last check: ${formatDate(activation.lastCheckDate)}`;
     disconnectBtn.classList.remove('hidden');
   } else {
     statusDot.classList.add('not-activated');
-    statusText.textContent = 'Not activated ⛔ • Complete the support requirement to activate.';
+    statusText.textContent = '⛔ Not activated • Go to Settings to activate.';
   }
 
   const supportStatus = await shouldShowSupport();
