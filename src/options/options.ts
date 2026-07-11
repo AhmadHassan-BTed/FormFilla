@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupDynamicLists();
   setupFilePickers();
   setupGithubVerification();
+  setupGithubDeviceAuth();
   await setupActivationStatusUI();
 
   setupSupportFeedback();
@@ -928,6 +929,180 @@ function setupGithubVerification() {
 
     verifyBtn.disabled = false;
     verifyBtn.textContent = 'Verify';
+  });
+}
+
+// ===== GitHub Device Auth (alternate path alongside manual entry) =====
+
+const GITHUB_CLIENT_ID = 'Ov23liHCiMtLBmrxhbcN';
+
+interface GitHubDeviceCodeResponse {
+  device_code: string;
+  user_code: string;
+  verification_uri: string;
+  verification_uri_complete: string;
+  expires_in: number;
+  interval: number;
+}
+
+async function runDeviceAuthFlow(
+  authBtn: HTMLButtonElement,
+  deviceContainer: HTMLDivElement,
+  deviceCodeEl: HTMLElement,
+  verifyLink: HTMLAnchorElement,
+  statusEl: HTMLParagraphElement,
+  disconnectBtn: HTMLButtonElement,
+  urlInput: HTMLInputElement | null
+) {
+  const authBtnText = authBtn.querySelector('.btn-text');
+  authBtn.disabled = true;
+  if (authBtnText) authBtnText.textContent = 'Starting...';
+
+  try {
+    const deviceResp = await fetch('https://github.com/login/device/code', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'FormFilla-Extension'
+      },
+      body: new URLSearchParams({ client_id: GITHUB_CLIENT_ID, scope: 'read:user' })
+    });
+
+    if (!deviceResp.ok) throw new Error(`Failed to start auth: ${deviceResp.status}`);
+
+    const deviceData: GitHubDeviceCodeResponse = await deviceResp.json();
+
+    deviceCodeEl.textContent = deviceData.user_code;
+    verifyLink.href = deviceData.verification_uri_complete || deviceData.verification_uri;
+    deviceContainer.classList.remove('hidden');
+    statusEl.textContent = 'Waiting for authorization...';
+
+    let pollInterval = deviceData.interval || 5;
+    const expiresAt = Date.now() + (deviceData.expires_in * 1000);
+
+    while (Date.now() < expiresAt) {
+      const tokenResp = await fetch('https://github.com/login/oauth/access_token', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'FormFilla-Extension'
+        },
+        body: new URLSearchParams({
+          client_id: GITHUB_CLIENT_ID,
+          device_code: deviceData.device_code,
+          grant_type: 'urn:ietf:params:oauth:grant-type:device_code'
+        })
+      });
+
+      const tokenData = await tokenResp.json();
+
+      if (tokenData.error) {
+        if (tokenData.error === 'authorization_pending') {
+          statusEl.textContent = 'Waiting for you to authorize...';
+        } else if (tokenData.error === 'slow_down') {
+          pollInterval = tokenData.interval || pollInterval + 5;
+          statusEl.textContent = 'Waiting for you to authorize...';
+        } else if (tokenData.error === 'expired_token') {
+          statusEl.textContent = 'Authorization expired. Please try again.';
+          deviceContainer.classList.add('hidden');
+          return;
+        } else if (tokenData.error === 'access_denied') {
+          statusEl.textContent = 'Authorization denied.';
+          deviceContainer.classList.add('hidden');
+          authBtn.disabled = false;
+          if (authBtnText) authBtnText.textContent = 'Connect with GitHub';
+          return;
+        }
+        await new Promise(r => setTimeout(r, pollInterval * 1000));
+        continue;
+      }
+
+      if (tokenData.access_token) {
+        const userResp = await fetch('https://api.github.com/user', {
+          headers: { 'Authorization': `Bearer ${tokenData.access_token}`, 'User-Agent': 'FormFilla-Extension' }
+        });
+
+        if (userResp.ok) {
+          const userData = await userResp.json();
+          const username = userData.login;
+
+          const { saveGithubUsername, verifySupportCompletion, markSupportCompleted } =
+            await import('../shared/storage/github-support.js');
+
+          await saveGithubUsername(username);
+          if (urlInput) urlInput.value = username;
+
+          const verifyResult = await verifySupportCompletion(username);
+
+          if (verifyResult.completed) {
+            await markSupportCompleted();
+            statusEl.textContent = `✅ Welcome @${username}!`;
+            deviceContainer.classList.add('hidden');
+            disconnectBtn.classList.remove('hidden');
+            const { setupActivationStatusUI } = await import('./activation-status.js');
+            setupActivationStatusUI();
+          } else {
+            statusEl.textContent = `Signed in as @${username}. Missing stars: ${verifyResult.missingRepos.length}`;
+            authBtn.disabled = false;
+            if (authBtnText) authBtnText.textContent = 'Connect with GitHub';
+          }
+        } else {
+          statusEl.textContent = 'Could not fetch your GitHub profile. Please try again.';
+        }
+        return;
+      }
+
+      await new Promise(r => setTimeout(r, pollInterval * 1000));
+    }
+
+    statusEl.textContent = 'Authorization expired. Please try again.';
+    deviceContainer.classList.add('hidden');
+  } catch (err) {
+    statusEl.textContent = err instanceof Error ? err.message : 'Auth failed';
+  } finally {
+    authBtn.disabled = false;
+    if (authBtnText) authBtnText.textContent = 'Connect with GitHub';
+  }
+}
+
+function setupGithubDeviceAuth() {
+  const authBtn = document.getElementById('github-auth-btn') as HTMLButtonElement | null;
+  const deviceContainer = document.getElementById('device-code-container') as HTMLDivElement | null;
+  const deviceCodeEl = document.getElementById('device-user-code');
+  const verifyLink = document.getElementById('device-verify-link') as HTMLAnchorElement | null;
+  const statusEl = document.getElementById('device-status') as HTMLParagraphElement | null;
+  const copyBtn = document.getElementById('copy-code-btn') as HTMLButtonElement | null;
+  const disconnectBtn = document.getElementById('disconnect-github-btn') as HTMLButtonElement | null;
+  const urlInput = document.getElementById('github-profile-url') as HTMLInputElement | null;
+
+  if (!authBtn || !deviceContainer || !deviceCodeEl || !verifyLink || !statusEl || !disconnectBtn) return;
+
+  import('../shared/storage/github-support.js').then(({ getGithubUsername }) => {
+    getGithubUsername().then(saved => {
+      if (saved) disconnectBtn.classList.remove('hidden');
+    });
+  });
+
+  authBtn.addEventListener('click', () => {
+    runDeviceAuthFlow(authBtn, deviceContainer, deviceCodeEl, verifyLink, statusEl, disconnectBtn, urlInput);
+  });
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(deviceCodeEl.textContent || '');
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy'; }, 2000);
+    });
+  }
+
+  disconnectBtn.addEventListener('click', async () => {
+    await chrome.storage.local.remove(['formfilla_github_support']);
+    disconnectBtn.classList.add('hidden');
+    if (urlInput) urlInput.value = '';
+    const { setupActivationStatusUI } = await import('./activation-status.js');
+    setupActivationStatusUI();
   });
 }
 
