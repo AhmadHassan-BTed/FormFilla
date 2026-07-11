@@ -172,13 +172,13 @@ body {
   font-weight: 600;
   padding: 12px;
   cursor: pointer;
-  box-shadow: var(--save-btn-shadow);
+  box-shadow: var(--save-btn-shadow, 0 4px 14px rgba(168, 85, 247, 0.3));
   transition: all 0.2s ease;
 }
 
 .save-button:hover {
   transform: translateY(-1px);
-  box-shadow: var(--save-btn-shadow-hover);
+  box-shadow: var(--save-btn-shadow-hover, 0 6px 20px rgba(168, 85, 247, 0.4));
 }
 
 .save-button:active {

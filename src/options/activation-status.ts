@@ -19,8 +19,6 @@ export function setupActivationStatusUI() {
 
   render();
 
-  // Previously missing: the button rendered but clicking it did nothing,
-  // since nothing called deactivate().
   if (deactivateBtn) {
     deactivateBtn.addEventListener('click', async () => {
       deactivateBtn.disabled = true;
