@@ -79,7 +79,7 @@ const buildOptions = {
   outdir: 'dist',
   platform: 'browser',
   target: 'chrome100',
-  sourcemap: true,
+  sourcemap: false,
   format: 'esm',
   logLevel: 'info',
   define: {

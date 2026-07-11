@@ -4,6 +4,8 @@ export interface ActivationStatus {
   activated: boolean;
   label: string;
   detail: string;
+  lastCheckDate: string | null;
+  lastVerificationDate: string | null;
 }
 
 function formatDate(iso: string | null): string {
@@ -22,15 +24,18 @@ export async function getActivationStatus(): Promise<ActivationStatus> {
   if (activated) {
     return {
       activated,
-      label: 'Activated ✅',
+      label: 'Activated',
       detail: `Last check: ${formatDate(state.lastVerificationDate)}`,
+      lastCheckDate: state.lastVerificationDate,
+      lastVerificationDate: state.lastVerificationDate,
     };
   }
 
   return {
     activated,
-    label: 'Not activated ⛔',
+    label: 'Not activated',
     detail: 'Complete the support requirement to activate.',
+    lastCheckDate: null,
+    lastVerificationDate: null,
   };
 }
-

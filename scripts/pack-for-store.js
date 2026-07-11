@@ -34,29 +34,41 @@ try {
   console.warn('⚠️ Warning: Failed to clean up old ZIP natively:', err.message);
 }
 
-// Step 3: Create store-ready zip using cross-platform tar
+// Step 2.5: Clean up source maps from dist (not needed for production)
+console.log('\n🧹 Cleaning up source maps...');
+function cleanupSourceMaps(dir) {
+  if (!fs.existsSync(dir)) return;
+  const files = fs.readdirSync(dir);
+  for (const file of files) {
+    const fullPath = path.join(dir, file);
+    const stat = fs.statSync(fullPath);
+    if (stat.isDirectory()) {
+      cleanupSourceMaps(fullPath);
+    } else if (file.endsWith('.map')) {
+      fs.unlinkSync(fullPath);
+      console.log(`  Removed: ${fullPath}`);
+    }
+  }
+}
+cleanupSourceMaps('dist');
+console.log('✅ Source maps cleaned.');
+
+// Step 3: Create store-ready zip
 console.log('\n📦 Creating ZIP package...');
 try {
-  // tar -a detects target extension (.zip) and compresses using the zip format.
-  // -C dist tells tar to change to the dist directory first, zipping its contents at the root level.
-  execSync(`tar -a -cf ${OUTPUT_ZIP} -C dist .`, { stdio: 'inherit' });
-  console.log(`\n✅ Package created: ${OUTPUT_ZIP}`);
-} catch (err) {
-  console.error('❌ Failed to create ZIP using tar:', err.message);
-  console.log('🔄 Attempting fallback zipping method...');
-  
-  // Fallback to powershell Compress-Archive only on Windows if tar failed
+  // On Windows, use PowerShell's Compress-Archive for clean paths
   if (process.platform === 'win32') {
-    try {
-      execSync(`powershell -Command "Compress-Archive -Path dist\\* -DestinationPath ${OUTPUT_ZIP} -Force"`, { stdio: 'inherit' });
-      console.log(`✅ Fallback Package created: ${OUTPUT_ZIP}`);
-    } catch (fallbackErr) {
-      console.error('❌ Fallback zipping also failed:', fallbackErr.message);
-      process.exit(1);
-    }
+    execSync(`powershell -Command "Compress-Archive -Path dist\\* -DestinationPath ${OUTPUT_ZIP} -Force"`, { stdio: 'inherit' });
+    console.log(`\n✅ Package created: ${OUTPUT_ZIP}`);
   } else {
-    process.exit(1);
+    // On Unix, use tar with -C to change directory first
+    // Use --transform to strip ./ prefix if present
+    execSync(`tar -a -cf ${OUTPUT_ZIP} -C dist . --transform 's|^\\./||'`, { stdio: 'inherit' });
+    console.log(`\n✅ Package created: ${OUTPUT_ZIP}`);
   }
+} catch (err) {
+  console.error('❌ Failed to create ZIP:', err.message);
+  process.exit(1);
 }
 
 console.log('\n🎉 Ready for Chrome Web Store upload!');

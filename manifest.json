@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "FormFilla",
   "version": "0.1.0",
-  "description": "Fills application forms (jobs, scholarships, admissions) from local JSON profile data. No AI, no network calls.",
+  "description": "Fills application forms (jobs, scholarships, admissions) from local JSON profile data. No AI, local-first.",
   "author": "AhmadHassan-BTed (https://github.com/AhmadHassan-BTed)",
   "homepage_url": "https://github.com/AhmadHassan-BTed/FormFilla",
   "icons": {
@@ -15,6 +15,9 @@
     "storage",
     "scripting",
     "activeTab"
+  ],
+  "host_permissions": [
+    "https://api.github.com/*"
   ],
   "optional_host_permissions": [
     "<all_urls>"

@@ -13,6 +13,15 @@ import {
   validateGithubUsername,
 } from '../shared/storage/github-support.js';
 
+function formatDate(iso: string | null): string {
+  if (!iso) return 'N/A';
+  try {
+    return new Date(iso).toLocaleDateString();
+  } catch {
+    return 'N/A';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const fillBtn = document.getElementById('fill-btn') as HTMLButtonElement;
   const optionsBtn = document.getElementById('options-btn') as HTMLButtonElement | null;
@@ -62,8 +71,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ===== Activation status (activated vs not) =====
   const { getActivationStatus } = await import('../shared/storage/activation-status.js');
   const activation = await getActivationStatus();
-  statusText.textContent = `${activation.label} • ${activation.detail}`;
-
+  
+  if (activation.activated) {
+    statusText.textContent = `Activated ✅ • Last check: ${formatDate(activation.lastCheckDate)}`;
+  } else {
+    statusDot.classList.add('not-activated');
+    statusText.textContent = 'Not activated ⛔ • Complete the support requirement to activate.';
+  }
 
   // Determine which panel to show
   const supportStatus = await shouldShowSupport();

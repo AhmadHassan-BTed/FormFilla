@@ -1,10 +1,11 @@
 {
   "name": "formfilla",
   "version": "0.1.0",
-  "description": "Fills job application forms from local JSON profile data. No AI, no network calls.",
+  "description": "Fills job application forms from local JSON profile data. No AI, local-first.",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.js",
+    "pack": "node scripts/pack-for-store.js",
     "icons": "pwsh -File scripts/generate-icons.ps1",
     "watch": "node scripts/build.js --watch",
     "test": "vitest run",

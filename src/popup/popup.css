@@ -306,6 +306,11 @@ body {
   animation: pulse 1s infinite alternate;
 }
 
+.status-dot.not-activated {
+  background-color: var(--warning);
+  box-shadow: 0 0 6px var(--warning);
+}
+
 @keyframes pulse {
   from {
     opacity: 0.4;
@@ -578,32 +583,6 @@ body {
   gap: 3px;
   margin-top: 2px;
 }
-
-.support-contact {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-  padding-top: 4px;
-}
-
-.support-contact-link {
-  color: var(--footer-link-color);
-  text-decoration: none;
-  font-size: 10px;
-  border: 1px solid var(--border-color);
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-}
-
-.support-contact-link:hover {
-  color: var(--footer-link-hover);
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(168, 85, 247, 0.35);
-}
-
-/* ===== GitHub Username Input ===== */
 
 .support-username-group {
   display: flex;

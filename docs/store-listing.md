@@ -14,18 +14,18 @@ FormFilla
 *(From manifest.json/package.json, max 45 characters)*
 
 ### Summary
-```text
-Fills job application forms from local JSON profile data. No AI, no network calls.
-```
-*(From manifest.json/package.json, max 132 characters)*
-
-### Description
-```text
-FormFilla is a local-first form engine that fills **all major application forms** (job applications, scholarships, admissions, internships, and other multi-section enrollment forms) from your **locally stored profile data**—fast, accurate, and designed to reduce copy/paste fatigue.
-
-It runs entirely in your browser: **no trackers, no external APIs, and no data leaves your device**.
-
-How it works (high level):
+ ```text
+ Fills job application forms from local JSON profile data. No AI, local-first.
+ ```
+ *(From manifest.json/package.json, max 132 characters)*
+ 
+ ### Description
+ ```text
+ FormFilla is a local-first form engine that fills **all major application forms** (job applications, scholarships, admissions, internships, and other multi-section enrollment forms) from your **locally stored profile data**—fast, accurate, and designed to reduce copy/paste fatigue.
+ 
+ It runs entirely in your browser: **no trackers, and your profile data never leaves your device**. The extension only makes public GitHub API calls for optional project support verification.
+ 
+ How it works (high level):
 1) Scans the page DOM to detect relevant inputs/selects and repeated form blocks (experience history, education entries, certifications, references, achievements, etc.).
 2) Normalizes field signals (labels/attributes/IDs) and matches them against your local profile.
 3) Uses a globally optimal field-mapping engine (Hungarian/Kuhn-Munkres) to reduce misalignment across complex forms.
@@ -137,9 +137,9 @@ Provide these reasons in the text boxes next to each declared permission.
   Required to run the content script logic that scans the current page, matches fields, and injects user profile values when the user initiates autofill.
   ```
 
-- **`host_permissions` / `<all_urls>`** *(optional — only if declared in your developer console)*
+- **`host_permissions` / `https://api.github.com/*`**
   ```text
-  Required to allow FormFilla to run on applicant/job form pages so it can scan and fill inputs on the active site.
+  Required for the optional GitHub support verification feature: checks if the user has starred all required repositories and follows the project accounts. Uses only public GitHub API endpoints with no user data transmitted.
   ```
 
 ### 3. Remote Code Use Justification
