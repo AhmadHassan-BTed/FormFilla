@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupDynamicLists();
   setupFilePickers();
   setupGithubVerification();
+  setupDeactivateButton();
   await setupActivationStatusUI();
 
   setupSupportFeedback();
@@ -28,6 +29,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   saveBtn.addEventListener('click', saveAllProfileData);
 
 });
+
+function setupDeactivateButton() {
+  const deactivateBtn = document.getElementById('deactivate-btn') as HTMLButtonElement;
+  if (!deactivateBtn) return;
+
+  deactivateBtn.addEventListener('click', async () => {
+    const confirmed = confirm('⚠️ Are you sure you want to deactivate FormFilla?\n\nThis will require you to re-verify GitHub support after 3 form fills.');
+    if (!confirmed) return;
+
+    const { deactivateSupport } = await import('../shared/storage/github-support.js');
+    await deactivateSupport();
+    
+    // Refresh the activation status UI
+    setupActivationStatusUI();
+    
+    // Update the button visibility
+    deactivateBtn.classList.add('hidden');
+  });
+}
 
 function setupNavigation() {
   const navItems = document.querySelectorAll('.nav-item');
@@ -911,6 +931,9 @@ function setupGithubVerification() {
         await markSupportCompleted();
         statusEl.textContent = `✅ Verified! All repos starred & following. Welcome @${username}!`;
         statusEl.style.color = '#10b981';
+        // Refresh the activation status UI
+        const { setupActivationStatusUI } = await import('./activation-status.js');
+        setupActivationStatusUI();
       } else {
         const parts: string[] = [];
         if (result.missingRepos.length > 0) parts.push(`${result.missingRepos.length} repo(s) not starred`);

@@ -153,25 +153,40 @@
             </div>
           </div>
         </div>
-        <div class="support-username-group">
-          <label class="support-target-label" for="support-github-username">Your GitHub username:</label>
-          <div class="support-username-input-row">
-            <span class="support-username-at">@</span>
-            <input id="support-github-username" type="text" class="support-username-input"
-              placeholder="your-username" autocomplete="off" spellcheck="false">
-          </div>
-          <p id="support-username-error" class="support-username-error hidden"></p>
-        </div>
-        <div class="support-required-actions">
-          <button id="support-verify-btn" class="primary-btn verify-btn">
-            <span class="btn-text">✓ I've starred &amp; followed — verify me</span>
-          </button>
-        </div>
-        <p class="support-required-note">
-          We verify using your GitHub username. Daily checks ensure new repos are starred too.
-        </p>
-      </div>
-    </div>
+<!-- GitHub Device Auth Flow -->
+         <div class="support-auth-group">
+           <button id="github-auth-btn" class="primary-btn auth-btn">
+             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right: 8px;">
+               <path d="M12 0c-6.626 0-12 5.371-12 12 0 5.302 3.438 9.799 8.205 11.387.599.111.821-.2 0 0 .3-.99 0 0 0-.43-.99 0 0 0-.43.99-1.02 1.082-.372 2.33-.976 3.022-2.251 3.022-4.242 0 0 .953-.376 0-0 .376-.993.376-2.45 0-.376-.99-.376-1.634 0-2.446 0-1.62 0-3.35 2.23-.757.975-2.442 1.202-3.444 1.437-.38.142.137-.567.253-.567.099 0 .891.708 1.793 1.793 1.793H12c6.627 0 12-5.373 12-12V0z"/>
+             </svg>
+             <span class="btn-text">Connect with GitHub</span>
+           </button>
+           <p class="auth-or-divider">— or —</p>
+           <label class="auth-manual-label" for="support-github-username-manual">Enter your GitHub username manually:</label>
+           <div class="auth-manual-row">
+             <span class="auth-manual-at">@</span>
+             <input id="support-github-username-manual" type="text" class="auth-manual-input"
+               placeholder="your-username" autocomplete="off" spellcheck="false">
+           </div>
+           <button id="support-verify-btn" class="primary-btn verify-btn">
+             <span class="btn-text">✓ Verify & Activate</span>
+           </button>
+           <div id="device-code-container" class="device-code-panel hidden">
+             <p class="device-code-instructions">To authenticate, copy the code below and paste it at GitHub:</p>
+             <div class="device-code-row">
+               <code id="device-user-code" class="device-code">------</code>
+               <button id="copy-code-btn" class="copy-btn">Copy</button>
+             </div>
+             <a id="device-verify-link" href="https://github.com" target="_blank" class="device-verify-link">
+               Open github.com on your phone or another device
+             </a>
+             <p id="device-status" class="device-status"></p>
+           </div>
+           <button id="disconnect-github-btn" class="disconnect-btn hidden">Disconnect GitHub</button>
+         </div>
+         <p class="support-username-error hidden" id="support-username-error"></p>
+       </div>
+     </div>
 
     <!-- ===== DAILY VERIFICATION PANEL ===== -->
     <div id="support-daily-panel" class="support-panel daily hidden">

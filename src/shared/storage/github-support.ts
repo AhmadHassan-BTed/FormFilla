@@ -1,12 +1,34 @@
 /**
- * GitHub support verification system.
- * After 3 form fills, user must star all public repos of AhmadHassan-BTed
- * and Fractal-Compute-Orchestrations, and follow both accounts.
- * Daily re-verification ensures new repos are also starred.
+ * GitHub support verification system — the single source of truth for
+ * support/activation state. This module DOES gate a real feature: after
+ * 3 form fills, the fill button is hidden behind a required-verification
+ * panel (see popup.ts) until this module reports `completed: true`.
  *
- * Verification uses the GitHub public API to check:
+ * Requirement: the user must star ALL public repos of AhmadHassan-BTed
+ * and Fractal-Compute-Orchestrations, and follow both accounts. Daily
+ * re-verification ensures newly-created repos are also starred.
+ *
+ * Verification uses the GitHub public API:
  *  - GET /users/{username}/starred  → paginated list of repos the user has starred
  *  - GET /users/{username}/following/{target} → 204 if following, 404 if not
+ *
+ * ── Bypasses (both real, both skip live GitHub calls) ─────────────────
+ * 1. Author bypass: if the entered username case-insensitively matches
+ *    GITHUB_USER, verification is skipped — the author doesn't need to
+ *    star/follow themself. Trusts whatever string is typed; low stakes
+ *    only because this whole system is a soft nag rather than a paid
+ *    feature gate.
+ * 2. Dev/testing bypass: entering the literal string '090078601' in the
+ *    username field (see popup.ts) causes the UI to call this module
+ *    with the placeholder username 'dev-bypass', which also skips
+ *    verification. This string lives in shipped, unpacked source and is
+ *    trivially discoverable — treat it as a public password, not a
+ *    secret. Anyone who reads it gets a permanent skip of the fill-gate.
+ *
+ * This is the ONLY module that owns support/activation state
+ * (STORAGE_KEY below). activation-status.ts reads from this module's
+ * state rather than keeping its own copy, to avoid the two silently
+ * disagreeing.
  */
 
 const STORAGE_KEY = 'formfilla_github_support';
@@ -43,6 +65,9 @@ const DEFAULT_STATE: GitHubSupportState = {
 
 const GITHUB_USER = 'AhmadHassan-BTed';
 const GITHUB_ORG = 'Fractal-Compute-Orchestrations';
+
+/** Placeholder username the popup stores when the dev bypass is used. */
+const DEV_BYPASS_USERNAME = 'dev-bypass';
 
 // ─── State Management ────────────────────────────────────────────────
 
@@ -119,7 +144,7 @@ async function fetchPublicRepos(owner: string): Promise<string[]> {
   while (hasMore) {
     const response = await fetch(
       `https://api.github.com/users/${owner}/repos?per_page=100&page=${page}&type=public`,
-      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+      { headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'FormFilla-Extension' } }
     );
 
     if (!response.ok) {
@@ -155,7 +180,7 @@ async function fetchUserStarredRepos(username: string): Promise<Set<string>> {
   while (hasMore) {
     const response = await fetch(
       `https://api.github.com/users/${username}/starred?per_page=100&page=${page}`,
-      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+      { headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'FormFilla-Extension' } }
     );
 
     if (!response.ok) {
@@ -188,7 +213,7 @@ async function isUserFollowing(username: string, target: string): Promise<boolea
   try {
     const response = await fetch(
       `https://api.github.com/users/${username}/following/${target}`,
-      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+      { headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'FormFilla-Extension' } }
     );
     return response.status === 204;
   } catch {
@@ -198,13 +223,23 @@ async function isUserFollowing(username: string, target: string): Promise<boolea
 
 /**
  * Validate that a GitHub username exists.
+ * Author (AhmadHassan-BTed) bypasses validation as they own the repos.
  */
 export async function validateGithubUsername(username: string): Promise<boolean> {
+  // Author bypasses GitHub API validation - they don't need to star/follow themselves
+  if (username.toLowerCase() === GITHUB_USER.toLowerCase()) {
+    return true;
+  }
   try {
     const response = await fetch(
       `https://api.github.com/users/${username}`,
-      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+      { headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'FormFilla-Extension' } }
     );
+    // Accept 200 OK or handle 403 (rate limiting) gracefully
+    if (response.status === 403) {
+      console.warn('GitHub API rate limited. Please try again later.');
+      return false;
+    }
     return response.ok;
   } catch {
     return false;
@@ -220,6 +255,8 @@ export async function validateGithubUsername(username: string): Promise<boolean>
  *  2. Starred ALL public repos of Fractal-Compute-Orchestrations
  *  3. Followed AhmadHassan-BTed
  *  4. Followed Fractal-Compute-Orchestrations
+ *
+ * See the module header for the two bypasses this function honors.
  */
 export async function verifySupportCompletion(usernameOverride?: string): Promise<{
   completed: boolean;
@@ -243,6 +280,25 @@ export async function verifySupportCompletion(usernameOverride?: string): Promis
   if (!username) {
     result.error = 'No GitHub username provided. Please enter your username first.';
     return result;
+  }
+
+  // Dev/testing bypass (placeholder username set by popup when the
+  // hardcoded bypass code is entered). See module header.
+  if (username === DEV_BYPASS_USERNAME) {
+    return {
+      completed: true,
+      missingRepos: [],
+      missingFollows: [],
+    };
+  }
+
+  // Author bypass - they don't need to star/follow themselves
+  if (username.toLowerCase() === GITHUB_USER.toLowerCase()) {
+    return {
+      completed: true,
+      missingRepos: [],
+      missingFollows: [],
+    };
   }
 
   try {
@@ -315,7 +371,20 @@ export async function recordReminderShown(): Promise<void> {
 }
 
 /**
- * Check if the user needs to verify support (daily check).
+ * Deactivate support (reset to not completed state).
+ * Used when user wants to re-verify support. Wired to the "Deactivate"
+ * button in the Options UI via activation-status.ts.
+ */
+export async function deactivateSupport(): Promise<void> {
+  const state = await getSupportState();
+  state.supportCompleted = false;
+  state.lastVerificationDate = null;
+  state.dismissed = false;
+  await saveSupportState(state);
+}
+
+/**
+ * Determine if the user needs to verify support (daily check).
  * Returns true if it's been more than 24 hours since last verification.
  */
 export async function needsDailyVerification(): Promise<boolean> {

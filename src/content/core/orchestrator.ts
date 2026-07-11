@@ -184,6 +184,18 @@ function activateWatcher(): void {
         if (mutationWatcherCleanup) mutationWatcherCleanup();
         return;
       }
+    } catch {
+      // Extension context invalidated - stop watching
+      if (mutationWatcherCleanup) mutationWatcherCleanup();
+      return;
+    }
+
+    // Additional guard: check if we can access extension APIs
+    if (typeof chrome === 'undefined' || !chrome.runtime) {
+      return;
+    }
+
+    try {
       const profile = await getProfile();
       if (profile && profile.personal && profile.personal.email) {
         await processFields(newFields, profile);
