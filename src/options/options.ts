@@ -787,8 +787,8 @@ function mergeProfileWithTemplate(profile: Profile, template: any): any {
   if (profile.personal) {
     result.personal = { ...result.personal, ...profile.personal };
   }
-  if ((profile as any).family) {
-    result.family = { ...result.family, ...(profile as any).family };
+  if (profile.family) {
+    result.family = { ...result.family, ...profile.family };
   }
   if (profile.address) {
     result.address = { ...result.address, ...profile.address };
@@ -798,6 +798,18 @@ function mergeProfileWithTemplate(profile: Profile, template: any): any {
   }
   if (profile.workAuthorization) {
     result.workAuthorization = { ...result.workAuthorization, ...profile.workAuthorization };
+  }
+  if (profile.compensation) {
+    result.compensation = { ...result.compensation, ...profile.compensation };
+  }
+  if (profile.availability) {
+    result.availability = { ...result.availability, ...profile.availability };
+  }
+  if (profile.source) {
+    result.source = { ...result.source, ...profile.source };
+  }
+  if (profile.legal) {
+    result.legal = { ...result.legal, ...profile.legal };
   }
   if (Array.isArray(profile.education) && profile.education.length > 0) {
     result.education = profile.education;
@@ -823,7 +835,7 @@ function mergeProfileWithTemplate(profile: Profile, template: any): any {
   if (Array.isArray(profile.certifications) && profile.certifications.length > 0) {
     result.certifications = profile.certifications;
   }
-  if (Array.isArray(profile.skills) && (Array.isArray(profile.skills) || typeof profile.skills === 'object')) {
+  if (profile.skills && (Array.isArray(profile.skills) || typeof profile.skills === 'object')) {
     result.skills = profile.skills;
   }
   if (Array.isArray(profile.languages) && profile.languages.length > 0) {

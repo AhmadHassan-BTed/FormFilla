@@ -22,11 +22,17 @@ export interface PersonalInfo {
 
 export interface AddressInfo {
   street?: string;
+  line2?: string;
   city?: string;
   state?: string;
   postalCode?: string;
   country?: string;
   county?: string;
+}
+
+export interface FamilyInfo {
+  fatherName?: string;
+  motherName?: string;
 }
 
 export interface LinksInfo {
@@ -216,6 +222,7 @@ export interface AcademicsInfo {
 
 export interface Profile {
   personal: PersonalInfo;
+  family?: FamilyInfo;
   address?: AddressInfo;
   links?: LinksInfo;
   workAuthorization?: WorkAuthorizationInfo;
