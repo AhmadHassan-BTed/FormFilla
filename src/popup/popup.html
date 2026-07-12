@@ -44,6 +44,14 @@
         <span class="btn-shine"></span>
       </button>
 
+      <button id="target-map-btn" class="secondary-btn text-btn" type="button" style="margin-top: 8px; width: 100%; border: 1px dashed var(--accent-indigo); background: rgba(99, 102, 241, 0.05); padding: 8px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--accent-indigo); font-weight: 500;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px; vertical-align: middle;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+        <span style="vertical-align: middle; font-size: 12px;">Learn new fields interactively</span>
+      </button>
+ 
       <div id="results-panel" class="results-panel hidden">
         <h3 class="results-title">Analysis & Fill Summary</h3>
         <div class="results-grid">
@@ -62,6 +70,19 @@
           <div class="result-item unmapped">
             <span class="result-val" id="count-unmapped">0</span>
             <span class="result-lbl">Unmapped</span>
+          </div>
+        </div>
+
+        <!-- Scanned Fields List -->
+        <div class="scanned-fields-section" style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+          <button id="toggle-fields-btn" class="secondary-btn text-btn" type="button" style="width: 100%; justify-content: space-between; display: flex; align-items: center; padding: 6px 10px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); font-size: 12px; font-weight: 500;">
+            <span>Show Page Fields</span>
+            <svg id="chevron-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="transition: transform 0.2s ease;">
+              <path d="M7 10l5 5 5-5H7z"/>
+            </svg>
+          </button>
+          <div id="scanned-fields-list" class="scanned-fields-list hidden" style="margin-top: 8px; max-height: 150px; overflow-y: auto; background: rgba(0, 0, 0, 0.15); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 11px; text-align: left; display: flex; flex-direction: column; gap: 6px;">
+            <!-- Populated dynamically -->
           </div>
         </div>
       </div>

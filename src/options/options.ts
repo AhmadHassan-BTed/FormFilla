@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
   saveBtn.addEventListener('click', saveAllProfileData);
-
+  await renderDynamicCustomFields().catch(err => console.error('Failed to load dynamic custom fields', err));
 });
 
 function setupNavigation() {
@@ -747,6 +747,19 @@ async function saveAllProfileData() {
       optIns
     };
 
+    // Read and merge dynamic custom fields
+    const customInputs = document.querySelectorAll('input[id^="custom-field-"], textarea[id^="custom-field-"]') as NodeListOf<HTMLInputElement | HTMLTextAreaElement>;
+    const learnedProfileFields: Record<string, any> = {};
+    customInputs.forEach(input => {
+      const key = input.id.substring('custom-field-'.length).replace(/-/g, '.');
+      const value = input.value;
+      setValueByPath(updatedProfile, key, value);
+      learnedProfileFields[key] = value;
+    });
+    if (customInputs.length > 0) {
+      await chrome.storage.local.set({ learnedProfileFields });
+    }
+
     await saveProfile(updatedProfile);
     currentProfile = updatedProfile;
 
@@ -1256,4 +1269,399 @@ function setupBackupRestore() {
       reader.readAsText(file);
     }
   });
+
+  initLearnedFieldsSection().catch(err => {
+    console.error('Failed to initialize Learned Fields section:', err);
+  });
+}
+
+async function initLearnedFieldsSection() {
+  const rulesTable = document.getElementById('learned-rules-table');
+  const rulesEmpty = document.getElementById('learned-rules-empty');
+  const rulesTbody = document.getElementById('learned-rules-tbody');
+
+  const valuesTable = document.getElementById('learned-values-table');
+  const valuesEmpty = document.getElementById('learned-values-empty');
+  const valuesTbody = document.getElementById('learned-values-tbody');
+
+  const { getLearnedData } = await import('../shared/storage/learned-store.js');
+
+  const updateUI = async () => {
+    const data = await getLearnedData();
+
+    // Render Rules
+    const rulesList = Object.values(data.rules);
+    if (rulesList.length > 0 && rulesTbody && rulesTable && rulesEmpty) {
+      rulesTbody.innerHTML = '';
+      rulesList.forEach(rule => {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid var(--border-color)';
+        
+        const keyTd = document.createElement('td');
+        keyTd.style.padding = '8px 10px';
+        keyTd.textContent = rule.key;
+
+        const exactTd = document.createElement('td');
+        exactTd.style.padding = '8px 10px';
+        exactTd.textContent = rule.exactPhrases.join(', ');
+
+        const regexTd = document.createElement('td');
+        regexTd.style.padding = '8px 10px';
+        regexTd.textContent = rule.regexPatterns.join(', ');
+
+        const actionTd = document.createElement('td');
+        actionTd.style.padding = '8px 10px';
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'save-button';
+        deleteBtn.style.padding = '4px 8px';
+        deleteBtn.style.background = '#e78284';
+        deleteBtn.style.color = '#1e1e2e';
+        deleteBtn.style.fontSize = '11px';
+        deleteBtn.style.width = 'auto';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', async () => {
+          if (confirm(`Delete custom rule for "${rule.key}"?`)) {
+            delete data.rules[rule.key];
+            await chrome.storage.local.set({ learnedRules: data.rules });
+            updateUI();
+          }
+        });
+        actionTd.appendChild(deleteBtn);
+
+        tr.appendChild(keyTd);
+        tr.appendChild(exactTd);
+        tr.appendChild(regexTd);
+        tr.appendChild(actionTd);
+        rulesTbody.appendChild(tr);
+      });
+      rulesTable.classList.remove('hidden');
+      rulesEmpty.classList.add('hidden');
+    } else if (rulesTable && rulesEmpty) {
+      rulesTable.classList.add('hidden');
+      rulesEmpty.classList.remove('hidden');
+    }
+
+    // Render Custom Values
+    const valEntries = Object.entries(data.profileFields);
+    if (valEntries.length > 0 && valuesTbody && valuesTable && valuesEmpty) {
+      valuesTbody.innerHTML = '';
+      valEntries.forEach(([key, val]) => {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid var(--border-color)';
+
+        const keyTd = document.createElement('td');
+        keyTd.style.padding = '8px 10px';
+        keyTd.textContent = key;
+
+        const valTd = document.createElement('td');
+        valTd.style.padding = '8px 10px';
+        valTd.textContent = typeof val === 'object' ? JSON.stringify(val) : String(val);
+
+        const transferTd = document.createElement('td');
+        transferTd.style.padding = '8px 10px';
+        transferTd.style.display = 'flex';
+        transferTd.style.gap = '6px';
+        transferTd.style.alignItems = 'center';
+
+        const pageSelect = document.createElement('select');
+        pageSelect.style.padding = '4px 6px';
+        pageSelect.style.fontSize = '12px';
+        pageSelect.style.background = 'var(--bg-secondary, #313244)';
+        pageSelect.style.border = '1px solid var(--border-color, #45475a)';
+        pageSelect.style.color = 'var(--text-primary, #cdd6f4)';
+        pageSelect.style.borderRadius = '4px';
+        pageSelect.innerHTML = `
+          <option value="personal">Personal Info</option>
+          <option value="education">Education</option>
+          <option value="experience">Experience</option>
+          <option value="references">References</option>
+          <option value="academics">Academics</option>
+        `;
+
+        const subKeyInput = document.createElement('input');
+        subKeyInput.type = 'text';
+        subKeyInput.placeholder = 'e.g. fatherSpouse';
+        subKeyInput.style.padding = '4px 6px';
+        subKeyInput.style.fontSize = '12px';
+        subKeyInput.style.width = '100px';
+        subKeyInput.style.background = 'var(--bg-secondary, #313244)';
+        subKeyInput.style.border = '1px solid var(--border-color, #45475a)';
+        subKeyInput.style.color = 'var(--text-primary, #cdd6f4)';
+        subKeyInput.style.borderRadius = '4px';
+
+        if (key.includes('.')) {
+          const parts = key.split('.');
+          const prefix = parts[0];
+          subKeyInput.value = parts.slice(1).join('.');
+          if (['personal', 'education', 'experience', 'references', 'academics'].includes(prefix)) {
+            pageSelect.value = prefix;
+          }
+        } else {
+          subKeyInput.value = key;
+        }
+
+        const transferBtn = document.createElement('button');
+        transferBtn.className = 'save-button';
+        transferBtn.style.padding = '4px 8px';
+        transferBtn.style.fontSize = '11px';
+        transferBtn.style.background = 'var(--accent-indigo, #cba6f7)';
+        transferBtn.style.color = '#11111b';
+        transferBtn.style.width = 'auto';
+        transferBtn.style.border = 'none';
+        transferBtn.style.borderRadius = '4px';
+        transferBtn.style.cursor = 'pointer';
+        transferBtn.textContent = 'Transfer';
+
+        transferBtn.addEventListener('click', async () => {
+          const prefix = pageSelect.value;
+          const subKey = subKeyInput.value.trim();
+          if (!subKey) {
+            alert('Please enter a sub-key name.');
+            return;
+          }
+          const newKey = `${prefix}.${subKey}`;
+          if (newKey === key) {
+            alert('New key is identical to the current key.');
+            return;
+          }
+
+          if (confirm(`Transfer field "${key}" to "${newKey}"?`)) {
+            // Update learnedProfileFields
+            data.profileFields[newKey] = val;
+            delete data.profileFields[key];
+            await chrome.storage.local.set({ learnedProfileFields: data.profileFields });
+
+            // Update matching rules
+            if (data.rules[key]) {
+              data.rules[newKey] = {
+                ...data.rules[key],
+                key: newKey
+              };
+              delete data.rules[key];
+              await chrome.storage.local.set({ learnedRules: data.rules });
+            }
+
+            // Update main profile
+            const profileResult = await chrome.storage.local.get('profile');
+            if (profileResult.profile) {
+              const profile = profileResult.profile;
+              deleteByPath(profile, key);
+              setValueByPath(profile, newKey, val);
+              await chrome.storage.local.set({ profile });
+            }
+
+            alert(`Field successfully transferred to ${newKey}!`);
+            window.location.reload();
+          }
+        });
+
+        transferTd.appendChild(pageSelect);
+        transferTd.appendChild(subKeyInput);
+        transferTd.appendChild(transferBtn);
+
+        const actionTd = document.createElement('td');
+        actionTd.style.padding = '8px 10px';
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'save-button';
+        deleteBtn.style.padding = '4px 8px';
+        deleteBtn.style.background = '#e78284';
+        deleteBtn.style.color = '#1e1e2e';
+        deleteBtn.style.fontSize = '11px';
+        deleteBtn.style.width = 'auto';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', async () => {
+          if (confirm(`Delete custom saved value for "${key}"?`)) {
+            delete data.profileFields[key];
+            await chrome.storage.local.set({ learnedProfileFields: data.profileFields });
+            const profileResult = await chrome.storage.local.get('profile');
+            if (profileResult.profile) {
+              const profile = profileResult.profile;
+              deleteByPath(profile, key);
+              await chrome.storage.local.set({ profile });
+            }
+            updateUI();
+          }
+        });
+        actionTd.appendChild(deleteBtn);
+
+        tr.appendChild(keyTd);
+        tr.appendChild(valTd);
+        tr.appendChild(transferTd);
+        tr.appendChild(actionTd);
+        valuesTbody.appendChild(tr);
+      });
+      valuesTable.classList.remove('hidden');
+      valuesEmpty.classList.add('hidden');
+    } else if (valuesTable && valuesEmpty) {
+      valuesTable.classList.add('hidden');
+      valuesEmpty.classList.remove('hidden');
+    }
+  };
+
+  const addDownloadHandler = (btnId: string, filename: string, getData: () => Promise<any>) => {
+    const btn = document.getElementById(btnId);
+    btn?.addEventListener('click', async () => {
+      try {
+        const payload = await getData();
+        const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(payload, null, 2));
+        const dl = document.createElement('a');
+        dl.setAttribute('href', dataStr);
+        dl.setAttribute('download', filename);
+        dl.click();
+      } catch (err) {
+        alert('Failed to generate download file.');
+      }
+    });
+  };
+
+  addDownloadHandler('download-rules-btn', 'rules.json', async () => {
+    const data = await getLearnedData();
+    return data.rules;
+  });
+
+  addDownloadHandler('download-profile-btn', 'profile.json', async () => {
+    const data = await getLearnedData();
+    return data.profileFields;
+  });
+
+  addDownloadHandler('download-abbreviations-btn', 'abbreviations.json', async () => {
+    const data = await getLearnedData();
+    return data.abbreviations;
+  });
+
+  addDownloadHandler('download-degrees-btn', 'degrees.json', async () => {
+    const data = await getLearnedData();
+    return data.degrees;
+  });
+
+  addDownloadHandler('download-template-btn', 'profile-template.json', async () => {
+    const data = await getLearnedData();
+    const customTemplate: Record<string, any> = {};
+    for (const key of Object.keys(data.profileFields)) {
+      customTemplate[key] = {
+        type: 'string',
+        description: `Learned field: ${key}`
+      };
+    }
+    return customTemplate;
+  });
+
+  await updateUI();
+}
+
+function deleteByPath(obj: any, path: string): void {
+  const parts = path.split('.');
+  let curr = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const part = parts[i];
+    const arrayMatch = part.match(/^(\w+)\[(\d+)\]$/);
+    if (arrayMatch) {
+      const arrName = arrayMatch[1];
+      const arrIdx = parseInt(arrayMatch[2], 10);
+      if (curr[arrName] && curr[arrName][arrIdx]) {
+        curr = curr[arrName][arrIdx];
+      } else return;
+    } else {
+      if (curr[part]) {
+        curr = curr[part];
+      } else return;
+    }
+  }
+
+  const lastPart = parts[parts.length - 1];
+  const arrayMatch = lastPart.match(/^(\w+)\[(\d+)\]$/);
+  if (arrayMatch) {
+    const arrName = arrayMatch[1];
+    const arrIdx = parseInt(arrayMatch[2], 10);
+    if (curr[arrName] && Array.isArray(curr[arrName])) {
+      curr[arrName].splice(arrIdx, 1);
+    }
+  } else {
+    delete curr[lastPart];
+  }
+}
+
+function setValueByPath(obj: any, path: string, value: any): void {
+  const parts = path.split('.');
+  let curr = obj;
+  for (let i = 0; i < parts.length - 1; i++) {
+    const part = parts[i];
+    const arrayMatch = part.match(/^(\w+)\[(\d+)\]$/);
+    if (arrayMatch) {
+      const arrName = arrayMatch[1];
+      const arrIdx = parseInt(arrayMatch[2], 10);
+      if (!curr[arrName]) curr[arrName] = [];
+      if (!curr[arrName][arrIdx]) curr[arrName][arrIdx] = {};
+      curr = curr[arrName][arrIdx];
+    } else {
+      if (!curr[part]) curr[part] = {};
+      curr = curr[part];
+    }
+  }
+
+  const lastPart = parts[parts.length - 1];
+  const arrayMatch = lastPart.match(/^(\w+)\[(\d+)\]$/);
+  if (arrayMatch) {
+    const arrName = arrayMatch[1];
+    const arrIdx = parseInt(arrayMatch[2], 10);
+    if (!curr[arrName]) curr[arrName] = [];
+    curr[arrName][arrIdx] = value;
+  } else {
+    curr[lastPart] = value;
+  }
+}
+
+async function renderDynamicCustomFields() {
+  const { getLearnedData } = await import('../shared/storage/learned-store.js');
+  const data = await getLearnedData();
+
+  for (const [key, val] of Object.entries(data.profileFields)) {
+    const parts = key.split('.');
+    const prefix = parts[0];
+    
+    let sectionId = 'section-learned-fields';
+    if (prefix === 'personal' || prefix === 'address' || prefix === 'links') {
+      sectionId = 'section-personal';
+    } else if (prefix === 'education') {
+      sectionId = 'section-education';
+    } else if (prefix === 'experience') {
+      sectionId = 'section-experience';
+    } else if (prefix === 'references') {
+      sectionId = 'section-references';
+    } else if (prefix === 'academics') {
+      sectionId = 'section-academics';
+    } else if (prefix === 'documents') {
+      sectionId = 'section-documents';
+    }
+
+    const section = document.getElementById(sectionId);
+    if (!section) continue;
+
+    const card = section.querySelector('.card');
+    if (!card) continue;
+
+    const inputId = `custom-field-${key.replace(/\./g, '-')}`;
+    if (document.getElementById(inputId)) continue;
+
+    const group = document.createElement('div');
+    group.className = 'form-group';
+    group.style.marginTop = '15px';
+
+    const labelText = parts.length > 1 ? parts.slice(1).join(' ') : key;
+    const formattedLabel = labelText.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim() + ' (custom)';
+
+    const label = document.createElement('label');
+    label.setAttribute('for', inputId);
+    label.textContent = formattedLabel;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = inputId;
+    input.value = typeof val === 'object' ? JSON.stringify(val) : String(val);
+    input.style.border = '1px dashed var(--accent-indigo)';
+
+    group.appendChild(label);
+    group.appendChild(input);
+    card.appendChild(group);
+  }
 }

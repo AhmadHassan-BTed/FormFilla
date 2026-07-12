@@ -13,11 +13,15 @@ export interface PersonalInfo {
   pronouns?: string;
   email: string;
   phone: string;
+  mobilePhone?: string;
   summary?: string;
+  otherQualifications?: string;
   nationalId?: string;
+  nationalIdType?: string;
   dateOfBirth?: string;
   cnicNumber?: string;
   passportNumber?: string;
+  languages?: string[] | string;
 }
 
 export interface AddressInfo {
@@ -291,11 +295,21 @@ export interface RepeatedBlock {
   fields: Element[];
 }
 
+export interface ScannedFieldDetail {
+  label: string;
+  name: string;
+  id: string;
+  type: string;
+  key: string;
+  gate: string;
+}
+
 export interface FillResult {
   confident: number;
   review: number;
   unmapped: number;
   needsConfirm: number;
+  details?: ScannedFieldDetail[];
 }
 
 export interface DateFieldGroup {

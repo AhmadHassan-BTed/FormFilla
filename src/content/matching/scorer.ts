@@ -1,11 +1,16 @@
 import { FieldSignals, ScoredField, Candidate, Profile, SensitivityTier, GateType, ArrayBlockType } from '../../shared/types/index.js';
-import { FIELD_RULES } from '../../shared/dictionary/rules.js';
+import { IPlatformAdapter } from '../adapters/adapter.interface.js';
+import { FIELD_RULES, FieldRule } from '../../shared/dictionary/rules.js';
 import { tokenize } from './normalizer.js';
 import { diceCoefficient, jaroWinkler } from './fuzzy.js';
 import { hungarianMaxWeightMatching, FieldCandidates } from './assignment.js';
 import { HIGH_THRESHOLD, LOW_THRESHOLD, CONFIRM_PATTERN } from '../../shared/constants/constants.js';
 
-export function scoreField(signals: FieldSignals, profile: Profile): Candidate[] {
+export function scoreField(
+  signals: FieldSignals,
+  profile: Profile,
+  customRules?: Record<string, FieldRule>
+): Candidate[] {
   const candidates: Candidate[] = [];
 
   const sources = [
@@ -16,7 +21,11 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
     { text: signals.legend || '', weight: 0.6 }
   ].filter(s => s.text.trim() !== '');
 
-  for (const [candidateKey, rule] of Object.entries(FIELD_RULES)) {
+  const rulesToEvaluate = customRules
+    ? { ...FIELD_RULES, ...customRules }
+    : FIELD_RULES;
+
+  for (const [candidateKey, rule] of Object.entries(rulesToEvaluate)) {
     if (rule.sensitivityTier === 'sensitive' && rule.requiresOptIn) {
       const optInKey = rule.optInKey || 'sensitiveEeo';
       const isOptInAllowed = !profile.optIns || profile.optIns[optInKey] !== false;
@@ -27,6 +36,13 @@ export function scoreField(signals: FieldSignals, profile: Profile): Candidate[]
 
     if (!rule.typeCompatible(signals.type, signals.tagName)) {
       continue;
+    }
+
+    if (candidateKey.includes('[]')) {
+      const expectedBlockType = candidateKey.split('[')[0];
+      if (signals.blockType !== expectedBlockType) {
+        continue;
+      }
     }
 
     let autocompleteBonus = 0;
@@ -105,34 +121,58 @@ function blockContextBonus(
     if (candidateKey.startsWith(prefix)) {
       return 15;
     }
-  } else {
-    if (candidateKey.includes('.highest.')) {
-      return 15;
-    }
   }
   return 0;
 }
 
 export function resolveAllFields(
   fieldsWithSignals: { element: Element; signals: FieldSignals }[],
-  profile: Profile
+  profile: Profile,
+  activeAdapter?: IPlatformAdapter,
+  customRules?: Record<string, FieldRule>
 ): ScoredField[] {
+  const scoredFields: ScoredField[] = [];
+  const preAssignedIndices = new Set<number>();
+  const preAssignedKeys = new Set<string>();
+
+  for (let i = 0; i < fieldsWithSignals.length; i++) {
+    const { element, signals } = fieldsWithSignals[i];
+    let override: ScoredField | null = null;
+    if (activeAdapter?.scoreOverride) {
+      try {
+        override = activeAdapter.scoreOverride(signals);
+      } catch (err) {
+        console.error('FormFilla: adapter scoreOverride failed', err);
+      }
+    }
+
+    if (override) {
+      scoredFields.push(override);
+      preAssignedIndices.add(i);
+      preAssignedKeys.add(override.key);
+    }
+  }
+
   const graphInputs: FieldCandidates[] = [];
 
   for (let i = 0; i < fieldsWithSignals.length; i++) {
-    const { signals } = fieldsWithSignals[i];
-    const rawCandidates = scoreField(signals, profile);
+    if (preAssignedIndices.has(i)) continue;
 
-    const concreteCandidates = rawCandidates.map(c => {
-      let concreteKey = c.key;
-      if (signals.blockIndex !== undefined && signals.blockType !== undefined) {
-        concreteKey = c.key.replace('[]', `[${signals.blockIndex}]`);
-      }
-      return {
-        key: concreteKey,
-        score: c.score
-      };
-    });
+    const { signals } = fieldsWithSignals[i];
+    const rawCandidates = scoreField(signals, profile, customRules);
+
+    const concreteCandidates = rawCandidates
+      .map(c => {
+        let concreteKey = c.key;
+        if (signals.blockIndex !== undefined && signals.blockType !== undefined) {
+          concreteKey = c.key.replace('[]', `[${signals.blockIndex}]`);
+        }
+        return {
+          key: concreteKey,
+          score: c.score
+        };
+      })
+      .filter(c => !preAssignedKeys.has(c.key));
 
     graphInputs.push({
       fieldIndex: i,
@@ -141,7 +181,6 @@ export function resolveAllFields(
   }
 
   const assignments = hungarianMaxWeightMatching(graphInputs);
-  const scoredFields: ScoredField[] = [];
 
   for (const assign of assignments) {
     const fieldItem = fieldsWithSignals[assign.fieldIndex];
@@ -161,7 +200,7 @@ export function resolveAllFields(
         gate = 'needs-confirm';
       }
     } else if (originalCand.sensitivityTier === 'sensitive') {
-      gate = confidence === 'high' ? 'confident' : 'unmapped';
+      gate = confidence === 'high' ? 'confident' : 'review';
     } else {
       gate = confidence === 'high' ? 'confident' : 'review';
     }

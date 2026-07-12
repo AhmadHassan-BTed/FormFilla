@@ -95,6 +95,23 @@ function findLabel(el: HTMLElement): string | null {
     }
   }
 
+  // Table cell layout fallback: if the element is inside a table cell (TD/TH),
+  // check if there is a preceding cell in the same row containing text.
+  const cell = el.closest('td, th');
+  if (cell) {
+    const row = cell.closest('tr');
+    if (row) {
+      const cells = Array.from((row as HTMLTableRowElement).cells);
+      const cellIndex = cells.indexOf(cell as HTMLTableCellElement);
+      if (cellIndex > 0) {
+        for (let i = cellIndex - 1; i >= 0; i--) {
+          const text = cells[i].textContent?.trim();
+          if (text) return text;
+        }
+      }
+    }
+  }
+
   return null;
 }
 

@@ -75,11 +75,13 @@
       "prefix",
       "salutation",
       "name prefix",
-      "title (mr/mrs/ms/dr)"
+      "title (mr/mrs/ms/dr)",
+      "title"
     ],
     "regexPatterns": [
       "\\bprefix\\b",
-      "salutation"
+      "salutation",
+      "^title$"
     ],
     "autocompleteTokens": [
       "honorific-prefix"
@@ -216,6 +218,28 @@
       "phone"
     ]
   },
+  "personal.mobilePhone": {
+    "allowedTypes": [
+      "tel",
+      "text"
+    ],
+    "exactPhrases": [
+      "mobile phone",
+      "mobile",
+      "mobile number",
+      "cell phone",
+      "cell",
+      "cell number",
+      "alternate phone",
+      "alternative phone"
+    ],
+    "regexPatterns": [
+      "mobile",
+      "cell",
+      "alt\\s*phone",
+      "alternative\\s*phone"
+    ]
+  },
   "personal.summary": {
     "allowedTags": [
       "TEXTAREA"
@@ -237,6 +261,38 @@
       "\\bbio(graphy)?\\b"
     ]
   },
+  "personal.otherQualifications": {
+    "allowedTags": [
+      "TEXTAREA",
+      "INPUT"
+    ],
+    "exactPhrases": [
+      "other qualifications",
+      "qualifications",
+      "professional qualifications",
+      "additional qualifications",
+      "other qualification"
+    ],
+    "regexPatterns": [
+      "other\\s*qualification",
+      "professional\\s*qualification",
+      "additional\\s*qualification"
+    ]
+  },
+  "personal.languages": {
+    "exactPhrases": [
+      "languages",
+      "foreign languages",
+      "languages spoken",
+      "languages list",
+      "language",
+      "language list"
+    ],
+    "regexPatterns": [
+      "language",
+      "languages"
+    ]
+  },
   "personal.nationalId": {
     "sensitivityTier": "critical",
     "exactPhrases": [
@@ -246,7 +302,11 @@
       "national identification",
       "national identity number",
       "national insurance number",
-      "tax identification number"
+      "tax identification number",
+      "id number",
+      "identification number",
+      "cnic",
+      "cnic number"
     ],
     "regexPatterns": [
       "\\bssn\\b",
@@ -254,7 +314,23 @@
       "national\\s*id\\b",
       "national\\s*identification",
       "national\\s*insurance",
-      "tax\\s*id"
+      "tax\\s*id",
+      "id\\s*number",
+      "identification\\s*number",
+      "cnic"
+    ]
+  },
+  "personal.nationalIdType": {
+    "sensitivityTier": "critical",
+    "exactPhrases": [
+      "id type",
+      "identification type",
+      "national id type",
+      "identity type"
+    ],
+    "regexPatterns": [
+      "id\\s*type",
+      "identification\\s*type"
     ]
   },
   "personal.passportNumber": {
@@ -360,7 +436,8 @@
       "zip",
       "zip code",
       "postal code",
-      "postcode"
+      "postcode",
+      "zip postal code"
     ],
     "regexPatterns": [
       "\\bzip\\b",
@@ -800,7 +877,6 @@
     "exactPhrases": [
       "start date",
       "from date",
-      "from year",
       "started"
     ],
     "regexPatterns": [
@@ -815,12 +891,61 @@
       "to date",
       "graduation date",
       "graduated",
-      "to year",
       "expected graduation"
     ],
     "regexPatterns": [
       "end\\s*date",
       "^to\\b",
+      "grad"
+    ]
+  },
+  "education[].startMonth": {
+    "exactPhrases": [
+      "start month",
+      "from month",
+      "education start month",
+      "education from month"
+    ],
+    "regexPatterns": [
+      "start\\s*month",
+      "from\\s*month"
+    ]
+  },
+  "education[].startYear": {
+    "exactPhrases": [
+      "start year",
+      "from year",
+      "education start year",
+      "education from year"
+    ],
+    "regexPatterns": [
+      "start\\s*year",
+      "from\\s*year"
+    ]
+  },
+  "education[].endMonth": {
+    "exactPhrases": [
+      "end month",
+      "to month",
+      "education end month",
+      "education to month"
+    ],
+    "regexPatterns": [
+      "end\\s*month",
+      "to\\s*month"
+    ]
+  },
+  "education[].endYear": {
+    "exactPhrases": [
+      "end year",
+      "to year",
+      "graduation year",
+      "education end year",
+      "education to year"
+    ],
+    "regexPatterns": [
+      "end\\s*year",
+      "to\\s*year",
       "grad"
     ]
   },
@@ -878,12 +1003,19 @@
     "exactPhrases": [
       "highest degree",
       "highest qualification",
-      "highest level of education"
+      "highest level of education",
+      "highest educational degree awarded",
+      "highest degree awarded",
+      "education degree level",
+      "degree level",
+      "please upload the educational document(s) while submitting your online application"
     ],
     "regexPatterns": [
       "highest\\s*degree",
       "highest\\s*qualification",
-      "level\\s*of\\s*education"
+      "level\\s*of\\s*education",
+      "degree\\s*level",
+      "upload\\s*educational\\s*document"
     ]
   },
   "education.highest.fieldOfStudy": {
@@ -911,12 +1043,16 @@
     ]
   },
   "experience[].title": {
+    "allowedTags": [
+      "INPUT"
+    ],
     "exactPhrases": [
       "title",
       "job title",
       "role",
       "position",
-      "position title"
+      "position title",
+      "experience job title"
     ],
     "regexPatterns": [
       "\\btitle\\b",
@@ -970,6 +1106,54 @@
     "regexPatterns": [
       "end\\s*date",
       "^to\\b"
+    ]
+  },
+  "experience[].startMonth": {
+    "exactPhrases": [
+      "start month",
+      "from month",
+      "experience start month",
+      "experience from month"
+    ],
+    "regexPatterns": [
+      "start\\s*month",
+      "from\\s*month"
+    ]
+  },
+  "experience[].startYear": {
+    "exactPhrases": [
+      "start year",
+      "from year",
+      "experience start year",
+      "experience from year"
+    ],
+    "regexPatterns": [
+      "start\\s*year",
+      "from\\s*year"
+    ]
+  },
+  "experience[].endMonth": {
+    "exactPhrases": [
+      "end month",
+      "to month",
+      "experience end month",
+      "experience to month"
+    ],
+    "regexPatterns": [
+      "end\\s*month",
+      "to\\s*month"
+    ]
+  },
+  "experience[].endYear": {
+    "exactPhrases": [
+      "end year",
+      "to year",
+      "experience end year",
+      "experience to year"
+    ],
+    "regexPatterns": [
+      "end\\s*year",
+      "to\\s*year"
     ]
   },
   "experience[].isCurrent": {
@@ -1027,16 +1211,64 @@
       "manager\\s*name"
     ]
   },
+  "experience[].phone": {
+    "allowedTypes": [
+      "tel",
+      "text"
+    ],
+    "exactPhrases": [
+      "experience phone",
+      "employer phone",
+      "company phone",
+      "supervisor phone"
+    ],
+    "regexPatterns": [
+      "experience\\s*phone",
+      "employer\\s*phone",
+      "company\\s*phone",
+      "supervisor\\s*phone"
+    ]
+  },
+  "experience[].startingSalary": {
+    "exactPhrases": [
+      "starting salary",
+      "experience starting salary"
+    ],
+    "regexPatterns": [
+      "starting\\s*salary"
+    ]
+  },
+  "experience[].endingSalary": {
+    "exactPhrases": [
+      "ending salary",
+      "experience ending salary"
+    ],
+    "regexPatterns": [
+      "ending\\s*salary"
+    ]
+  },
+  "experience[].salaryCurrency": {
+    "exactPhrases": [
+      "currency",
+      "salary currency",
+      "experience currency"
+    ],
+    "regexPatterns": [
+      "currency",
+      "salary\\s*currency"
+    ]
+  },
   "references[].name": {
     "sensitivityTier": "sensitive",
     "exactPhrases": [
       "reference name",
+      "references name",
       "contact name",
       "ref name",
       "full name of reference"
     ],
     "regexPatterns": [
-      "reference\\s*name",
+      "references?\\s*name",
       "ref\\s*name"
     ]
   },
@@ -1045,21 +1277,27 @@
     "exactPhrases": [
       "relationship",
       "how do you know this person",
-      "relationship to you"
+      "relationship to you",
+      "references relationship",
+      "references relation",
+      "references type",
+      "reference type"
     ],
     "regexPatterns": [
       "relationship",
-      "relation"
+      "relation",
+      "references?\\s*(relation|type)"
     ]
   },
   "references[].company": {
     "sensitivityTier": "sensitive",
     "exactPhrases": [
       "reference company",
+      "references company",
       "ref company"
     ],
     "regexPatterns": [
-      "reference\\s*company",
+      "references?\\s*company",
       "ref\\s*company"
     ]
   },
@@ -1067,11 +1305,21 @@
     "sensitivityTier": "sensitive",
     "exactPhrases": [
       "reference title",
-      "ref title"
+      "references title",
+      "ref title",
+      "occupation",
+      "position",
+      "occupation position",
+      "reference occupation",
+      "references occupation",
+      "reference position",
+      "references position"
     ],
     "regexPatterns": [
-      "reference\\s*title",
-      "ref\\s*title"
+      "references?\\s*title",
+      "ref\\s*title",
+      "occupation",
+      "position"
     ]
   },
   "references[].email": {
@@ -1082,10 +1330,11 @@
     "sensitivityTier": "sensitive",
     "exactPhrases": [
       "reference email",
+      "references email",
       "ref email"
     ],
     "regexPatterns": [
-      "reference\\s*email",
+      "references?\\s*email",
       "ref\\s*email"
     ]
   },
@@ -1097,10 +1346,11 @@
     "sensitivityTier": "sensitive",
     "exactPhrases": [
       "reference phone",
+      "references phone",
       "ref phone"
     ],
     "regexPatterns": [
-      "reference\\s*phone",
+      "references?\\s*phone",
       "ref\\s*phone"
     ]
   },
@@ -1111,10 +1361,17 @@
       "fathers name",
       "father's name",
       "father",
-      "name of father"
+      "name of father",
+      "father/spouse",
+      "father spouse",
+      "spouse name",
+      "family reference name",
+      "family reference"
     ],
     "regexPatterns": [
-      "father"
+      "father",
+      "father\\s*spouse",
+      "family\\s*reference"
     ]
   },
   "family.motherName": {
@@ -1184,9 +1441,11 @@
     ],
     "exactPhrases": [
       "photo",
+      "photograph",
       "headshot",
       "picture",
       "upload photo",
+      "upload photograph",
       "upload picture",
       "profile photo"
     ],
@@ -1227,11 +1486,19 @@
       "cnic back",
       "upload cnic",
       "cnic photo",
-      "cnic copy"
+      "cnic copy",
+      "government issued photo id",
+      "government issued id",
+      "photo id",
+      "government id",
+      "identity card"
     ],
     "regexPatterns": [
       "cnic",
-      "national\\s*id\\s*card"
+      "national\\s*id\\s*card",
+      "government\\s*issued\\s*(photo\\s*)?id",
+      "photo\\s*id",
+      "government\\s*id"
     ]
   },
   "documents.driversLicense": {
@@ -2579,7 +2846,9 @@
       "university",
       "college",
       "field of study",
-      "minor"
+      "minor",
+      "education",
+      "qualification"
     ],
     "experience": [
       "company",
@@ -2589,7 +2858,13 @@
       "description",
       "employer",
       "job title",
-      "supervisor"
+      "supervisor",
+      "experience",
+      "work",
+      "employment",
+      "salary",
+      "duration",
+      "history"
     ],
     "references": [
       "name",
@@ -2598,7 +2873,8 @@
       "email",
       "phone",
       "relation",
-      "reference"
+      "reference",
+      "references"
     ],
     "certifications": [
       "certification",

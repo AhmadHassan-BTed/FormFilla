@@ -95,6 +95,12 @@
           </svg>
           Support & Feedback
         </button>
+        <button class="nav-item" data-section="learned-fields">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5.82 12.49L12 15.86l6.18-3.37z" fill="currentColor"/>
+          </svg>
+          Learned Fields
+        </button>
         <button class="nav-item" data-section="settings">
 
           <svg class="nav-icon" viewBox="0 0 24 24">
@@ -1027,6 +1033,72 @@
             style="color: var(--accent-indigo); text-decoration: none; font-weight: 600;">Email</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- SECTION: Learned Fields -->
+  <section id="section-learned-fields" class="content-section">
+    <h2 class="section-title">Learned Fields & Custom Rules</h2>
+    <p class="description" style="margin-bottom: 20px; color: var(--text-secondary);">
+      These are custom matching rules and profile fields learned dynamically from forms you interacted with.
+      You can download only these additions as standalone files, delete them, or view them.
+    </p>
+
+    <!-- Asset Download Card -->
+    <div class="card" style="margin-bottom: 24px; border: 1px dashed var(--accent-indigo); background: rgba(99, 102, 241, 0.02);">
+      <h3 class="subsection-title" style="color: var(--accent-indigo); margin-top: 0;">Download Custom Definition Assets</h3>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Download the specific rules, abbreviations, profile fields, and templates that were newly added or learned during your use of FormFilla. These files contain ONLY your custom additions and can be shared or loaded elsewhere.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <button id="download-rules-btn" class="save-button" style="background: var(--accent-indigo); color: #fff; width: auto; font-size: 12px; padding: 8px 16px; border: none; cursor: pointer;">Download rules.json</button>
+        <button id="download-profile-btn" class="save-button" style="background: var(--accent-indigo); color: #fff; width: auto; font-size: 12px; padding: 8px 16px; border: none; cursor: pointer;">Download profile.json</button>
+        <button id="download-abbreviations-btn" class="save-button" style="background: var(--accent-indigo); color: #fff; width: auto; font-size: 12px; padding: 8px 16px; border: none; cursor: pointer;">Download abbreviations.json</button>
+        <button id="download-degrees-btn" class="save-button" style="background: var(--accent-indigo); color: #fff; width: auto; font-size: 12px; padding: 8px 16px; border: none; cursor: pointer;">Download degrees.json</button>
+        <button id="download-template-btn" class="save-button" style="background: var(--accent-indigo); color: #fff; width: auto; font-size: 12px; padding: 8px 16px; border: none; cursor: pointer;">Download profile-template.json</button>
+      </div>
+    </div>
+
+    <!-- Learned Rules Section -->
+    <h3 class="subsection-title">Custom Matching Rules</h3>
+    <div class="card" style="margin-bottom: 24px;">
+      <div id="learned-rules-empty" style="color: var(--text-secondary); text-align: center; padding: 20px;">
+        No custom rules learned yet. Use the "Interactive Target Mapper" or popup to map unmapped fields.
+      </div>
+      <table id="learned-rules-table" class="data-table hidden" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+            <th style="padding: 10px;">Profile Path Key</th>
+            <th style="padding: 10px;">Exact Phrases</th>
+            <th style="padding: 10px;">Regex Patterns</th>
+            <th style="padding: 10px; width: 60px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="learned-rules-tbody">
+          <!-- Populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Learned Profile Fields Section -->
+    <h3 class="subsection-title">Learned Custom Values</h3>
+    <div class="card">
+      <div id="learned-values-empty" style="color: var(--text-secondary); text-align: center; padding: 20px;">
+        No custom field values saved. Key-value mappings will appear here after learning.
+      </div>
+      <table id="learned-values-table" class="data-table hidden" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+            <th style="padding: 10px;">Field Key Path</th>
+            <th style="padding: 10px;">Saved Value</th>
+            <th style="padding: 10px;">Transfer to Section/Key</th>
+            <th style="padding: 10px; width: 120px;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="learned-values-tbody">
+          <!-- Populated dynamically -->
+        </tbody>
+      </table>
     </div>
   </section>
 
