@@ -38,9 +38,12 @@ export function scoreField(
       continue;
     }
 
-    const isDobIdentifier = /dob|birth/i.test(signals.id || '') || /dob|birth/i.test(signals.name || '');
-    if (isDobIdentifier && candidateKey !== 'personal.dateOfBirth') {
-      continue;
+    if (rule.rejectIfMatches) {
+      const idOrName = `${signals.id || ''} ${signals.name || ''}`.trim();
+      const shouldReject = rule.rejectIfMatches.some(pattern => pattern.test(idOrName));
+      if (shouldReject) {
+        continue;
+      }
     }
 
     if (candidateKey.includes('[]')) {

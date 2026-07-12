@@ -700,6 +700,10 @@
       "when\\s*can\\s*you\\s*start",
       "date\\s*available",
       "availability\\s*date"
+    ],
+    "rejectIfMatches": [
+      "dob",
+      "birth"
     ]
   },
   "availability.noticePeriod": {

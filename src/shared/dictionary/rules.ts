@@ -78,6 +78,7 @@ export interface FieldRule {
   regexPatterns: RegExp[];
   autocompleteTokens: string[];
   negativePatterns?: RegExp[];
+  rejectIfMatches?: RegExp[];
 }
 
 function defaultTypeCompatible(type: string, tagName: string, allowedTypes?: string[], allowedTags?: string[]): boolean {
@@ -241,6 +242,9 @@ export function compileRule(key: string, raw: unknown): FieldRule | null {
     autocompleteTokens: normalizeStringArray(rawRule.autocompleteTokens, key, 'autocompleteTokens') ?? [],
     negativePatterns: rawRule.negativePatterns !== undefined
       ? compileRegexList(rawRule.negativePatterns, key, 'negativePatterns')
+      : undefined,
+    rejectIfMatches: rawRule.rejectIfMatches !== undefined
+      ? compileRegexList(rawRule.rejectIfMatches, key, 'rejectIfMatches')
       : undefined,
   };
 }
