@@ -75,13 +75,11 @@
       "prefix",
       "salutation",
       "name prefix",
-      "title (mr/mrs/ms/dr)",
-      "title"
+      "title (mr/mrs/ms/dr)"
     ],
     "regexPatterns": [
       "\\bprefix\\b",
-      "salutation",
-      "^title$"
+      "salutation"
     ],
     "autocompleteTokens": [
       "honorific-prefix"

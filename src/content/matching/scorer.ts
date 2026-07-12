@@ -1,6 +1,6 @@
 import { FieldSignals, ScoredField, Candidate, Profile, SensitivityTier, GateType, ArrayBlockType } from '../../shared/types/index.js';
 import { IPlatformAdapter } from '../adapters/adapter.interface.js';
-import { FIELD_RULES, FieldRule } from '../../shared/dictionary/rules.js';
+import { FIELD_RULES, FieldRule, compileRule } from '../../shared/dictionary/rules.js';
 import { tokenize } from './normalizer.js';
 import { diceCoefficient, jaroWinkler } from './fuzzy.js';
 import { hungarianMaxWeightMatching, FieldCandidates } from './assignment.js';
@@ -139,6 +139,9 @@ export function resolveAllFields(
   activeAdapter?: IPlatformAdapter,
   customRules?: Record<string, FieldRule>
 ): ScoredField[] {
+  const profileRules = generateRulesFromProfile(profile);
+  const mergedCustomRules = { ...profileRules, ...customRules };
+
   const scoredFields: ScoredField[] = [];
   const preAssignedIndices = new Set<number>();
   const preAssignedKeys = new Set<string>();
@@ -167,7 +170,7 @@ export function resolveAllFields(
     if (preAssignedIndices.has(i)) continue;
 
     const { signals } = fieldsWithSignals[i];
-    const rawCandidates = scoreField(signals, profile, customRules);
+    const rawCandidates = scoreField(signals, profile, mergedCustomRules);
 
     const concreteCandidates = rawCandidates
       .map(c => {
@@ -192,7 +195,8 @@ export function resolveAllFields(
 
   for (const assign of assignments) {
     const fieldItem = fieldsWithSignals[assign.fieldIndex];
-    const originalCand = FIELD_RULES[assign.key.replace(/\[\d+\]/g, '[]')];
+    const normalizedKey = assign.key.replace(/\[\d+\]/g, '[]');
+    const originalCand = mergedCustomRules[normalizedKey] || FIELD_RULES[normalizedKey];
 
     if (!originalCand) continue;
 
@@ -247,4 +251,65 @@ export function resolveAllFields(
   }
 
   return scoredFields;
+}
+
+function escapeRegExp(string: string): string {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export function generateRulesFromProfile(profile: any): Record<string, FieldRule> {
+  if (!profile) return {};
+  const generated: Record<string, FieldRule> = {};
+
+  function traverse(obj: any, path: string) {
+    if (obj === null || obj === undefined) return;
+
+    if (Array.isArray(obj)) {
+      const isPrimitiveArray = obj.length === 0 || typeof obj[0] !== 'object';
+      if (isPrimitiveArray) {
+        // Fall through to compile as a leaf node
+      } else {
+        obj.forEach(item => {
+          traverse(item, `${path}[]`);
+        });
+        return;
+      }
+    } else if (typeof obj === 'object') {
+      for (const [key, val] of Object.entries(obj)) {
+        if (key.startsWith('__')) continue;
+        const newPath = path ? `${path}.${key}` : key;
+        traverse(val, newPath);
+      }
+      return;
+    }
+
+    // Leaf nodes
+    if (FIELD_RULES[path]) return;
+
+    const parts = path.split('.');
+    const lastPart = parts[parts.length - 1];
+    
+    // Split camelCase, snake_case, kebab-case, or spaces
+    const words = lastPart
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/[-_]/g, ' ')
+      .toLowerCase()
+      .trim();
+
+    if (words.length >= 2) {
+      const regexStr = words.split(/\s+/).map(w => escapeRegExp(w)).join('\\s*');
+      const compiled = compileRule(path, {
+        sensitivityTier: 'standard',
+        allowedTypes: ['text', 'textarea', 'email', 'tel', 'url', 'number', 'select', 'date', 'checkbox', 'radio'],
+        exactPhrases: [words, lastPart.toLowerCase()],
+        regexPatterns: [regexStr]
+      });
+      if (compiled) {
+        generated[path] = compiled;
+      }
+    }
+  }
+
+  traverse(profile, '');
+  return generated;
 }
