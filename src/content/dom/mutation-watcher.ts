@@ -365,6 +365,14 @@ export function watch(
     let needsFlush = false;
 
     for (const record of records) {
+      if (record.target.nodeType === Node.ELEMENT_NODE) {
+        const targetEl = record.target as Element;
+        if (targetEl.tagName === 'SELECT' && record.type === 'childList') {
+          reportedFields.delete(targetEl);
+          onRemovedFields?.([targetEl]);
+        }
+      }
+
       for (const node of Array.from(record.addedNodes)) {
         if (node.nodeType === Node.ELEMENT_NODE) {
           const el = node as Element;

@@ -834,7 +834,14 @@ function activateWatcher(): void {
     watcherPendingFields.push(...newFields);
     if (watcherDebounceTimer) clearTimeout(watcherDebounceTimer);
     watcherDebounceTimer = setTimeout(flushWatcherQueue, WATCHER_DEBOUNCE_MS);
-  }, undefined, scanOptions);
+  }, (removedFields) => {
+    for (const f of removedFields) {
+      const key = getDedupKey(f);
+      if (key) {
+        handledElements.delete(key);
+      }
+    }
+  }, scanOptions);
 }
 
 /* ===================================================================
