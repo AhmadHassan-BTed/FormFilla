@@ -82,7 +82,8 @@ sequenceDiagram
 
 ## Features & Gates
 
-- **Zero Network Requests:** Data is stored locally using `chrome.storage.local` and IndexedDB. There are no tracking scripts or server APIs.
+- **Serverless Rules Crowdsourcing:** Anonymously downloads community form rules and uploads new learned element rules to a serverless Firebase Firestore DB. Connections are batched and executed silently at most once per 24 hours.
+- **Local-first Profile Security:** All candidate profile data is kept strictly on-device using `chrome.storage.local`. No personal data or credentials ever leave your browser.
 - **Repeated Block Fingerprinting:** Correctly groups and indexes repeated lists (e.g. multiple jobs or degrees) by checking element layouts.
 - **Unified File Transfers:** Simulates drag-and-drop operations using synthetic `DataTransfer` streams to upload local resumes and cover letters.
 - **Sensitivity Gating:**
@@ -250,6 +251,12 @@ npm run build
 | `DEBUG_MODE`           | `boolean` | `false` | Enables detailed logging in the browser console.                                               |
 | `MOCK_STORAGE`         | `boolean` | `false` | Uses an in-memory database mock for testing.                                                   |
 | `BYPASS_CONFIRMATIONS` | `boolean` | `false` | Automatically fills critical fields without requiring confirmation (for development use only). |
+| `FIREBASE_API_KEY`     | `string`  | `""`    | Web client API key from your Firebase console web application.                                  |
+| `FIREBASE_AUTH_DOMAIN` | `string`  | `""`    | Auth domain link (e.g. `your-project.firebaseapp.com`).                                        |
+| `FIREBASE_PROJECT_ID`  | `string`  | `""`    | Project ID for rules and authentication calls.                                                 |
+| `FIREBASE_STORAGE_BUCKET`| `string` | `""`   | Storage bucket URI for database assets.                                                        |
+| `FIREBASE_MESSAGING_SENDER_ID`| `string`| `""` | Messaging sender ID number.                                                                   |
+| `FIREBASE_APP_ID`      | `string`  | `""`    | App ID registered in your Firebase settings dashboard.                                          |
 
 </details>
 

@@ -142,6 +142,11 @@ Provide these reasons in the text boxes next to each declared permission.
   Required for the optional GitHub support verification feature: checks if the user has starred all required repositories and follows the project accounts. Uses only public GitHub API endpoints with no user data transmitted.
   ```
 
+- **`host_permissions` / `https://*.googleapis.com/*` & `https://*.firebaseio.com/*`**
+  ```text
+  Required to anonymously connect to the crowdsourced rules sync Firestore database. Allows fetching dynamic matching rules and uploading custom learned element mapping rules in the background.
+  ```
+
 ### 3. Remote Code Use Justification
 - **Question**: "Are you using remote code?"
 - **Answer**: Select **No, I am not using Remote code**.
@@ -152,7 +157,7 @@ Provide these reasons in the text boxes next to each declared permission.
 
 ### 4. Data Usage Disclosures
 - **Question**: "What user data do you plan to collect from users now or in the future?"
-- **Answer**: **DO NOT check any boxes**. Leave all categories completely **UNCHECKED**, since the extension operates strictly locally and does not collect or transmit user data.
+- **Answer**: Leave all categories completely **UNCHECKED**, since the extension operates locally. The only outbound sync is user-contributed form rules (anonymized tag names, field names, and regex patterns), which contains no personal, identifying, or profile details.
 
 - **Data Compliance Certifications**:
   Check **all three** boxes at the bottom:

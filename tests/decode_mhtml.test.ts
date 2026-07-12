@@ -1,9 +1,9 @@
 import fs from 'fs';
 import { JSDOM } from 'jsdom';
-import { scanForFields } from './src/content/dom/field-scanner.js';
-import { detectRepeatedBlocks } from './src/content/dom/repeated-block.js';
-import { extractSignals } from './src/content/dom/signal-extractor.js';
-import { resolveAllFields } from './src/content/matching/scorer.js';
+import { scanForFields } from '../src/content/dom/field-scanner.js';
+import { detectRepeatedBlocks } from '../src/content/dom/repeated-block.js';
+import { extractSignals } from '../src/content/dom/signal-extractor.js';
+import { resolveAllFields } from '../src/content/matching/scorer.js';
 import { test } from 'vitest';
 
 test('debug Airblue page fields', () => {
