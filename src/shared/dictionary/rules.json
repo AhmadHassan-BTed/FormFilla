@@ -190,6 +190,40 @@
       "email"
     ]
   },
+  "personal.desiredPosition": {
+    "sensitivityTier": "standard",
+    "exactPhrases": [
+      "applying for position",
+      "position applied for",
+      "desired position",
+      "target position",
+      "position you are applying for",
+      "position"
+    ],
+    "regexPatterns": [
+      "applying\\s*for\\s*position",
+      "desired\\s*position",
+      "position\\s*applied",
+      "target\\s*position"
+    ]
+  },
+  "personal.phoneAreaCode": {
+    "sensitivityTier": "standard",
+    "exactPhrases": [
+      "area code",
+      "country code",
+      "dial code",
+      "phone code",
+      "areacode"
+    ],
+    "regexPatterns": [
+      "area\\s*code",
+      "country\\s*code",
+      "dial\\s*code",
+      "phone\\s*code",
+      "areacode"
+    ]
+  },
   "personal.phone": {
     "allowedTypes": [
       "tel",
@@ -1433,6 +1467,27 @@
     "regexPatterns": [
       "cover\\s*letter",
       "\\bletter\\b"
+    ]
+  },
+  "documents.coverLetterText": {
+    "sensitivityTier": "standard",
+    "allowedTags": [
+      "TEXTAREA",
+      "INPUT"
+    ],
+    "allowedTypes": [
+      "text"
+    ],
+    "exactPhrases": [
+      "cover letter",
+      "cover letter text",
+      "write cover letter",
+      "your cover letter",
+      "message"
+    ],
+    "regexPatterns": [
+      "cover\\s*letter",
+      "message"
     ]
   },
   "documents.photo": {

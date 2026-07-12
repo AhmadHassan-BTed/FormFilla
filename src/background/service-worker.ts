@@ -131,6 +131,30 @@ chrome.runtime.onInstalled.addListener(async () => {
   }
 });
 
+async function handleReportError(errorData: any) {
+  if (!isFirebaseConfigured()) return;
+  try {
+    const firestore = getFirebaseDb();
+    if (!firestore) return;
+
+    if (auth && !auth.currentUser) {
+      await signInAnonymously(auth);
+    }
+
+    const errorsCol = collection(firestore, 'errors');
+    await addDoc(errorsCol, {
+      message: errorData.message || 'Unknown Error',
+      stack: errorData.stack || '',
+      context: errorData.context || '',
+      url: errorData.url || '',
+      timestamp: new Date().toISOString()
+    });
+    console.log('FormFilla: Crash report uploaded successfully.');
+  } catch (err) {
+    console.error('FormFilla: Failed to upload crash report', err);
+  }
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'PERMISSION_NEEDED') {
     console.log(`Content script reported blocked frame origin: ${message.origin}`);
@@ -147,6 +171,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.error('FormFilla: Fetching community rules failed', err);
         sendResponse({ success: false, rules: {}, error: err.message });
       });
+    return true; // async response
+  }
+
+  if (message.type === 'REPORT_ERROR') {
+    handleReportError(message.errorData)
+      .then(() => sendResponse({ success: true }))
+      .catch((err) => sendResponse({ success: false, error: err.message }));
     return true; // async response
   }
 });

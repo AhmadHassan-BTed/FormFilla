@@ -478,7 +478,25 @@ export async function processFields(
     }
 
     try {
-      const value = getValueByPath(profile, sf.key);
+      let value = getValueByPath(profile, sf.key);
+
+      if (sf.key === 'personal.phone' && typeof value === 'string') {
+        const hasAreaCodeField = scoredFields.some(f => f.key === 'personal.phoneAreaCode');
+        if (hasAreaCodeField) {
+          const areaCodeVal = getValueByPath(profile, 'personal.phoneAreaCode');
+          if (typeof areaCodeVal === 'string' && areaCodeVal) {
+            const escapedAreaCode = areaCodeVal.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`^\\s*${escapedAreaCode}\\s*`);
+            value = value.replace(regex, '').trim();
+          } else {
+            const match = value.match(/^\+(\d{1,4})/);
+            if (match) {
+              const prefix = match[0];
+              value = value.substring(prefix.length).trim();
+            }
+          }
+        }
+      }
 
       if (sf.gate === 'needs-confirm') {
         tagField(sf.element, sf.gate, async () => {
@@ -660,7 +678,7 @@ async function fillWithRescans(profile: any): Promise<FillResult> {
       allFields = dedupedFields;
 
     } catch (err) {
-      console.error('FormFilla: scanForFields failed', err);
+      reportCrash(err, 'scan_for_fields');
       allFields = [];
     }
 
@@ -777,7 +795,7 @@ async function flushWatcherQueue(): Promise<void> {
       return;
     }
     // Context is still alive, so this is a real, unexpected failure.
-    console.error('FormFilla: dynamic fill failed', err);
+    reportCrash(err, 'dynamic_fill');
   }
 }
 
@@ -839,7 +857,7 @@ export function startOrchestrator() {
 
           sendResponse({ type: 'FILL_RESULT', result: results });
         } catch (err) {
-          console.error('Error during form fill execution:', err);
+          reportCrash(err, 'form_fill_execution');
           sendResponse({
             type: 'FILL_RESULT',
             result: { confident: 0, review: 0, unmapped: 0, needsConfirm: 0 }
@@ -856,7 +874,7 @@ export function startOrchestrator() {
           startInteractiveMapping();
           sendResponse({ type: 'MAPPER_STARTED' });
         } catch (err) {
-          console.error('FormFilla: failed to start target mapper', err);
+          reportCrash(err, 'start_interactive_mapper');
           sendResponse({ type: 'MAPPER_FAILED' });
         }
       })();
@@ -868,6 +886,23 @@ export function startOrchestrator() {
   // running DOM observers on irrelevant pages (WhatsApp, email, etc.).
 
   console.log('FormFilla content script active. Use the popup to fill forms.');
+}
+
+function reportCrash(err: any, context: string) {
+  console.error(`FormFilla: [${context}] failed`, err);
+  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+    chrome.runtime.sendMessage({
+      type: 'REPORT_ERROR',
+      errorData: {
+        message: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : '',
+        context,
+        url: window.location.href
+      }
+    }, () => {
+      const lastError = chrome.runtime.lastError;
+    });
+  }
 }
 
 export { getValueByPath };

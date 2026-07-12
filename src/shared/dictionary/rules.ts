@@ -101,8 +101,8 @@ function defaultTypeCompatible(type: string, tagName: string, allowedTypes?: str
   }
 
   if (allowedTypes && !allowedTypes.includes(normType)) {
-    const isTextLikeInput = ['text', 'email', 'tel', 'url', 'number', 'date', 'password'].includes(normType) && normTag === 'INPUT';
-    const isTextLikeAllowed = allowedTypes.some(t => ['text', 'email', 'tel', 'url', 'number', 'date', 'password'].includes(t));
+    const isTextLikeInput = ['text', 'email', 'tel', 'url', 'number', 'date', 'password', 'textarea'].includes(normType) || normTag === 'TEXTAREA';
+    const isTextLikeAllowed = allowedTypes.some(t => ['text', 'email', 'tel', 'url', 'number', 'date', 'password', 'textarea'].includes(t));
     if (isTextLikeInput && isTextLikeAllowed) {
       return true;
     }

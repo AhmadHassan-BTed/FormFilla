@@ -19,11 +19,13 @@
     "preferredName": "Ahmad",
     "pronouns": "he/him",
     "email": "ahmadhassan.bted@gmail.com",
+    "phoneAreaCode": "+92",
     "phone": "+92 300 1234567",
     "dateOfBirth": "2004-02-23",
     "nationalId": "12345-6789012-3",
     "cnicNumber": "12345-6789012-3",
     "passportNumber": "",
+    "desiredPosition": "Software Architect",
     "summary": "Senior Software Architect with experience in compiler architectures and bipartite form matching systems."
   },
   "family": {
@@ -210,6 +212,7 @@
       "size": 12345,
       "lastModified": 1625000000000
     },
+    "documents.coverLetterText": "My cover letter content...",
     "documents.coverLetter": {
       "name": "cover_letter.pdf",
       "type": "application/pdf",

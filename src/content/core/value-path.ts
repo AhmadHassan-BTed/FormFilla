@@ -283,6 +283,26 @@ export function getValueByPath(obj: any, path: string): any {
       return val !== undefined && val !== null && val !== '' ? val : traverse(obj, 'personal.phone');
     }
 
+    if (trimmedPath === 'personal.phoneAreaCode' || trimmedPath === 'personal.phoneCountryCode' || trimmedPath === 'personal.phoneDialCode') {
+      const explicitCode = traverse(obj, trimmedPath);
+      if (explicitCode !== undefined && explicitCode !== null && explicitCode !== '') return explicitCode;
+
+      const phone = traverse(obj, 'personal.phone') || traverse(obj, 'personal.mobilePhone');
+      if (typeof phone === 'string') {
+        const cleanPhone = phone.trim();
+        const plusMatch = cleanPhone.match(/^\+(\d{1,4})/);
+        if (plusMatch) {
+          return plusMatch[0];
+        }
+        const spaceIndex = cleanPhone.indexOf(' ');
+        if (spaceIndex > 0) {
+          const firstPart = cleanPhone.substring(0, spaceIndex).trim();
+          if (/^\+?\d+$/.test(firstPart)) return firstPart;
+        }
+      }
+      return undefined;
+    }
+
     if (trimmedPath === 'personal.nationalIdType') {
       const val = traverse(obj, 'personal.nationalIdType');
       return val !== undefined && val !== null && val !== '' ? val : 'National ID';

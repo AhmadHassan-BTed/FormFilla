@@ -38,6 +38,11 @@ export function scoreField(
       continue;
     }
 
+    const isDobIdentifier = /dob|birth/i.test(signals.id || '') || /dob|birth/i.test(signals.name || '');
+    if (isDobIdentifier && candidateKey !== 'personal.dateOfBirth') {
+      continue;
+    }
+
     if (candidateKey.includes('[]')) {
       const expectedBlockType = candidateKey.split('[')[0];
       if (signals.blockType !== expectedBlockType) {
