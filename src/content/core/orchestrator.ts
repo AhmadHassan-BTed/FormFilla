@@ -487,13 +487,16 @@ export async function processFields(
           if (typeof areaCodeVal === 'string' && areaCodeVal) {
             const escapedAreaCode = areaCodeVal.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
             const regex = new RegExp(`^\\s*${escapedAreaCode}\\s*`);
-            value = value.replace(regex, '').trim();
+            value = value.replace(regex, '').replace(/^[\s\-_()/]+/, '').trim();
           } else {
             const match = value.match(/^\+(\d{1,4})/);
             if (match) {
               const prefix = match[0];
-              value = value.substring(prefix.length).trim();
+              value = value.substring(prefix.length).replace(/^[\s\-_()/]+/, '').trim();
             }
+          }
+          if (value.startsWith('0') && value.length > 5) {
+            value = value.substring(1).trim();
           }
         }
       }
