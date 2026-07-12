@@ -368,12 +368,13 @@ export function getValueByPath(obj: any, path: string): any {
     }
 
     if (trimmedPath.startsWith('documents.')) {
-      // obj.documents?.[path] in the original used the FULL path
-      // (including the "documents." prefix) as the lookup key, so it
-      // could only ever match a key literally named "documents.resume"
-      // — which no real profile object has. Strip the prefix and
-      // traverse the remainder against obj.documents instead.
+      if (obj.documents && trimmedPath in obj.documents) {
+        return obj.documents[trimmedPath];
+      }
       const remainder = trimmedPath.substring('documents.'.length);
+      if (obj.documents && remainder in obj.documents) {
+        return obj.documents[remainder];
+      }
       return remainder ? traverse(obj.documents, remainder) : obj.documents;
     }
 

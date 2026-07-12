@@ -360,6 +360,10 @@
               <input type="tel" id="personal-phone" required placeholder="+1 (555) 019-2834">
             </div>
             <div class="form-group">
+              <label for="personal-phoneAreaCode">Phone Area / Dial Code</label>
+              <input type="text" id="personal-phoneAreaCode" placeholder="e.g. +92">
+            </div>
+            <div class="form-group">
               <label for="personal-nationalId">National ID / SSN</label>
               <input type="text" id="personal-nationalId" placeholder="e.g. 12345-6789012-3">
             </div>
@@ -378,6 +382,10 @@
             <div class="form-group">
               <label for="personal-passportNumber">Passport Number</label>
               <input type="text" id="personal-passportNumber" placeholder="e.g. AB1234567">
+            </div>
+            <div class="form-group">
+              <label for="personal-desiredPosition">Applying for Position (Desired Position)</label>
+              <input type="text" id="personal-desiredPosition" placeholder="e.g. Software Architect">
             </div>
             <div class="form-group span-2">
               <label for="personal-summary">Professional Summary</label>
@@ -567,6 +575,15 @@
               <label for="file-coverLetter" class="custom-file-upload-btn">Choose File</label>
               <input type="file" id="file-coverLetter" accept=".pdf,.doc,.docx,.txt" style="display: none;">
               <div class="file-details" id="coverLetter-details">No file chosen</div>
+            </div>
+
+            <div class="file-upload-card" style="grid-column: span 2;">
+              <svg class="file-card-icon" viewBox="0 0 24 24">
+                <path
+                  d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+              </svg>
+              <h3>Cover Letter Text (for typed forms)</h3>
+              <textarea id="documents-coverLetterText" rows="4" style="width: 100%; min-height: 80px; background: rgba(0,0,0,0.2); border: 1px rgba(255,255,255,0.08) solid; border-radius: 8px; color: #fff; padding: 10px; margin-top: 10px; font-family: inherit; font-size: 13px;" placeholder="Paste your cover letter text here..."></textarea>
             </div>
 
             <div class="file-upload-card">

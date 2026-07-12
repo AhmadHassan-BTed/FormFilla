@@ -86,11 +86,13 @@ async function loadProfileData() {
   setInputValue('personal-middleName', currentProfile.personal.middleName);
   setInputValue('personal-email', currentProfile.personal.email);
   setInputValue('personal-phone', currentProfile.personal.phone);
+  setInputValue('personal-phoneAreaCode', currentProfile.personal.phoneAreaCode);
   setInputValue('personal-nationalId', currentProfile.personal.nationalId);
   setInputValue('personal-namePrefix', currentProfile.personal.namePrefix);
   setInputValue('personal-dateOfBirth', currentProfile.personal.dateOfBirth);
   setInputValue('personal-cnicNumber', currentProfile.personal.cnicNumber);
   setInputValue('personal-passportNumber', currentProfile.personal.passportNumber);
+  setInputValue('personal-desiredPosition', currentProfile.personal.desiredPosition);
   setInputValue('personal-summary', currentProfile.personal.summary);
 
   if (currentProfile.address) {
@@ -188,6 +190,7 @@ async function loadProfileData() {
 
   renderFileDetails('resume', currentProfile.documents?.['documents.resume']);
   renderFileDetails('coverLetter', currentProfile.documents?.['documents.coverLetter']);
+  setInputValue('documents-coverLetterText', currentProfile.documents?.['documents.coverLetterText']);
   renderFileDetails('photo', currentProfile.documents?.['documents.photo']);
   renderFileDetails('sop', currentProfile.documents?.['documents.sop']);
   renderFileDetails('researchProposal', currentProfile.documents?.['documents.researchProposal']);
@@ -529,11 +532,13 @@ async function saveAllProfileData() {
       middleName: getInputValue('personal-middleName'),
       email: getInputValue('personal-email'),
       phone: getInputValue('personal-phone'),
+      phoneAreaCode: getInputValue('personal-phoneAreaCode'),
       nationalId: getInputValue('personal-nationalId'),
       namePrefix: getInputValue('personal-namePrefix'),
       dateOfBirth: getInputValue('personal-dateOfBirth'),
       cnicNumber: getInputValue('personal-cnicNumber'),
       passportNumber: getInputValue('personal-passportNumber'),
+      desiredPosition: getInputValue('personal-desiredPosition'),
       summary: getInputValue('personal-summary')
     };
 
@@ -641,7 +646,7 @@ async function saveAllProfileData() {
       });
     });
 
-    const documentsMetadata: Record<string, DocumentFile> = currentProfile.documents || {};
+    const documentsMetadata: Record<string, any> = currentProfile.documents || {};
     for (const [key, upload] of Object.entries(uploadedFiles)) {
       await saveFileBlob(key, upload.buffer);
       documentsMetadata[key] = {
@@ -651,6 +656,7 @@ async function saveAllProfileData() {
         lastModified: upload.file.lastModified
       };
     }
+    documentsMetadata['documents.coverLetterText'] = getInputValue('documents-coverLetterText') || '';
 
     const academics = {
       greVerbal: getInputValue('academics-greVerbal'),

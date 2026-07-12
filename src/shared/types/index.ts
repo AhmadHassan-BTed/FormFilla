@@ -13,6 +13,7 @@ export interface PersonalInfo {
   pronouns?: string;
   email: string;
   phone: string;
+  phoneAreaCode?: string;
   mobilePhone?: string;
   summary?: string;
   otherQualifications?: string;
@@ -21,6 +22,7 @@ export interface PersonalInfo {
   dateOfBirth?: string;
   cnicNumber?: string;
   passportNumber?: string;
+  desiredPosition?: string;
   languages?: string[] | string;
 }
 
