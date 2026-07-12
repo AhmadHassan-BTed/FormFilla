@@ -195,10 +195,17 @@ async function loadProfileData() {
   renderFileDetails('sop', currentProfile.documents?.['documents.sop']);
   renderFileDetails('researchProposal', currentProfile.documents?.['documents.researchProposal']);
   renderFileDetails('recommendationLetter', currentProfile.documents?.['documents.recommendationLetter']);
-  // Load Portfolio & Skills tab fields
-  const skillsText = Array.isArray(currentProfile.skills)
-    ? currentProfile.skills.join(', ')
-    : (currentProfile.skills ? JSON.stringify(currentProfile.skills) : '');
+  let skillsText = '';
+  if (Array.isArray(currentProfile.skills)) {
+    skillsText = currentProfile.skills.join(', ');
+  } else if (currentProfile.skills && typeof currentProfile.skills === 'object') {
+    const allSkills = Object.values(currentProfile.skills).flatMap(val =>
+      Array.isArray(val) ? val : []
+    );
+    skillsText = allSkills.join(', ');
+  } else if (currentProfile.skills) {
+    skillsText = String(currentProfile.skills);
+  }
   setInputValue('portfolio-skills', skillsText);
 
   const courseworkText = Array.isArray(currentProfile.coursework)

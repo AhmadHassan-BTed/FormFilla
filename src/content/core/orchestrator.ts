@@ -4,12 +4,7 @@ import { detectRepeatedBlocks } from '../dom/repeated-block.js';
 import { extractSignals } from '../dom/signal-extractor.js';
 import { resolveAllFields } from '../matching/scorer.js';
 import { compileRule, FieldRule } from '../../shared/dictionary/rules.js';
-import { setNativeValue } from '../fill/native-setter.js';
-import { fillSelect } from '../fill/select-filler.js';
-import { fillChoiceGroup } from '../fill/radio-checkbox-filler.js';
-import { fillDate } from '../fill/date-filler.js';
-import { fillFileInput } from '../fill/file-filler.js';
-import { fillCombobox } from '../fill/combobox-adapter.js';
+import { FIELD_FILLERS, fillChoiceGroup } from '../fill/index.js';
 import { tagField } from '../ui/review-highlighter.js';
 import { watch } from '../dom/mutation-watcher.js';
 import { FieldSignals, FillResult, ScoredField, ScannedFieldDetail } from '../../shared/types/index.js';
@@ -72,8 +67,6 @@ const FIELD_FILL_TIMEOUT_MS = 4000;
 /** How long the watcher waits for a burst of DOM changes to settle before processing them as one batch. */
 const WATCHER_DEBOUNCE_MS = 350;
 
-/** Input types that are never data-entry targets, regardless of what upstream scanning returns. */
-const NON_FILLABLE_INPUT_TYPES = new Set(['hidden', 'submit', 'button', 'reset', 'image']);
 
 /** Confidence ranking used to pick one representative gate for a whole radio/checkbox group. */
 const GATE_PRIORITY: Record<string, number> = {
@@ -196,49 +189,7 @@ function bestGate(scored: ScoredField[]): string {
   return best;
 }
 
-/* ===================================================================
-   Field-type helpers
-   =================================================================== */
 
-function isComboboxLike(el: Element): boolean {
-  return (
-    el.getAttribute('role') === 'combobox' ||
-    el.getAttribute('aria-haspopup') === 'listbox' ||
-    el.classList.contains('select2') ||
-    el.classList.contains('combobox')
-  );
-}
-
-/**
- * Best-effort fill for rich-text / contenteditable widgets (cover-letter
- * boxes built on Quill, ProseMirror, etc.) — a field type the original
- * dispatch never handled at all, so it silently fell through to
- * "unmapped" every time. execCommand still drives the real browser
- * text-insertion pipeline, which is what most of these editors actually
- * listen to; direct textContent assignment is only the fallback.
- */
-function fillContentEditable(el: HTMLElement, value: string): boolean {
-  try {
-    el.focus();
-    const selection = window.getSelection();
-    if (selection) {
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-    if (document.execCommand('insertText', false, value)) {
-      return true;
-    }
-  } catch {
-    // execCommand unsupported/blocked here — fall through to the manual path.
-  }
-
-  el.textContent = value;
-  el.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true, inputType: 'insertText', data: value }));
-  el.dispatchEvent(new Event('change', { bubbles: true }));
-  return true;
-}
 
 /* ===================================================================
    Per-field fill dispatch
@@ -247,70 +198,24 @@ function fillContentEditable(el: HTMLElement, value: string): boolean {
 async function fillSingleField(sf: ScoredField, val: any, profile: any): Promise<boolean> {
   if (!isFillableValue(val)) return false;
 
-  const el: any = sf.element;
+  const el = sf.element;
+  const context = {
+    profile,
+    key: sf.key,
+    getFileBlob,
+    getValueByPath,
+    stringifyValue
+  };
 
-  // Date-group fields are synthetic descriptor objects built in
-  // processFields() below — NOT real DOM elements. This check must run
-  // before anything touches `.tagName`, which date-groups don't have.
-  // (The original version read el.tagName unconditionally before this
-  // check ever ran, which threw on every date-group field and silently
-  // killed the rest of the batch along with it — see the top comment.)
-  if (el && typeof el === 'object' && el.type === 'date-group') {
-    return await fillDate(el, stringifyValue(val));
-  }
-
-  if (!(el instanceof Element)) {
-    return false;
-  }
-
-  const tagName = el.tagName.toUpperCase();
-
-  if (tagName === 'INPUT' && NON_FILLABLE_INPUT_TYPES.has((el as HTMLInputElement).type)) {
-    return false;
-  }
-
-  if (tagName === 'SELECT') {
-    return fillSelect(el as HTMLSelectElement, stringifyValue(val));
-  }
-
-  if (isComboboxLike(el)) {
-    return await fillCombobox(el, stringifyValue(val));
-  }
-
-  if (tagName === 'INPUT' && (el as HTMLInputElement).type === 'file') {
-    let docMetadata = val as { name?: string; type?: string } | undefined;
-    let targetKey = sf.key;
-
-    if (!docMetadata || !docMetadata.name) {
-      if (sf.key === 'documents.cv') {
-        targetKey = 'documents.resume';
-        docMetadata = getValueByPath(profile, targetKey);
-      } else if (sf.key === 'documents.resume') {
-        targetKey = 'documents.cv';
-        docMetadata = getValueByPath(profile, targetKey);
-      }
-    }
-
-    if (docMetadata && docMetadata.name) {
+  for (const filler of FIELD_FILLERS) {
+    if (filler.supports(el, sf.key, val)) {
       try {
-        const fileBytes = await getFileBlob(targetKey);
-        if (fileBytes) {
-          return await fillFileInput(el as HTMLInputElement, fileBytes, docMetadata.name, docMetadata.type ?? 'application/octet-stream');
-        }
-      } catch (e) {
-        console.warn(`FormFilla: could not load binary bytes for "${targetKey}" from storage`, e);
+        return await filler.fill(el, val, context);
+      } catch (err) {
+        console.error(`FormFilla: Filler failed for key ${sf.key}`, err);
+        return false;
       }
     }
-    return false;
-  }
-
-  if (tagName === 'INPUT' || tagName === 'TEXTAREA') {
-    setNativeValue(el as HTMLInputElement | HTMLTextAreaElement, stringifyValue(val));
-    return true;
-  }
-
-  if ((el as HTMLElement).isContentEditable) {
-    return fillContentEditable(el as HTMLElement, stringifyValue(val));
   }
 
   return false;

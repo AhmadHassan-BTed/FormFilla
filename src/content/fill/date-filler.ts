@@ -2,6 +2,7 @@ import { DateFieldGroup } from '../../shared/types/index.js';
 import { setNativeValue } from './native-setter.js';
 import { fillSelect } from './select-filler.js';
 import { fillCombobox } from './combobox-adapter.js';
+import { FieldFiller, FillContext } from './filler.interface.js';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -429,4 +430,14 @@ function dispatchKeyEvent(el: HTMLElement, eventName: string, key: string): void
   el.dispatchEvent(new KeyboardEvent(eventName, {
     key, code, keyCode, which: keyCode, bubbles: true, cancelable: true
   }));
+}
+
+export class DateFiller implements FieldFiller {
+  supports(el: any, key: string, val: any): boolean {
+    return !!(el && typeof el === 'object' && el.type === 'date-group');
+  }
+
+  async fill(el: any, val: any, context: FillContext): Promise<boolean> {
+    return await fillDateAsync(el, context.stringifyValue(val));
+  }
 }

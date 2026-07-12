@@ -1,5 +1,6 @@
 import { bestMatch } from '../matching/fuzzy.js';
 import { setNativeValue } from './native-setter.js';
+import { FieldFiller, FillContext } from './filler.interface.js';
 
 /**
  * Fills any combobox / autocomplete / searchable-select widget, then selects
@@ -463,4 +464,23 @@ function raf(): Promise<void> {
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isComboboxLike(el: Element): boolean {
+  return (
+    el.getAttribute('role') === 'combobox' ||
+    el.getAttribute('aria-haspopup') === 'listbox' ||
+    el.classList.contains('select2') ||
+    el.classList.contains('combobox')
+  );
+}
+
+export class ComboboxFiller implements FieldFiller {
+  supports(el: any, key: string, val: any): boolean {
+    return el instanceof Element && isComboboxLike(el);
+  }
+
+  async fill(el: any, val: any, context: FillContext): Promise<boolean> {
+    return await fillCombobox(el, context.stringifyValue(val));
+  }
 }

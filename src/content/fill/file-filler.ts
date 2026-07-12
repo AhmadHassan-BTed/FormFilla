@@ -35,6 +35,8 @@
  * path, rather than assuming the drop "probably worked."
  */
 
+import { FieldFiller, FillContext } from './filler.interface.js';
+
 export interface FileDescriptor {
   bytes: ArrayBuffer;
   name: string;
@@ -223,4 +225,42 @@ function dispatchDragSequence(target: HTMLElement, dt: DataTransfer): void {
 
 function raf(): Promise<void> {
   return new Promise(resolve => requestAnimationFrame(() => resolve()));
+}
+
+export class FileFiller implements FieldFiller {
+  supports(el: any, key: string, val: any): boolean {
+    return el instanceof Element && el.tagName.toUpperCase() === 'INPUT' && (el as HTMLInputElement).type === 'file';
+  }
+
+  async fill(el: any, val: any, context: FillContext): Promise<boolean> {
+    let docMetadata = val as { name?: string; type?: string } | undefined;
+    let targetKey = context.key;
+
+    if (!docMetadata || !docMetadata.name) {
+      if (context.key === 'documents.cv') {
+        targetKey = 'documents.resume';
+        docMetadata = context.getValueByPath(context.profile, targetKey);
+      } else if (context.key === 'documents.resume') {
+        targetKey = 'documents.cv';
+        docMetadata = context.getValueByPath(context.profile, targetKey);
+      }
+    }
+
+    if (docMetadata && docMetadata.name) {
+      try {
+        const fileBytes = await context.getFileBlob(targetKey);
+        if (fileBytes) {
+          return await fillFileInput(
+            el as HTMLInputElement,
+            fileBytes,
+            docMetadata.name,
+            docMetadata.type ?? 'application/octet-stream'
+          );
+        }
+      } catch (e) {
+        console.warn(`FormFilla: could not load binary bytes for "${targetKey}" from storage`, e);
+      }
+    }
+    return false;
+  }
 }

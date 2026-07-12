@@ -1,4 +1,5 @@
 import { bestMatch } from '../matching/fuzzy.js';
+import { FieldFiller, FillContext } from './filler.interface.js';
 
 export function fillSelect(el: HTMLSelectElement, value: string | string[]): boolean {
   const options = Array.from(el.options);
@@ -97,4 +98,14 @@ export function fillSelect(el: HTMLSelectElement, value: string | string[]): boo
   }
 
   return false;
+}
+
+export class SelectFiller implements FieldFiller {
+  supports(el: any, key: string, val: any): boolean {
+    return el instanceof Element && el.tagName.toUpperCase() === 'SELECT';
+  }
+
+  fill(el: any, val: any, context: FillContext): boolean {
+    return fillSelect(el as HTMLSelectElement, context.stringifyValue(val));
+  }
 }

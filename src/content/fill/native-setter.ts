@@ -29,6 +29,8 @@
  * recovering an unpatched native reference.
  */
 
+import { FieldFiller, FillContext } from './filler.interface.js';
+
 export interface SetNativeValueOptions {
   /**
    * Which events to dispatch after the value is set. Default: both —
@@ -169,4 +171,58 @@ function buildInputEvent(inputType?: string): Event {
   } catch {
     return new Event('input', { bubbles: true, composed: true });
   }
+}
+
+const NON_FILLABLE_INPUT_TYPES = new Set([
+  'submit', 'button', 'image', 'reset', 'file', 'hidden', 'radio', 'checkbox'
+]);
+
+export class TextInputFiller implements FieldFiller {
+  supports(el: any, key: string, val: any): boolean {
+    if (!(el instanceof Element)) return false;
+    const tagName = el.tagName.toUpperCase();
+    if (tagName === 'INPUT') {
+      const type = (el as HTMLInputElement).type?.toLowerCase();
+      return !NON_FILLABLE_INPUT_TYPES.has(type);
+    }
+    return tagName === 'TEXTAREA';
+  }
+
+  fill(el: any, val: any, context: FillContext): boolean {
+    setNativeValue(el as HTMLInputElement | HTMLTextAreaElement, context.stringifyValue(val));
+    return true;
+  }
+}
+
+export class ContentEditableFiller implements FieldFiller {
+  supports(el: any, key: string, val: any): boolean {
+    return el instanceof Element && (el as HTMLElement).isContentEditable;
+  }
+
+  fill(el: any, val: any, context: FillContext): boolean {
+    return fillContentEditable(el as HTMLElement, context.stringifyValue(val));
+  }
+}
+
+function fillContentEditable(el: HTMLElement, value: string): boolean {
+  try {
+    el.focus();
+    const selection = window.getSelection();
+    if (selection) {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+    if (document.execCommand('insertText', false, value)) {
+      return true;
+    }
+  } catch {
+    // execCommand unsupported/blocked here — fall through to the manual path.
+  }
+
+  el.textContent = value;
+  el.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true, inputType: 'insertText', data: value }));
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+  return true;
 }
