@@ -14,8 +14,7 @@
   "permissions": [
     "storage",
     "scripting",
-    "activeTab",
-    "identity"
+    "activeTab"
   ],
   "host_permissions": [
     "https://api.github.com/*",

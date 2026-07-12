@@ -17,33 +17,33 @@ function injectStyles() {
   style.id = MAPPER_STYLE_ID;
   style.textContent = `
     .formfilla-hover-target {
-      outline: 2px dashed #6366f1 !important;
+      outline: 2px dashed #a855f7 !important;
       outline-offset: 2px !important;
       cursor: crosshair !important;
-      box-shadow: 0 0 8px rgba(99, 102, 241, 0.4) !important;
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.4) !important;
       transition: outline 0.1s ease, box-shadow 0.1s ease !important;
     }
 
     #${PANEL_ID} {
       position: absolute;
       z-index: 10000000;
-      background: #1e1e2e;
-      color: #cdd6f4;
-      border: 1px solid #45475a;
+      background: #0c0e17;
+      color: #f3f4f6;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
-      padding: 16px;
-      width: 320px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      width: 330px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
       font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-size: 14px;
       line-height: 1.4;
     }
 
     #${PANEL_ID} h4 {
-      margin: 0 0 12px 0;
-      color: #f5c2e7;
-      font-size: 16px;
-      font-weight: 600;
+      margin: 0 0 16px 0;
+      color: #f3f4f6;
+      font-size: 18px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -51,72 +51,84 @@ function injectStyles() {
 
     #${PANEL_ID} .signal-row {
       font-size: 12px;
-      color: #a6adc8;
-      background: #313244;
-      padding: 6px 10px;
-      border-radius: 6px;
-      margin-bottom: 12px;
+      color: #9ca3af;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
       word-break: break-all;
     }
 
     #${PANEL_ID} .input-group {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     #${PANEL_ID} label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      font-size: 13px;
       font-weight: 500;
-      color: #bac2de;
+      color: #9ca3af;
     }
 
     #${PANEL_ID} input, #${PANEL_ID} select {
       width: 100%;
       box-sizing: border-box;
-      background: #313244;
-      border: 1px solid #45475a;
-      color: #cdd6f4;
-      padding: 8px 10px;
-      border-radius: 6px;
-      font-size: 13px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: #f3f4f6;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
       outline: none;
-      transition: border-color 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     #${PANEL_ID} input:focus, #${PANEL_ID} select:focus {
-      border-color: #cba6f7;
+      border-color: #a855f7;
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.15);
     }
 
     #${PANEL_ID} .actions-row {
       display: flex;
-      gap: 10px;
-      margin-top: 16px;
+      gap: 12px;
+      margin-top: 20px;
     }
 
     #${PANEL_ID} button {
       flex: 1;
-      padding: 10px;
-      border-radius: 6px;
+      padding: 12px;
+      border-radius: 8px;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 15px;
       border: none;
       cursor: pointer;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
     }
 
     #${PANEL_ID} button:hover {
-      opacity: 0.9;
+      opacity: 0.95;
+    }
+
+    #${PANEL_ID} button:active {
+      transform: scale(0.98);
     }
 
     #${PANEL_ID} .btn-save {
-      background: #cba6f7;
-      color: #11111b;
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.3);
+    }
+
+    #${PANEL_ID} .btn-save:hover {
+      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
     }
 
     #${PANEL_ID} .btn-cancel {
-      background: #313244;
-      color: #cdd6f4;
-      border: 1px solid #45475a;
+      background: rgba(255, 255, 255, 0.05);
+      color: #f3f4f6;
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
   `;
   document.head.appendChild(style);
@@ -205,7 +217,7 @@ function createLearningPanel(target: HTMLElement, x: number, y: number) {
   panel.innerHTML = `
     <h4>
       <span>Learn Field</span>
-      <span style="font-size: 11px; background: #eba0ac; color: #11111b; padding: 2px 6px; border-radius: 4px;">Dynamic Map</span>
+      <span style="font-size: 11px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%); border: 1px solid rgba(168, 85, 247, 0.3); color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-weight: 500;">Dynamic Map</span>
     </h4>
     <div class="signal-row">
       <strong>Detected:</strong> "${labelText}"<br/>
