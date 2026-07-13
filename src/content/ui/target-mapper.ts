@@ -22,7 +22,7 @@ function injectStyles() {
       outline: 2px dashed var(--accent-purple, var(--primary-accent, #a855f7)) !important;
       outline-offset: 2px !important;
       cursor: crosshair !important;
-      box-shadow: 0 0 8px var(--accent-purple, var(--primary-accent, rgba(168, 85, 247, 0.4))) !important;
+      box-shadow: 0 0 0 2px #07080c, 0 0 8px var(--focus-ring, rgba(168, 85, 247, 0.3)) !important;
       transition: outline 0.1s ease, box-shadow 0.1s ease !important;
     }
 
@@ -168,7 +168,6 @@ export function startInteractiveMapping() {
     injectStyles();
 
     document.body.addEventListener('mouseover', handleMouseOver, true);
-    document.body.addEventListener('mouseout', handleMouseOut, true);
     document.body.addEventListener('click', handleClick, true);
   });
 }
@@ -176,7 +175,6 @@ export function startInteractiveMapping() {
 function stopInteractiveMapping() {
   isMappingActive = false;
   document.body.removeEventListener('mouseover', handleMouseOver, true);
-  document.body.removeEventListener('mouseout', handleMouseOut, true);
   document.body.removeEventListener('click', handleClick, true);
 
   if (hoverTarget) {
@@ -198,18 +196,8 @@ function handleMouseOver(e: MouseEvent) {
     }
     hoverTarget = target;
     hoverTarget.classList.add('formfilla-hover-target');
-  }
-}
-
-function handleMouseOut(e: MouseEvent) {
-  if (!isMappingActive) return;
-  const related = e.relatedTarget as HTMLElement | null;
-  if (!related || !(
-    related.tagName === 'INPUT' ||
-    related.tagName === 'SELECT' ||
-    related.tagName === 'TEXTAREA' ||
-    related.hasAttribute('contenteditable')
-  )) {
+  } else {
+    // Moved away from form controls completely
     if (hoverTarget) {
       hoverTarget.classList.remove('formfilla-hover-target');
       hoverTarget = null;
