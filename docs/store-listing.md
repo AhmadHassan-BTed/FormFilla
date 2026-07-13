@@ -175,7 +175,7 @@ Provide these reasons in the text boxes next to each declared permission.
 - **Field**: `Privacy policy URL*`
 - **Value**:
   ```text
-  https://github.com/AhmadHassan-BTed/FormFilla/blob/main/PRIVACY.md
+  https://github.com/AhmadHassan-BTed/FormFilla-core/blob/main/PRIVACY.md
   ```
 *(If `PRIVACY.md` is not in your repo yet, create it and link to the correct branch.)*
 
