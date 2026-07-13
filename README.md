@@ -1,22 +1,17 @@
 <p align="center">
   <img src="docs/assets/small_promo_tile_hd.png" alt="FormFilla promo tile" style="width:100%;max-width:440px;height:auto;" />
-</p>
 
 <h1 align="center">FormFilla</h1>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-grey?labelColor=black" alt="License: Proprietary"></a>
-  <a href="https://github.com/AhmadHassan-BTed/FormFilla/actions"><img src="https://img.shields.io/github/actions/workflow/status/AhmadHassan-BTed/FormFilla/ci.yml?branch=main&label=Build&labelColor=black&color=grey" alt="CI Status"></a>
-  <a href="docs/CHANGELOG.md"><img src="https://img.shields.io/badge/Version-0.1.0-grey?labelColor=black" alt="Version"></a>
-  <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Language-TypeScript-grey?labelColor=black" alt="TypeScript"></a>
-  <img src="https://img.shields.io/badge/Engine-Zero--AI-grey?labelColor=black" alt="Zero AI" />
-  <img src="https://img.shields.io/badge/Logic-Kuhn--Munkres-grey?labelColor=black" alt="Kuhn-Munkres" />
-  <img src="https://img.shields.io/badge/Architecture-Local--First-grey?labelColor=black" alt="Local First" />
-  <img src="https://img.shields.io/badge/Privacy-100%25-grey?labelColor=black" alt="Privacy" />
+  <img src="https://img.shields.io/badge/License-Proprietary%20Browser%20Extension-red.svg" alt="License: Proprietary Browser Extension"/>
+  <img src="https://img.shields.io/badge/Distribution-Closed%20Source-orange.svg" alt="Distribution: Closed Source"/>
+  <img src="https://img.shields.io/badge/Deployment-Chrome%20Extension-blue.svg" alt="Deployment: Chrome Extension"/>
 </p>
 
 <p align="center">
   <strong>A local-first, privacy-respecting form engine designed to restore candidate dignity and speed in the modern job hunt.</strong>
+  > **Architecture Note:** *The core extraction engine and DOM manipulation logic for FormFilla are closed-source. This repository serves as the public documentation, issue tracker routing, and release hub for the compiled browser extension.*
 </p>
 
 <hr />
@@ -82,8 +77,7 @@ sequenceDiagram
 
 ## Features & Gates
 
-- **Serverless Rules Crowdsourcing:** Anonymously downloads community form rules and uploads new learned element rules to a serverless Firebase Firestore DB. Connections are batched and executed silently at most once per 24 hours.
-- **Local-first Profile Security:** All candidate profile data is kept strictly on-device using `chrome.storage.local`. No personal data or credentials ever leave your browser.
+- **Zero Network Requests:** Data is stored locally using `chrome.storage.local` and IndexedDB. There are no tracking scripts or server APIs.
 - **Repeated Block Fingerprinting:** Correctly groups and indexes repeated lists (e.g. multiple jobs or degrees) by checking element layouts.
 - **Unified File Transfers:** Simulates drag-and-drop operations using synthetic `DataTransfer` streams to upload local resumes and cover letters.
 - **Sensitivity Gating:**
@@ -93,7 +87,9 @@ sequenceDiagram
 
 ---
 
-## Directory Structure
+## Directory Structure (Private Repository)
+
+_Note: The following represents the internal architecture of the closed-source FormFilla Repository._
 
 ```
 FormFilla/
@@ -110,7 +106,7 @@ FormFilla/
 │   ├── assets/            # Static assets (logos, SVGs)
 │   ├── background/        # Service Worker bootstrapping
 │   │   └── service-worker.ts
-│   ├── content/           # Core runtime engine
+│   ├── content/           # Core runtime engine (closed-source)
 │   │   ├── adapters/      # Site-specific platform adapters (Workday, Lever, Greenhouse)
 │   │   │   ├── adapter.interface.ts
 │   │   │   ├── generic.ts
@@ -213,75 +209,11 @@ _Every JSON configuration contains an embedded `__meta__` prompt. You can supply
 
 ---
 
-## Setup & Development
+## Installation
 
-### 1. Installation
+FormFilla is officially distributed through the Chrome Web Store to ensure you always receive the latest, secure updates directly to your browser.
 
-Install project dependencies and build the extension:
-
-```bash
-# Clone the repository
-git clone https://github.com/AhmadHassan-BTed/FormFilla.git
-cd FormFilla
-
-# Install local dependencies
-npm install
-
-# Copy local configurations
-cp .env.example .env
-
-# Build unpacked files
-npm run build
-```
-
-### 2. Loading the Extension in Chrome
-
-1. Navigate to `chrome://extensions/` in Google Chrome.
-2. Toggle **Developer mode** in the top-right corner.
-3. Click **Load unpacked** in the top-left corner.
-4. Select the `dist/` directory inside this repository.
-
-### 3. Environment Variables
-
-<details>
-<summary>Click to expand environment configurations</summary>
-
-| Parameter              | Type      | Default | Description                                                                                    |
-| :--------------------- | :-------- | :------ | :--------------------------------------------------------------------------------------------- |
-| `DEBUG_MODE`           | `boolean` | `false` | Enables detailed logging in the browser console.                                               |
-| `MOCK_STORAGE`         | `boolean` | `false` | Uses an in-memory database mock for testing.                                                   |
-| `BYPASS_CONFIRMATIONS` | `boolean` | `false` | Automatically fills critical fields without requiring confirmation (for development use only). |
-| `FIREBASE_API_KEY`     | `string`  | `""`    | Web client API key from your Firebase console web application.                                  |
-| `FIREBASE_AUTH_DOMAIN` | `string`  | `""`    | Auth domain link (e.g. `your-project.firebaseapp.com`).                                        |
-| `FIREBASE_PROJECT_ID`  | `string`  | `""`    | Project ID for rules and authentication calls.                                                 |
-| `FIREBASE_STORAGE_BUCKET`| `string` | `""`   | Storage bucket URI for database assets.                                                        |
-| `FIREBASE_MESSAGING_SENDER_ID`| `string`| `""` | Messaging sender ID number.                                                                   |
-| `FIREBASE_APP_ID`      | `string`  | `""`    | App ID registered in your Firebase settings dashboard.                                          |
-
-</details>
-
----
-
-## Testing & Quality Assurance
-
-Static verification and unit testing are configured to validate changes:
-
-```bash
-# Run unit and integration tests
-npm run test
-
-# Run static type checks
-npx tsc --noEmit
-```
-
-Docker configurations are available to compile and test the extension within a standardized container:
-
-```bash
-# Run tests inside Docker
-docker compose -f infra/docker/docker-compose.yml up --build
-```
-
----
+**[Install FormFilla from the Chrome Web Store](#)** _(Link will be added upon store approval)_
 
 ## Roadmap
 
@@ -291,8 +223,15 @@ docker compose -f infra/docker/docker-compose.yml up --build
 
 ---
 
-## License & Support
+## Bugs & Feature Requests
 
-This project is closed-source and proprietary. See the [LICENSE](LICENSE) file for details.
+We manage all feedback, bugs, and feature requests centrally to maintain a clean workflow.
 
-For bug reports or support inquiries, open an issue in this repository or contact the author, **AhmadHassan-BTed**, at **ahmadhassan.bted@gmail.com**. Refer to the [Security Policy](docs/SECURITY.md) for vulnerability reporting.
+If you encounter an issue or have a feature idea for FormFilla, please submit it to our central board:
+**[Open the Central Issue Tracker](https://github.com/AhmadHassan-BTed/FormFilla/issues)**
+
+---
+
+## License
+
+The documentation and public assets in this repository are available for viewing, but the FormFilla software itself is Proprietary and closed-source.
