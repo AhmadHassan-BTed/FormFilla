@@ -184,6 +184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const statusDot = document.querySelector('.status-dot') as HTMLSpanElement;
   const statusText = document.getElementById('status-text') as HTMLSpanElement;
 
+  const countTotal = document.getElementById('count-total') as HTMLSpanElement;
   const countConfident = document.getElementById('count-confident') as HTMLSpanElement;
   const countReview = document.getElementById('count-review') as HTMLSpanElement;
   const countConfirm = document.getElementById('count-confirm') as HTMLSpanElement;
@@ -395,6 +396,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (response?.type === 'FILL_RESULT') {
           const res = response.result as FillResult;
+          const total = res.confident + res.review + res.needsConfirm + res.unmapped;
+          if (countTotal) countTotal.textContent = String(total);
           countConfident.textContent = String(res.confident);
           countReview.textContent = String(res.review);
           countConfirm.textContent = String(res.needsConfirm);
