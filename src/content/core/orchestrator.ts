@@ -125,6 +125,7 @@ function isPrimitiveFillable(v: any): boolean {
 function isFillableValue(val: any): boolean {
   if (val instanceof Date) return !isNaN(val.getTime());
   if (Array.isArray(val)) return val.some(isPrimitiveFillable);
+  if (val && typeof val === 'object' && typeof val.name === 'string') return true;
   return isPrimitiveFillable(val);
 }
 
@@ -386,6 +387,12 @@ export async function processFields(
 
     try {
       let value = getValueByPath(profile, sf.key);
+
+      if (sf.key === 'documents.cv' && (!value || typeof value !== 'object' || !value.name)) {
+        value = getValueByPath(profile, 'documents.resume');
+      } else if (sf.key === 'documents.resume' && (!value || typeof value !== 'object' || !value.name)) {
+        value = getValueByPath(profile, 'documents.cv');
+      }
 
       if (sf.key === 'personal.phone' && typeof value === 'string') {
         const hasAreaCodeField = scoredFields.some(f => f.key === 'personal.phoneAreaCode');

@@ -124,14 +124,22 @@ function isSelfHidden(el: Element): boolean {
 function isElementVisible(el: Element, cache: Map<Element, boolean>): boolean {
   if (!el.isConnected) return false;
 
-  const rect = el.getBoundingClientRect();
-  if (rect.width === 0 && rect.height === 0) return false;
+  const isFileInput = el instanceof HTMLInputElement && el.type === 'file';
+  if (!isFileInput) {
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) return false;
+  }
 
   let current: Element | null = el;
   while (current) {
     let hidden = cache.get(current);
     if (hidden === undefined) {
-      hidden = isSelfHidden(current);
+      if (isFileInput && current === el) {
+        const htmlEl = current as HTMLElement & { inert?: boolean };
+        hidden = htmlEl.hidden || htmlEl.inert || current.getAttribute('aria-hidden') === 'true';
+      } else {
+        hidden = isSelfHidden(current);
+      }
       cache.set(current, hidden);
     }
     if (hidden) return false;
