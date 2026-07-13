@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.1] - 2026-07-13
 
 ### Added
-* **Mind2Web Benchmarking**: Integrated osunlp/Mind2Web dataset and created [scripts/evaluate-mind2web.js](file:///p:/JobApplier/scripts/evaluate-mind2web.js) local JSDOM stress-testing runner.
+* **Mind2Web Benchmarking**: Integrated osunlp/Mind2Web dataset and created [scripts/evaluate-mind2web.js](../scripts/evaluate-mind2web.js) local JSDOM stress-testing runner.
 * **Popup Stats Header**: Dynamic fields scanner metric displaying total scanned inputs (`Analysis & Fill Summary (X Fields)`) inside the popup.
 * **Document Fallbacks**: CV and Resume cross-fallback value resolution in the filling orchestrator.
 

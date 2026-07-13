@@ -25,7 +25,7 @@ graph TD
 Depending on the behavior you want to modify, target the following specific files:
 
 ### A. To Add Core Recognition Rules
-*   **Target File**: [`src/shared/dictionary/rules.json`](file:///p:/JobApplier/src/shared/dictionary/rules.json)
+*   **Target File**: [`src/shared/dictionary/rules.json`](src/shared/dictionary/rules.json)
 *   **When to edit**: When a field exists in standard forms (like "Mobile Phone" or "ID Type") but is not mapped, or mapped with low confidence.
 *   **Format**:
     ```json
@@ -48,19 +48,19 @@ Depending on the behavior you want to modify, target the following specific file
 *   **When to edit**: When labels use unusual acronyms or abbreviations (e.g. `Ph.` -> `Phone`, `DOB` -> `Date of Birth`) that cause matching to fail.
 
 ### C. To Adjust Scoring & Matching Weights
-*   **Target File**: [`src/content/matching/scorer.ts`](file:///p:/JobApplier/src/content/matching/scorer.ts)
+*   **Target File**: [`src/content/matching/scorer.ts`](src/content/matching/scorer.ts)
 *   **When to edit**: To change the relative weights of signals (labels vs. placeholders vs. input names vs. IDs) or adjust thresholds (e.g. `HIGH_THRESHOLD`).
 *   **Key variables**: `sources` weights list inside the `scoreField()` function.
 
 ### D. To Modify DOM Field Retrieval & Grouping
-*   **Target File**: [`src/content/dom/field-scanner.ts`](file:///p:/JobApplier/src/content/dom/field-scanner.ts)
+*   **Target File**: [`src/content/dom/field-scanner.ts`](src/content/dom/field-scanner.ts)
 *   **When to edit**: When date fields or split arrays are containerized in a non-standard layout, or to modify which tag names are permitted for scanning.
 
 ### E. To Add Custom Fill Logics
 *   **Target Files**: 
-    - [`src/content/fill/select-filler.ts`](file:///p:/JobApplier/src/content/fill/select-filler.ts) (comboboxes/multi-selects)
-    - [`src/content/fill/date-filler.ts`](file:///p:/JobApplier/src/content/fill/date-filler.ts) (date grouping/split months)
-    - [`src/content/fill/file-filler.ts`](file:///p:/JobApplier/src/content/fill/file-filler.ts) (attachments/drop zones)
+    - [`src/content/fill/select-filler.ts`](src/content/fill/select-filler.ts) (comboboxes/multi-selects)
+    - [`src/content/fill/date-filler.ts`](src/content/fill/date-filler.ts) (date grouping/split months)
+    - [`src/content/fill/file-filler.ts`](src/content/fill/file-filler.ts) (attachments/drop zones)
 *   **When to edit**: To add custom formatting (e.g. month translation digits like Jan -> `1`) or upload fallbacks.
 
 ---
