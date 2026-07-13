@@ -116,7 +116,23 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 
 function isPrimitiveFillable(v: any): boolean {
   if (v === null || v === undefined) return false;
-  if (typeof v === 'string') return v.trim().length > 0;
+  if (typeof v === 'string') {
+    const trimmed = v.trim();
+    if (trimmed.length === 0) return false;
+    const lowercase = trimmed.toLowerCase();
+    if (
+      lowercase.includes('goes here') ||
+      lowercase.includes('your plans after graduating') ||
+      lowercase === 'father name' ||
+      lowercase === 'mother name' ||
+      lowercase === 'reference contact' ||
+      lowercase === 'my cover letter content...' ||
+      lowercase === 'my cover letter content'
+    ) {
+      return false;
+    }
+    return true;
+  }
   if (typeof v === 'number') return !Number.isNaN(v);
   if (typeof v === 'boolean') return true;
   return false;
@@ -394,13 +410,20 @@ export async function processFields(
         value = getValueByPath(profile, 'documents.cv');
       }
 
-      if (sf.key === 'personal.phone' && typeof value === 'string') {
-        const hasAreaCodeField = scoredFields.some(f => f.key === 'personal.phoneAreaCode');
+      if ((sf.key === 'personal.phone' || sf.key === 'personal.mobilePhone') && typeof value === 'string') {
+        const hasAreaCodeField = scoredFields.some(f => 
+          f.key === 'personal.phoneAreaCode' || 
+          f.key === 'personal.phoneCountryCode' || 
+          f.key === 'personal.phoneDialCode'
+        );
         if (hasAreaCodeField) {
-          const areaCodeVal = getValueByPath(profile, 'personal.phoneAreaCode');
+          const areaCodeVal = getValueByPath(profile, 'personal.phoneAreaCode') || 
+                              getValueByPath(profile, 'personal.phoneCountryCode') || 
+                              getValueByPath(profile, 'personal.phoneDialCode');
           if (typeof areaCodeVal === 'string' && areaCodeVal) {
-            const escapedAreaCode = areaCodeVal.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-            const regex = new RegExp(`^\\s*${escapedAreaCode}\\s*`);
+            const cleanCode = areaCodeVal.replace(/^\+/, '').trim();
+            const escapedAreaCode = cleanCode.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`^\\s*\\+?\\s*${escapedAreaCode}\\s*`);
             value = value.replace(regex, '').replace(/^[\s\-_()/]+/, '').trim();
           } else {
             const match = value.match(/^\+(\d{1,4})/);

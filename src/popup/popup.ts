@@ -398,7 +398,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (chrome.runtime.lastError) {
           fillBtn.disabled = false;
           if (btnText) btnText.textContent = 'Fill this page';
-          statusText.textContent = 'Cannot connect to this page (ensure it is loaded and not a chrome:// or new tab page).';
+          statusText.textContent = 'Cannot connect to this page. Please refresh the page or restart the browser.';
           return;
         }
 

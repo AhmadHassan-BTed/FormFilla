@@ -6,30 +6,32 @@ import { fillSelect } from '../fill/select-filler.js';
 
 let isMappingActive = false;
 let hoverTarget: HTMLElement | null = null;
+let activeThemeName = 'brutalist-dark';
 
 const MAPPER_STYLE_ID = 'formfilla-mapper-styles';
 const PANEL_ID = 'formfilla-learning-panel';
 
 function injectStyles() {
-  if (document.getElementById(MAPPER_STYLE_ID)) return;
+  const existing = document.getElementById(MAPPER_STYLE_ID);
+  if (existing) existing.remove();
 
   const style = document.createElement('style');
   style.id = MAPPER_STYLE_ID;
   style.textContent = `
     .formfilla-hover-target {
-      outline: 2px dashed #a855f7 !important;
+      outline: 2px dashed var(--accent-purple, var(--primary-accent, #a855f7)) !important;
       outline-offset: 2px !important;
       cursor: crosshair !important;
-      box-shadow: 0 0 8px rgba(168, 85, 247, 0.4) !important;
+      box-shadow: 0 0 8px var(--accent-purple, var(--primary-accent, rgba(168, 85, 247, 0.4))) !important;
       transition: outline 0.1s ease, box-shadow 0.1s ease !important;
     }
 
     #${PANEL_ID} {
       position: absolute;
       z-index: 10000000;
-      background: #0c0e17;
-      color: #f3f4f6;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--bg-color, #0c0e17);
+      color: var(--text-primary, #f3f4f6);
+      border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
       border-radius: 12px;
       padding: 20px;
       width: 330px;
@@ -41,7 +43,7 @@ function injectStyles() {
 
     #${PANEL_ID} h4 {
       margin: 0 0 16px 0;
-      color: #f3f4f6;
+      color: var(--text-primary, #f3f4f6);
       font-size: 18px;
       font-weight: 700;
       display: flex;
@@ -49,11 +51,21 @@ function injectStyles() {
       justify-content: space-between;
     }
 
+    #${PANEL_ID} .formfilla-badge-dynamic {
+      font-size: 11px;
+      background: var(--card-bg, rgba(255, 255, 255, 0.05));
+      border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+      color: var(--text-primary, #f3f4f6);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
     #${PANEL_ID} .signal-row {
       font-size: 12px;
-      color: #9ca3af;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary, #9ca3af);
+      background: var(--input-bg, rgba(0, 0, 0, 0.2));
+      border: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
       padding: 8px 12px;
       border-radius: 8px;
       margin-bottom: 16px;
@@ -69,15 +81,15 @@ function injectStyles() {
       margin-bottom: 8px;
       font-size: 13px;
       font-weight: 500;
-      color: #9ca3af;
+      color: var(--text-secondary, #9ca3af);
     }
 
     #${PANEL_ID} input, #${PANEL_ID} select {
       width: 100%;
       box-sizing: border-box;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      color: #f3f4f6;
+      background: var(--input-bg, rgba(0, 0, 0, 0.2));
+      border: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
+      color: var(--text-primary, #f3f4f6);
       padding: 10px 14px;
       border-radius: 8px;
       font-size: 14px;
@@ -86,8 +98,8 @@ function injectStyles() {
     }
 
     #${PANEL_ID} input:focus, #${PANEL_ID} select:focus {
-      border-color: #a855f7;
-      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.15);
+      border-color: var(--accent-purple, var(--primary-accent, #a855f7));
+      box-shadow: 0 0 0 2px var(--focus-ring, rgba(168, 85, 247, 0.15));
     }
 
     #${PANEL_ID} .actions-row {
@@ -116,19 +128,20 @@ function injectStyles() {
     }
 
     #${PANEL_ID} .btn-save {
-      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-      color: #ffffff;
-      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.3);
+      background: var(--save-btn-bg, var(--btn-primary-bg, #a855f7));
+      color: var(--save-btn-text, var(--btn-primary-text, #ffffff));
+      box-shadow: var(--save-btn-shadow, 0 4px 14px rgba(168, 85, 247, 0.3));
     }
 
     #${PANEL_ID} .btn-save:hover {
-      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+      opacity: 0.9;
+      box-shadow: var(--save-btn-shadow-hover, 0 6px 20px rgba(168, 85, 247, 0.4));
     }
 
     #${PANEL_ID} .btn-cancel {
-      background: rgba(255, 255, 255, 0.05);
-      color: #f3f4f6;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: var(--input-bg, rgba(255, 255, 255, 0.05));
+      color: var(--text-primary, #f3f4f6);
+      border: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
     }
   `;
   document.head.appendChild(style);
@@ -137,11 +150,27 @@ function injectStyles() {
 export function startInteractiveMapping() {
   if (isMappingActive) return;
   isMappingActive = true;
-  injectStyles();
+  chrome.storage.local.get(['theme'], (result) => {
+    const themeVal = result.theme;
+    activeThemeName = typeof themeVal === 'string' ? themeVal : 'brutalist-dark';
 
-  document.body.addEventListener('mouseover', handleMouseOver, true);
-  document.body.addEventListener('mouseout', handleMouseOut, true);
-  document.body.addEventListener('click', handleClick, true);
+    // Inject the theme stylesheet link directly into the webpage context
+    const linkId = 'formfilla-theme-link';
+    let link = document.getElementById(linkId) as HTMLLinkElement;
+    if (!link) {
+      link = document.createElement('link');
+      link.id = linkId;
+      link.rel = 'stylesheet';
+      document.head.appendChild(link);
+    }
+    link.href = chrome.runtime.getURL(`themes/theme-${activeThemeName}.css`);
+
+    injectStyles();
+
+    document.body.addEventListener('mouseover', handleMouseOver, true);
+    document.body.addEventListener('mouseout', handleMouseOut, true);
+    document.body.addEventListener('click', handleClick, true);
+  });
 }
 
 function stopInteractiveMapping() {
@@ -174,10 +203,17 @@ function handleMouseOver(e: MouseEvent) {
 
 function handleMouseOut(e: MouseEvent) {
   if (!isMappingActive) return;
-  const target = e.target as HTMLElement;
-  if (hoverTarget === target) {
-    hoverTarget.classList.remove('formfilla-hover-target');
-    hoverTarget = null;
+  const related = e.relatedTarget as HTMLElement | null;
+  if (!related || !(
+    related.tagName === 'INPUT' ||
+    related.tagName === 'SELECT' ||
+    related.tagName === 'TEXTAREA' ||
+    related.hasAttribute('contenteditable')
+  )) {
+    if (hoverTarget) {
+      hoverTarget.classList.remove('formfilla-hover-target');
+      hoverTarget = null;
+    }
   }
 }
 
@@ -201,8 +237,28 @@ async function handleClick(e: MouseEvent) {
   }
 }
 
-function createLearningPanel(target: HTMLElement, x: number, y: number) {
+async function createLearningPanel(target: HTMLElement, x: number, y: number) {
   removeLearningPanel();
+
+  // Load active profile from storage to build dynamic dropdown sections
+  const result = await new Promise<any>((resolve) => {
+    chrome.storage.local.get(['profile'], resolve);
+  });
+  const profile = result?.profile || {};
+
+  const sections: string[] = [];
+  for (const key of Object.keys(profile)) {
+    if (key === '__meta__') continue;
+    const val = profile[key];
+    const friendlyName = key.charAt(0).toUpperCase() + key.slice(1);
+    if (Array.isArray(val)) {
+      sections.push(`<option value="${key}[0].">${key}[0]. (${friendlyName} List)</option>`);
+    } else if (val && typeof val === 'object') {
+      sections.push(`<option value="${key}.">${key}. (${friendlyName} Details)</option>`);
+    } else {
+      sections.push(`<option value="${key}">${key} (Root Property)</option>`);
+    }
+  }
 
   const blocks = detectRepeatedBlocks(document.body);
   const signals = extractSignals(target, blocks);
@@ -217,7 +273,7 @@ function createLearningPanel(target: HTMLElement, x: number, y: number) {
   panel.innerHTML = `
     <h4>
       <span>Learn Field</span>
-      <span style="font-size: 11px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%); border: 1px solid rgba(168, 85, 247, 0.3); color: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-weight: 500;">Dynamic Map</span>
+      <span class="formfilla-badge-dynamic">Dynamic Map</span>
     </h4>
     <div class="signal-row">
       <strong>Detected:</strong> "${labelText}"<br/>
@@ -225,30 +281,10 @@ function createLearningPanel(target: HTMLElement, x: number, y: number) {
     </div>
     
     <div class="input-group">
-      <label for="formfilla-map-key-select">Choose Profile Destination:</label>
+      <label for="formfilla-map-key-select">Choose Profile Destination Section:</label>
       <select id="formfilla-map-key-select">
-        <option value="">-- Select Key or Choose Learned --</option>
-        <optgroup label="Personal Info">
-          <option value="personal.firstName">First Name</option>
-          <option value="personal.lastName">Last Name</option>
-          <option value="personal.middleName">Middle Name</option>
-          <option value="personal.mobilePhone">Mobile Phone</option>
-          <option value="personal.phone">Phone</option>
-          <option value="personal.email">Email</option>
-          <option value="personal.dateOfBirth">Birth Date</option>
-          <option value="personal.nationalId">ID Number (CNIC)</option>
-          <option value="personal.nationalIdType">ID Type</option>
-          <option value="personal.otherQualifications">Other Qualifications</option>
-        </optgroup>
-        <optgroup label="Repeated Arrays (Use index like [0])">
-          <option value="experience[0].company">Experience 1 - Company</option>
-          <option value="experience[0].title">Experience 1 - Title</option>
-          <option value="education[0].school">Education 1 - School</option>
-          <option value="references[0].name">Reference 1 - Name</option>
-        </optgroup>
-        <optgroup label="Learned / Custom Section">
-          <option value="personal.customField">Learned Fields Tab</option>
-        </optgroup>
+        <option value="">-- Choose Profile Section --</option>
+        ${sections.join('\n')}
       </select>
     </div>
 
@@ -280,7 +316,10 @@ function createLearningPanel(target: HTMLElement, x: number, y: number) {
     }
   });
 
-  panel.querySelector('#formfilla-btn-cancel')?.addEventListener('click', removeLearningPanel);
+  panel.querySelector('#formfilla-btn-cancel')?.addEventListener('click', () => {
+    removeLearningPanel();
+    cleanupStylesAndTheme();
+  });
 
   panel.querySelector('#formfilla-btn-save')?.addEventListener('click', async () => {
     const finalKey = customInput.value.trim();
@@ -309,6 +348,7 @@ function createLearningPanel(target: HTMLElement, x: number, y: number) {
       sendExperimentalTelemetry(finalKey, signals);
 
       removeLearningPanel();
+      cleanupStylesAndTheme();
     } catch (err) {
       console.error('FormFilla: error saving learned mapping', err);
       alert('Failed to save learning mapping.');
@@ -321,6 +361,13 @@ function removeLearningPanel() {
   if (panel) {
     panel.remove();
   }
+}
+
+function cleanupStylesAndTheme() {
+  const link = document.getElementById('formfilla-theme-link');
+  if (link) link.remove();
+  const styles = document.getElementById(MAPPER_STYLE_ID);
+  if (styles) styles.remove();
 }
 
 function sendExperimentalTelemetry(key: string, signals: any) {
