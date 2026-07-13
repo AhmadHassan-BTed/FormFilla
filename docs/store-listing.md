@@ -194,5 +194,5 @@ Go to the **Settings** tab in the developer console and complete the following s
 ### 2. Trader Declaration (EEA Consumer Laws)
 - **Field**: `Declare if your publisher account is considered a trader or non-trader...`
 - **Value**: Select **This is a non-trader account**.
-- **Reason**: Since FormFilla is a free, open-source tool built as a student/side project with no monetization, ads, or commercial services, you are legally considered a **non-trader**.
+- **Reason**: Since FormFilla is a free, proprietary tool built as a student/side project with no monetization, ads, or commercial services, you are legally considered a **non-trader**.
 
