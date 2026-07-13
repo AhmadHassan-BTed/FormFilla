@@ -147,6 +147,12 @@ Provide these reasons in the text boxes next to each declared permission.
   Required to anonymously connect to the crowdsourced rules sync Firestore database. Allows fetching dynamic matching rules and uploading custom learned element mapping rules in the background.
   ```
 
+- **`content_scripts` & `optional_host_permissions` / `<all_urls>`**
+  ```text
+  Required to detect, scan, and auto-fill forms on any job board, university application portal, or online enrollment form the user navigates to. Because these application forms are distributed across thousands of distinct domains, the extension must be authorized to load its layout parsing scripts on any domain where form automation is requested.
+  ```
+
+
 ### 3. Remote Code Use Justification
 - **Question**: "Are you using remote code?"
 - **Answer**: Select **No, I am not using Remote code**.
