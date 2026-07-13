@@ -1,3 +1,31 @@
+function isContentScript(): boolean {
+  return typeof chrome !== 'undefined' &&
+         chrome.runtime !== undefined &&
+         chrome.runtime.sendMessage !== undefined &&
+         typeof window !== 'undefined' &&
+         window.location.protocol !== 'chrome-extension:';
+}
+
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+function base64ToArrayBuffer(base64: string): ArrayBuffer {
+  const binaryString = atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
 let memoryFiles: Record<string, ArrayBuffer> = {};
 
 const DB_NAME = 'FormFillaFiles';
@@ -23,6 +51,23 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 export async function getFileBlob(key: string): Promise<ArrayBuffer> {
+  if (isContentScript()) {
+    return new Promise<ArrayBuffer>((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        { type: 'GET_FILE_BLOB', key },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            reject(new Error(chrome.runtime.lastError.message));
+          } else if (response && response.success) {
+            resolve(base64ToArrayBuffer(response.base64));
+          } else {
+            reject(new Error(response?.error || 'Failed to retrieve file blob via message'));
+          }
+        }
+      );
+    });
+  }
+
   try {
     const db = await openDB();
     return new Promise<ArrayBuffer>((resolve, reject) => {
@@ -49,6 +94,24 @@ export async function getFileBlob(key: string): Promise<ArrayBuffer> {
 }
 
 export async function saveFileBlob(key: string, bytes: ArrayBuffer): Promise<void> {
+  if (isContentScript()) {
+    return new Promise<void>((resolve, reject) => {
+      const base64 = arrayBufferToBase64(bytes);
+      chrome.runtime.sendMessage(
+        { type: 'SAVE_FILE_BLOB', key, base64 },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            reject(new Error(chrome.runtime.lastError.message));
+          } else if (response && response.success) {
+            resolve();
+          } else {
+            reject(new Error(response?.error || 'Failed to save file blob via message'));
+          }
+        }
+      );
+    });
+  }
+
   try {
     const db = await openDB();
     return new Promise<void>((resolve, reject) => {

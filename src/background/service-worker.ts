@@ -1,4 +1,4 @@
-import { getProfile, saveProfile } from '../shared/storage/storage-client.js';
+import { getProfile, saveProfile, getFileBlob, saveFileBlob } from '../shared/storage/storage-client.js';
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, signInAnonymously } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDocs, limit, query } from 'firebase/firestore';
@@ -172,6 +172,41 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         sendResponse({ success: false, rules: {}, error: err.message });
       });
     return true; // async response
+  }
+
+  if (message.type === 'GET_FILE_BLOB') {
+    getFileBlob(message.key)
+      .then((arrayBuffer) => {
+        const bytes = new Uint8Array(arrayBuffer);
+        let binary = '';
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const base64 = btoa(binary);
+        sendResponse({ success: true, base64 });
+      })
+      .catch((err) => {
+        console.error('FormFilla: Failed to read file blob in service worker', err);
+        sendResponse({ success: false, error: err.message });
+      });
+    return true; // async
+  }
+
+  if (message.type === 'SAVE_FILE_BLOB') {
+    const binaryString = atob(message.base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    saveFileBlob(message.key, bytes.buffer)
+      .then(() => sendResponse({ success: true }))
+      .catch((err) => {
+        console.error('FormFilla: Failed to save file blob in service worker', err);
+        sendResponse({ success: false, error: err.message });
+      });
+    return true; // async
   }
 
   if (message.type === 'REPORT_ERROR') {
