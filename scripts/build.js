@@ -16,6 +16,21 @@ function copyFile(src, dest) {
   fs.copyFileSync(src, dest);
 }
 
+function copyDir(src, dest) {
+  if (!fs.existsSync(src)) return;
+  fs.mkdirSync(dest, { recursive: true });
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDir(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
 function copyAssets() {
   console.log('Copying static assets...');
   copyFile('manifest.json', 'dist/manifest.json');
@@ -24,6 +39,7 @@ function copyAssets() {
   if (fs.existsSync('src/popup/popup.css')) copyFile('src/popup/popup.css', 'dist/popup/popup.css');
   if (fs.existsSync('src/options/options.html')) copyFile('src/options/options.html', 'dist/options/options.html');
   if (fs.existsSync('src/options/options.css')) copyFile('src/options/options.css', 'dist/options/options.css');
+  if (fs.existsSync('src/options/sections')) copyDir('src/options/sections', 'dist/options/sections');
   if (fs.existsSync('src/assets/logo.svg')) copyFile('src/assets/logo.svg', 'dist/assets/logo.svg');
   if (fs.existsSync('icon.svg')) copyFile('icon.svg', 'dist/icon.svg');
   if (fs.existsSync('src/popup/theme-loader.js')) copyFile('src/popup/theme-loader.js', 'dist/popup/theme-loader.js');

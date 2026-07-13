@@ -1,0 +1,108 @@
+<h2 class="section-title">Activation &amp; GitHub Verification</h2>
+
+<div class="card" style="margin-bottom: 16px;">
+  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--accent-indigo)">
+      <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+    </svg>
+    <div>
+      <span id="activation-status-label" style="font-size: 15px; font-weight: 700; color: var(--text-primary);">Checking...</span>
+      <br>
+      <span id="activation-status-detail" style="font-size: 12px; color: var(--text-secondary);">Loading activation status...</span>
+    </div>
+  </div>
+  <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5; margin-bottom: 12px;">
+    FormFilla is <strong>free forever</strong> — we just ask you to support the project by starring all public repos and following the accounts below. After 3 form fills, this becomes a requirement. A quick daily check ensures new repos are starred too.
+  </p>
+  
+  <!-- Deactivate Button - Only visible when activated -->
+  <button type="button" id="deactivate-btn" class="deactivation-btn hidden" 
+    style="display: flex; align-items: center; gap: 8px; background: #ef4444; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; margin-top: 8px;">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+    </svg>
+    Deactivate FormFilla
+  </button>
+</div>
+
+<div class="card" style="margin-bottom: 16px;">
+  <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+    <svg viewBox="0 0 16 16" width="16" height="16" fill="var(--text-primary)">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+    </svg>
+    Verify Your GitHub Account
+  </h3>
+  <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 14px;">
+    Connect your GitHub account below to activate FormFilla — sign in with GitHub directly, or enter your username manually.
+  </p>
+
+  <!-- One-click GitHub sign-in (device auth flow) -->
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button type="button" id="github-auth-btn" class="primary-btn">
+      <span class="btn-text">Connect with GitHub</span>
+    </button>
+    <button type="button" id="disconnect-github-btn" class="secondary-btn hidden">Disconnect</button>
+  </div>
+
+  <div id="device-code-container" class="hidden"
+    style="margin-top: 14px; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;">
+    <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">
+      Enter this code on GitHub to finish connecting:
+    </p>
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+      <code id="device-user-code"
+        style="font-size: 18px; font-weight: 700; letter-spacing: 2px; color: var(--text-primary); background: rgba(99, 102, 241, 0.1); padding: 6px 12px; border-radius: 6px;"></code>
+      <button type="button" id="copy-code-btn" class="secondary-btn" style="padding: 6px 10px; font-size: 12px;">Copy</button>
+    </div>
+    <a id="device-verify-link" href="#" target="_blank" rel="noopener noreferrer" class="primary-btn"
+      style="align-self: flex-start; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+      Open GitHub to Authorize
+    </a>
+  </div>
+
+  <p id="device-status" style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; min-height: 14px;"></p>
+
+  <div style="display: flex; align-items: center; gap: 10px; margin: 16px 0; color: var(--text-secondary); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+    <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+    or enter manually
+    <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+  </div>
+
+  <!-- Manual username entry (alternate path) -->
+  <div class="form-group">
+    <label for="github-profile-url">GitHub username</label>
+    <div style="display: flex; gap: 8px;">
+      <input type="text" id="github-profile-url" placeholder="e.g. octocat or github.com/octocat" style="flex: 1;">
+      <button type="button" id="verify-github-btn" class="secondary-btn">Verify</button>
+    </div>
+  </div>
+  <p id="github-verify-status" style="font-size: 12px; margin-top: 8px; min-height: 14px; color: var(--text-secondary);"></p>
+</div>
+
+<div class="card">
+  <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary);">Support Requirements</h3>
+  <div class="grid-2" style="gap: 10px;">
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <p style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.3px;">Star all public repos:</p>
+      <a href="https://github.com/AhmadHassan-BTed?tab=repositories" target="_blank"
+        style="color: var(--accent-indigo); text-decoration: none; font-size: 13px; font-weight: 500;">
+        ⭐ @AhmadHassan-BTed repos
+      </a>
+      <a href="https://github.com/orgs/Fractal-Compute-Orchestrations/repositories" target="_blank"
+        style="color: var(--accent-indigo); text-decoration: none; font-size: 13px; font-weight: 500;">
+        ⭐ @Fractal-Compute-Orchestrations repos
+      </a>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <p style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.3px;">Follow on GitHub:</p>
+      <a href="https://github.com/AhmadHassan-BTed" target="_blank"
+        style="color: var(--accent-indigo); text-decoration: none; font-size: 13px; font-weight: 500;">
+        👤 @AhmadHassan-BTed
+      </a>
+      <a href="https://github.com/Fractal-Compute-Orchestrations" target="_blank"
+        style="color: var(--accent-indigo); text-decoration: none; font-size: 13px; font-weight: 500;">
+        👤 @Fractal-Compute-Orchestrations
+      </a>
+    </div>
+  </div>
+</div>

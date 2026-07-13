@@ -10,7 +10,117 @@ import { buildNewIssueUrl } from '../shared/storage/feedback.js';
 let currentProfile: Profile;
 const uploadedFiles: Record<string, { file: File; buffer: ArrayBuffer }> = {};
 
+interface SectionMetadata {
+  id: string;
+  title: string;
+  iconSvg: string;
+}
+
+const SECTION_METADATA: SectionMetadata[] = [
+  {
+    id: 'intro',
+    title: 'Getting Started',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`
+  },
+  {
+    id: 'activation',
+    title: 'Activation',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>`
+  },
+  {
+    id: 'personal',
+    title: 'Personal Info',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`
+  },
+  {
+    id: 'education',
+    title: 'Education',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>`
+  },
+  {
+    id: 'experience',
+    title: 'Experience',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z"/></svg>`
+  },
+  {
+    id: 'references',
+    title: 'References',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`
+  },
+  {
+    id: 'academics',
+    title: 'Academics & Scholarships',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 3L1 9h22L12 3zm1 10h-2v8h2v-8zm4 0h-2v8h2v-8zm4 0h-2v8h2v-8zM4 13H2v8h2v-8zm4 0H6v8h2v-8z"/></svg>`
+  },
+  {
+    id: 'portfolio',
+    title: 'Portfolio & Skills',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 11.55C9.64 9.35 6.48 8 3 8v11c3.48 0 6.64 1.35 9 3.55 2.36-2.2 5.52-3.55 9-3.55V8c-3.48 0-6.64 1.35-9 3.55zM12 8c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z"/></svg>`
+  },
+  {
+    id: 'documents',
+    title: 'Documents & Files',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.89-1.99 1.99L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.89 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`
+  },
+  {
+    id: 'support',
+    title: 'Support & Feedback',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4zm2 3v2h12V7H6zm0 4v2h8v-2H6z"/></svg>`
+  },
+  {
+    id: 'learned-fields',
+    title: 'Learned Fields',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5.82 12.49L12 15.86l6.18-3.37z" fill="currentColor"/></svg>`
+  },
+  {
+    id: 'settings',
+    title: 'Settings & Import',
+    iconSvg: `<svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59 2.4-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>`
+  }
+];
+
+function buildSidebarMenu() {
+  const sidebarNav = document.getElementById('sidebar-nav')!;
+  if (!sidebarNav) return;
+  sidebarNav.innerHTML = '';
+  SECTION_METADATA.forEach((section, index) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nav-item';
+    if (index === 0) btn.classList.add('active');
+    btn.setAttribute('data-section', section.id);
+    btn.innerHTML = `${section.iconSvg} ${section.title}`;
+    sidebarNav.appendChild(btn);
+  });
+}
+
+async function loadAllSections() {
+  const container = document.getElementById('content-container')!;
+  if (!container) return;
+  container.innerHTML = '';
+  for (const section of SECTION_METADATA) {
+    const url = chrome.runtime.getURL(`options/sections/${section.id}.html`);
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.error(`Failed to fetch section ${section.id}: ${response.statusText}`);
+      continue;
+    }
+    const html = await response.text();
+    const secEl = document.createElement('section');
+    secEl.id = `section-${section.id}`;
+    secEl.className = 'content-section';
+    if (section.id === 'intro') {
+      secEl.classList.add('active');
+    }
+    secEl.innerHTML = html;
+    container.appendChild(secEl);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+  buildSidebarMenu();
+  await loadAllSections();
+
   setupNavigation();
   setupThemeSelection();
   await loadProfileData();
@@ -21,12 +131,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   await setupActivationStatusUI();
 
   setupSupportFeedback();
-
   setupBackupRestore();
 
-
   const saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
-  saveBtn.addEventListener('click', saveAllProfileData);
+  if (saveBtn) {
+    saveBtn.addEventListener('click', saveAllProfileData);
+  }
   await renderDynamicCustomFields().catch(err => console.error('Failed to load dynamic custom fields', err));
 });
 

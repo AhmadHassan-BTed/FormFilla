@@ -1,0 +1,73 @@
+<h2 class="section-title">Settings & Backup</h2>
+
+<h3 class="subsection-title">Matching Preferences</h3>
+<div class="card">
+  <div class="form-group checkbox-group">
+    <input type="checkbox" id="settings-sensitiveEeo" checked>
+    <label for="settings-sensitiveEeo">Enable auto-filling of sensitive EEO fields (Gender, Race, Veteran, Disability)</label>
+  </div>
+  <div class="form-group checkbox-group" style="margin-top: 15px;">
+    <input type="checkbox" id="settings-autoFillCritical" checked>
+    <label for="settings-autoFillCritical">Enable auto-filling of critical fields (CNIC, National ID, Passport) without confirmation</label>
+  </div>
+  <div class="form-group checkbox-group" style="margin-top: 15px;">
+    <input type="checkbox" id="settings-sensitiveFinancials" checked>
+    <label for="settings-sensitiveFinancials">Enable auto-filling of sensitive financial details (Household Income, Financial Statements)</label>
+  </div>
+  <div class="form-group checkbox-group" style="margin-top: 15px;">
+    <input type="checkbox" id="settings-sensitiveCompensation" checked>
+    <label for="settings-sensitiveCompensation">Enable auto-filling of sensitive compensation fields (Current Salary, Desired Salary)</label>
+  </div>
+  <div class="form-group checkbox-group" style="margin-top: 15px;">
+    <input type="checkbox" id="settings-sensitiveMedical" checked>
+    <label for="settings-sensitiveMedical">Enable auto-filling of sensitive personal medical assessments (Infectious diseases, allergies, history)</label>
+  </div>
+</div>
+
+<h3 class="subsection-title">Theme Customization</h3>
+<div class="card" style="margin-bottom: 20px;">
+  <div class="form-group" style="max-width: 300px;">
+    <label for="settings-theme">Active Theme</label>
+    <select id="settings-theme">
+      <option value="brutalist-dark">Godzilla Brutalist (Dark) (Default)</option>
+      <option value="brutalist-light">Godzilla Brutalist (Light)</option>
+      <option value="dark">Dark Theme</option>
+      <option value="light">Light Theme</option>
+    </select>
+  </div>
+</div>
+
+<h3 class="subsection-title">Data Backup & Restore</h3>
+<div class="card grid-3">
+  <div class="backup-card">
+    <h3>Export Profile</h3>
+    <p>Download your complete profile data as a JSON file to keep a backup.</p>
+    <button type="button" id="export-btn" class="secondary-btn">
+      <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor" />
+      </svg>
+      Export to JSON
+    </button>
+  </div>
+  <div class="backup-card">
+    <h3>Download Template</h3>
+    <p>Download an extensive blank profile JSON template with all supported fields.</p>
+    <button type="button" id="template-btn" class="secondary-btn">
+      <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+        <path d="M14 2H6c-1.1 0-1.99.89-1.99 1.99L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.89 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor" />
+      </svg>
+      Download Template
+    </button>
+  </div>
+  <div class="backup-card">
+    <h3>Import Profile</h3>
+    <p>Load your profile data from a previously exported JSON backup file.</p>
+    <input type="file" id="import-file" accept=".json" style="display: none;">
+    <button type="button" id="import-btn" class="secondary-btn">
+      <svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16">
+        <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" fill="currentColor" />
+      </svg>
+      Import JSON File
+    </button>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<h2 class="section-title">Support & Feedback</h2>
+
+<div class="card" style="margin-bottom: 16px;">
+  <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin: 0 0 12px 0;">
+    Want a new feature? Found a bug? Report it here so you don’t need to leave a bad rating.
+  </p>
+
+  <div class="grid-2">
+    <div class="form-group">
+      <label for="feedback-kind">Type</label>
+      <select id="feedback-kind">
+        <option value="bug">Bug</option>
+        <option value="feature">Feature Request</option>
+      </select>
+    </div>
+
+    <div class="form-group" style="display: none;">
+      <label for="feedback-product">Product / Extension</label>
+      <input type="text" id="feedback-product" value="FormFilla" />
+    </div>
+
+    <div class="form-group" style="display: none;">
+      <label for="feedback-country">Country (optional)</label>
+      <input type="text" id="feedback-country" />
+    </div>
+
+    <div class="form-group">
+      <label for="feedback-title">Title (user written)</label>
+      <input type="text" id="feedback-title" placeholder="e.g. Autofill fails on Workday" />
+    </div>
+
+    <div class="form-group span-2">
+      <label for="feedback-description">Description / Steps (user written)</label>
+      <textarea id="feedback-description" rows="8" placeholder="Tell us what happened and how to reproduce..."></textarea>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; align-items:center;">
+    <button type="button" id="feedback-open-issue" class="primary-btn">
+      <span class="btn-text">Open GitHub Issue</span>
+    </button>
+    <a href="https://github.com/AhmadHassan-BTed/FormFilla" target="_blank" rel="noopener noreferrer" class="secondary-btn" style="display:inline-flex;align-items:center;justify-content:center;">Open Repo</a>
+  </div>
+
+  <p style="color: var(--muted); font-size: 11px; margin-top: 10px;">
+    This opens GitHub in your browser with your title & description prefilled.
+  </p>
+</div>
+
+<div class="card">
+  <div style="display:flex; flex-direction:column; gap: 6px;">
+    <div style="font-size: 12px; color: var(--text-secondary);">Need quick help?</div>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <a href="https://wa.me/923225522383" target="_blank" rel="noopener noreferrer" style="color: var(--accent-indigo); text-decoration: none; font-weight: 600;">WhatsApp</a>
+      <a href="mailto:ahmadhassan.bted@gmail.com" style="color: var(--accent-indigo); text-decoration: none; font-weight: 600;">Email</a>
+    </div>
+  </div>
+</div>
