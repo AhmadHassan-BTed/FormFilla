@@ -300,7 +300,7 @@ export function generateRulesFromProfile(profile: any): Record<string, FieldRule
       const regexStr = words.split(/\s+/).map(w => escapeRegExp(w)).join('\\s*');
       const compiled = compileRule(path, {
         sensitivityTier: 'standard',
-        allowedTypes: ['text', 'textarea', 'email', 'tel', 'url', 'number', 'select', 'date', 'checkbox', 'radio'],
+        allowedTypes: ['text', 'textarea', 'email', 'tel', 'url', 'number', 'select', 'date', 'checkbox', 'radio', 'search', 'password'],
         exactPhrases: [words, lastPart.toLowerCase()],
         regexPatterns: [regexStr]
       });
