@@ -373,11 +373,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Listen for progress updates from the content script fill process
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.type === 'FILL_PROGRESS') {
+      const btnTextText = fillBtn.querySelector('.btn-text');
+      if (btnTextText) {
+        btnTextText.textContent = `Analyzing Page (${message.progress}%)...`;
+      }
+      statusText.textContent = message.message;
+    }
+  });
+
   // ===== FILL BUTTON =====
   fillBtn.addEventListener('click', async () => {
     fillBtn.disabled = true;
     const btnText = fillBtn.querySelector('.btn-text');
-    if (btnText) btnText.textContent = 'Analyzing Page...';
+    if (btnText) btnText.textContent = 'Analyzing Page (0%)...';
 
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });

@@ -26,6 +26,10 @@
     "cnicNumber": "12345-6789012-3",
     "passportNumber": "",
     "desiredPosition": "Software Architect",
+    "mobilePhone": "+92 322 5522383",
+    "otherQualifications": "Certification in Software Architectures",
+    "languages": ["English", "Urdu", "French"],
+    "nationalIdType": "CNIC",
     "summary": "Senior Software Architect with experience in compiler architectures and bipartite form matching systems."
   },
   "family": {

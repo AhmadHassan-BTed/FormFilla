@@ -555,6 +555,8 @@ async function fillWithRescans(profile: any): Promise<FillResult> {
   const totals: FillResult = { confident: 0, review: 0, unmapped: 0, needsConfirm: 0 };
   const activeAdapter = getActiveAdapter();
 
+  reportProgress(10, 'Initializing page adapters...');
+
   if (activeAdapter.waitUntilReady) {
     try {
       await activeAdapter.waitUntilReady();
@@ -563,6 +565,7 @@ async function fillWithRescans(profile: any): Promise<FillResult> {
     }
   }
 
+  reportProgress(25, 'Waiting for page DOM to settle...');
   await waitForDomSettle(document.body);
 
   const scanOptions = {
@@ -571,6 +574,9 @@ async function fillWithRescans(profile: any): Promise<FillResult> {
   };
 
   for (let pass = 0; pass <= RESCAN_PASSES; pass++) {
+    const percent = 45 + Math.round((pass / (RESCAN_PASSES + 1)) * 50);
+    reportProgress(percent, `Filling elements (Pass ${pass + 1} of ${RESCAN_PASSES + 1})...`);
+
     if (activeAdapter.beforeScan) {
       try {
         await activeAdapter.beforeScan();
@@ -840,6 +846,22 @@ function reportCrash(err: any, context: string) {
     }, () => {
       const lastError = chrome.runtime.lastError;
     });
+  }
+}
+
+function reportProgress(progress: number, message: string) {
+  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+    try {
+      chrome.runtime.sendMessage({
+        type: 'FILL_PROGRESS',
+        progress,
+        message
+      }, () => {
+        const lastError = chrome.runtime.lastError;
+      });
+    } catch (err) {
+      // ignore
+    }
   }
 }
 
