@@ -651,3 +651,161 @@ body {
 .support-username-error.hidden {
   display: none;
 }
+
+/* GitHub Auth Flow & Support Panels Formatting */
+.support-auth-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.auth-btn {
+  background: #24292e !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  padding: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.auth-btn:hover {
+  background: #2f363d !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.auth-or-divider {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.auth-manual-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.verify-btn {
+  width: 100% !important;
+  margin-top: 4px !important;
+}
+
+.device-code-panel {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.device-code-instructions {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.device-code-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.device-code {
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: #facc15;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 12px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+  border: 1px solid rgba(250, 200, 50, 0.25);
+  user-select: all;
+}
+
+.copy-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.device-verify-link {
+  font-size: 11px;
+  color: var(--accent-indigo);
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 6px;
+  transition: color 0.2s ease;
+}
+
+.device-verify-link:hover {
+  color: var(--accent-purple);
+  text-decoration: underline;
+}
+
+.device-status {
+  font-size: 11px;
+  text-align: center;
+  margin: 4px 0 0 0;
+  color: var(--text-secondary);
+}
+
+.disconnect-btn {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  border-radius: 8px !important;
+  color: #f87171 !important;
+  padding: 10px !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  width: 100% !important;
+  margin-top: 12px !important;
+  transition: all 0.2s ease !important;
+  display: inline-block;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.disconnect-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #ffffff !important;
+}
+
+/* Wrapping fixes for support target links */
+.support-target-link {
+  display: flex !important;
+  align-items: flex-start !important;
+  line-height: 1.4 !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
