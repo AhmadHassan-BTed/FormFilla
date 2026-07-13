@@ -1,10 +1,15 @@
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { JSDOM } from 'jsdom';
 import { scanForFields } from '../src/content/dom/field-scanner.js';
 import { detectRepeatedBlocks } from '../src/content/dom/repeated-block.js';
 import { extractSignals } from '../src/content/dom/signal-extractor.js';
 import { resolveAllFields } from '../src/content/matching/scorer.js';
 import { test } from 'vitest';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 test('debug Airblue page fields', () => {
   function decodeQuotedPrintable(str: string): string {
@@ -15,7 +20,7 @@ test('debug Airblue page fields', () => {
     return decoded;
   }
 
-  const mhtmlPath = 'p:\\JobApplier\\.sample_webpage\\_ _ _ airline _ _ _ Opportunities.mhtml';
+  const mhtmlPath = path.join(__dirname, '..', '.sample_webpage', '_ _ _ airline _ _ _ Opportunities.mhtml');
   const mhtmlContent = fs.readFileSync(mhtmlPath, 'utf8');
 
   // Simple extraction of the HTML part from MHTML
