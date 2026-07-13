@@ -95,6 +95,28 @@ function findLabel(el: HTMLElement): string | null {
     }
   }
 
+  // Wrapper parent sibling fallback: if the input is nested inside a paragraph or helper tag,
+  // walk up to 2 levels of parent wrappers and collect preceding text siblings.
+  let current: HTMLElement | null = el;
+  let collectedText: string[] = [];
+  for (let depth = 0; depth < 2; depth++) {
+    const parentNode = current.parentElement;
+    if (!parentNode || parentNode.tagName === 'BODY' || parentNode.tagName === 'FORM') break;
+    
+    let prevSibling = parentNode.previousElementSibling;
+    while (prevSibling) {
+      const text = prevSibling.textContent?.trim();
+      if (text) {
+        collectedText.push(text);
+      }
+      prevSibling = prevSibling.previousElementSibling;
+    }
+    current = parentNode;
+  }
+  if (collectedText.length > 0) {
+    return collectedText.reverse().join(' ');
+  }
+
   // Table cell layout fallback: if the element is inside a table cell (TD/TH),
   // check if there is a preceding cell in the same row containing text.
   const cell = el.closest('td, th');
