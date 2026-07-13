@@ -7,3 +7,4 @@ coverage/
 Thumbs.db
 .vscode/
 .idea/
+*.log
