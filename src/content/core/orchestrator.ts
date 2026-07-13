@@ -367,17 +367,19 @@ export async function processFields(
     else if (sf.gate === 'needs-confirm') needsConfirm++;
     else unmapped++;
 
+    let detailEntry: any = null;
     try {
       const labels = (sf.element as any).labels;
       const labelText = labels && labels[0] ? labels[0].textContent?.trim() : sf.element.getAttribute('aria-label') || sf.element.getAttribute('placeholder') || sf.element.getAttribute('name') || sf.element.id || 'Field';
-      details.push({
+      detailEntry = {
         label: labelText || 'Field',
         name: sf.element.getAttribute('name') || '',
         id: sf.element.id || '',
         type: sf.element.tagName,
         key: sf.key,
         gate: sf.gate
-      });
+      };
+      details.push(detailEntry);
     } catch (err) {
       console.warn('FormFilla: failed to record field details', err);
     }
@@ -417,9 +419,15 @@ export async function processFields(
       } else if (sf.gate === 'confident' || sf.gate === 'review') {
         let ok = false;
         try {
-          ok = await withTimeout(fillSingleField(sf, value, profile), FIELD_FILL_TIMEOUT_MS);
+          ok = isFillableValue(value) && await withTimeout(fillSingleField(sf, value, profile), FIELD_FILL_TIMEOUT_MS);
         } catch (err) {
           console.warn(`FormFilla: fill failed for key "${sf.key}"`, err);
+        }
+        if (!ok) {
+          if (sf.gate === 'confident') confident--;
+          else if (sf.gate === 'review') review--;
+          unmapped++;
+          if (detailEntry) detailEntry.gate = 'unmapped';
         }
         tagField(sf.element, ok ? sf.gate : 'unmapped');
       } else {
@@ -441,18 +449,20 @@ export async function processFields(
     else if (primaryGate === 'needs-confirm') needsConfirm++;
     else unmapped++;
 
+    let detailEntry: any = null;
     try {
       const firstEl = group.elements[0];
       const labels = (firstEl as any).labels;
       const labelText = labels && labels[0] ? labels[0].textContent?.trim() : firstEl.getAttribute('aria-label') || firstEl.getAttribute('name') || firstEl.id || 'Choice Group';
-      details.push({
+      detailEntry = {
         label: labelText || 'Choice Group',
         name: firstEl.getAttribute('name') || '',
         id: firstEl.id || '',
         type: firstEl.tagName,
         key,
         gate: primaryGate
-      });
+      };
+      details.push(detailEntry);
     } catch (err) {
       console.warn('FormFilla: failed to record choice group details', err);
     }
@@ -474,6 +484,12 @@ export async function processFields(
         });
       } else if (primaryGate === 'confident' || primaryGate === 'review') {
         const ok = isFillableValue(value) && fillChoiceGroup(group.elements, stringifyValue(value));
+        if (!ok) {
+          if (primaryGate === 'confident') confident--;
+          else if (primaryGate === 'review') review--;
+          unmapped++;
+          if (detailEntry) detailEntry.gate = 'unmapped';
+        }
         group.elements.forEach(el => tagField(el, ok ? primaryGate : 'unmapped'));
       } else {
         group.elements.forEach(el => tagField(el, 'unmapped'));
