@@ -1,6 +1,6 @@
 {
   "name": "formfilla",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Fills job application forms from local JSON profile data. No AI, local-first.",
   "type": "module",
   "scripts": {

@@ -111,6 +111,75 @@ const buildOptions = {
   }
 };
 
+function sanitizeBuildArtifacts() {
+  console.log('Sanitizing build artifacts for Chrome Web Store MV3 compliance...');
+  const targetFiles = [
+    path.join('dist', 'background', 'service-worker.js'),
+    path.join('dist', 'content', 'index.js'),
+    path.join('dist', 'popup', 'popup.js'),
+    path.join('dist', 'options', 'options.js')
+  ];
+
+  const remoteCodePatterns = [
+    /https:\/\/apis\.google\.com\/js\/api\.js/g,
+    /https:\/\/www\.google\.com\/recaptcha\/api\.js/g,
+    /https:\/\/www\.google\.com\/recaptcha\/enterprise\.js\?render=/g
+  ];
+
+  for (const filePath of targetFiles) {
+    if (fs.existsSync(filePath)) {
+      let content = fs.readFileSync(filePath, 'utf-8');
+      let modified = false;
+      for (const pattern of remoteCodePatterns) {
+        if (pattern.test(content)) {
+          content = content.replace(pattern, '');
+          modified = true;
+        }
+      }
+      if (modified) {
+        fs.writeFileSync(filePath, content, 'utf-8');
+        console.log(`  Sanitized remotely hosted code references in ${filePath}`);
+      }
+    }
+  }
+}
+
+function verifyNoRemotelyHostedCode() {
+  console.log('Verifying build output contains NO remotely hosted script URLs...');
+  const remoteJsRegex = /https?:\/\/[^\s"']+\.js(\?[^\s"']*)?/g;
+  let violationsFound = false;
+
+  function scanDir(dir) {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        scanDir(fullPath);
+      } else if (entry.name.endsWith('.js')) {
+        const content = fs.readFileSync(fullPath, 'utf-8');
+        const matches = content.match(remoteJsRegex);
+        if (matches && matches.length > 0) {
+          console.error(`❌ Remotely hosted code URL detected in ${fullPath}:`);
+          for (const match of matches) {
+            console.error(`   - ${match}`);
+          }
+          violationsFound = true;
+        }
+      }
+    }
+  }
+
+  scanDir('dist');
+
+  if (violationsFound) {
+    console.error('❌ Build failed: Remotely hosted script URLs found in dist output!');
+    process.exit(1);
+  } else {
+    console.log('✅ Verification passed: 0 remotely hosted script URLs found in dist.');
+  }
+}
+
 async function run() {
   if (isWatch) {
     let ctx = await esbuild.context({
@@ -120,6 +189,8 @@ async function run() {
         setup(build) {
           build.onEnd(() => {
             copyAssets();
+            sanitizeBuildArtifacts();
+            verifyNoRemotelyHostedCode();
           });
         }
       }]
@@ -129,6 +200,8 @@ async function run() {
   } else {
     await esbuild.build(buildOptions);
     copyAssets();
+    sanitizeBuildArtifacts();
+    verifyNoRemotelyHostedCode();
     console.log('Build complete.');
   }
 }
@@ -137,3 +210,4 @@ run().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+

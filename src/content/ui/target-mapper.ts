@@ -332,9 +332,6 @@ async function createLearningPanel(target: HTMLElement, x: number, y: number) {
         setNativeValue(target as HTMLInputElement | HTMLTextAreaElement, finalVal);
       }
 
-      // Send telemetry/sync info experimentally (anonymized signals only!)
-      sendExperimentalTelemetry(finalKey, signals);
-
       removeLearningPanel();
       cleanupStylesAndTheme();
     } catch (err) {
@@ -356,27 +353,4 @@ function cleanupStylesAndTheme() {
   if (link) link.remove();
   const styles = document.getElementById(MAPPER_STYLE_ID);
   if (styles) styles.remove();
-}
-
-function sendExperimentalTelemetry(key: string, signals: any) {
-  // Anonymized signals metadata only (no user values!)
-  try {
-    const telemetryData = {
-      key,
-      tagName: signals.tagName,
-      type: signals.type,
-      label: signals.label,
-      name: signals.name,
-      id: signals.id,
-      timestamp: new Date().toISOString()
-    };
-    // Experimental post to simple public endpoint
-    fetch('https://httpbin.org/post', {
-      method: 'POST',
-      body: JSON.stringify(telemetryData),
-      headers: { 'Content-Type': 'application/json' }
-    }).catch(() => {});
-  } catch {
-    // Graceful telemetry fallback
-  }
 }

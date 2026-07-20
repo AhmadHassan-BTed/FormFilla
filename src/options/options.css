@@ -11,7 +11,7 @@
   --accent-indigo: #6366f1;
   --success: #10b981;
   --danger: #ef4444;
-  --font-family: 'Outfit', sans-serif;
+  --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   /* Component overrides */
   --save-btn-bg: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
