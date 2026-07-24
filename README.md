@@ -213,7 +213,7 @@ _Every JSON configuration contains an embedded `__meta__` prompt. You can supply
 
 FormFilla is officially distributed through the Chrome Web Store to ensure you always receive the latest, secure updates directly to your browser.
 
-**[Install FormFilla from the Chrome Web Store](#)** _(Link will be added upon store approval)_
+**[Install FormFilla from the Chrome Web Store](https://chromewebstore.google.com/detail/ghdmoobkedimgbgohodgmjmnldfmkcja?utm_source=item-share-cb)**
 
 ## Roadmap
 
