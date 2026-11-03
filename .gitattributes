@@ -1,0 +1,14 @@
+# Normalize line endings to LF for all text files
+* text=auto eol=lf
+
+# Force specific files to retain LF
+*.ts text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+
+# Mark test HTML fixtures as raw text
+tests/fixtures/*.html text eol=lf

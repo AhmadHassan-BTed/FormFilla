@@ -1,0 +1,43 @@
+:root {
+  --bg-color: #07080C;
+  --svg-icon-color: var(--text-primary);
+  --sidebar-bg: #0C0E17;
+  --card-bg: rgba(20, 22, 34, 0.6);
+  --border-color: rgba(255, 255, 255, 0.06);
+  --input-bg: rgba(0, 0, 0, 0.2);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --accent-purple: #a855f7;
+  --accent-indigo: #6366f1;
+
+  /* Component overrides */
+  --save-btn-bg: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
+  --save-btn-text: #FFFFFF;
+  --nav-active-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+  --nav-active-border: rgba(168, 85, 247, 0.25);
+  --nav-active-text: #FFFFFF;
+  --brand-text-bg: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-purple) 100%);
+  --brand-text-color: transparent;
+  --brand-logo-fill: url(#brand-grad);
+  --focus-ring: rgba(168, 85, 247, 0.15);
+  --file-btn-bg: rgba(255, 255, 255, 0.05);
+  --file-btn-color: var(--text-primary);
+  --file-btn-border: var(--border-color);
+  --scrollbar-thumb: var(--border-color);
+  --scrollbar-track: rgba(0, 0, 0, 0.15);
+
+  /* Popup overrides */
+  --primary-accent: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --primary-hover: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+  --brand-text-bg: var(--primary-accent);
+  --brand-text-color: transparent;
+  --brand-logo-fill: url(#brand-grad);
+  --brand-logo-filter: brightness(0) invert(1);
+  --btn-primary-bg: var(--primary-accent);
+  --btn-primary-text: #FFFFFF;
+  --icon-btn-bg: rgba(255, 255, 255, 0.08);
+  --icon-btn-color: var(--text-primary);
+  --result-item-bg: rgba(255, 255, 255, 0.02);
+  --save-btn-shadow: 0 4px 14px rgba(168, 85, 247, 0.25);
+  --save-btn-shadow-hover: 0 6px 20px rgba(168, 85, 247, 0.35);
+}

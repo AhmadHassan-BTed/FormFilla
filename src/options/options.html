@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FormFilla - Profile Settings</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <link rel="stylesheet" href="options.css">
+  <style id="fouc-preventer">
+    body {
+      visibility: hidden !important;
+    }
+  </style>
+  <script src="theme-loader.js"></script>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo-icon" src="../assets/logo.svg" alt="FormFilla logo" width="24" height="24">
+        <span class="brand-name">FormFilla</span>
+      </div>
+      <nav id="sidebar-nav" class="nav-menu">
+        <!-- Dynamically populated from JS section definitions -->
+      </nav>
+      <div class="sidebar-footer">
+        <button id="save-btn" class="save-button">Save Changes</button>
+        <span id="save-status" class="save-status"></span>
+        <a href="https://github.com/AhmadHassan-BTed" target="_blank" class="credit-link"
+          title="Created by AhmadHassan-BTed">Created by <strong>@AhmadHassan-BTed</strong></a>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <form id="profile-form" onsubmit="return false;">
+        <div id="content-container">
+          <!-- Dynamically loaded content sections -->
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+
+</html>

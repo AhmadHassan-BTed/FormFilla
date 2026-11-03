@@ -1,0 +1,350 @@
+{
+  "__meta__": {
+    "instructions": [
+      "AI INSTRUCTION SET FOR EXTENDING PROFILE TEMPLATES:",
+      "1. STRUCTURE COHESION: Every key path in this template must map exactly to matching path keys defined in 'rules.json'.",
+      "2. DATA TYPES: String fields must have realistic default string examples. Arrays (like 'education', 'experience') must contain a single element array representing the schema template.",
+      "3. NESTED DIRECTIVES: Keep sub-objects (like 'personal', 'address', 'links') clean. Avoid deeply nested structures beyond 2 levels.",
+      "4. DOCUMENT ENTRIES: Add standard metadata placeholders under the 'documents' block when introducing new file fields.",
+      "5. DERIVED / UNSTORED PATHS: Some rules.json paths are resolved at fill-time from other stored fields rather than saved directly (e.g. 'education.highest.*' is derived from the 'education' array). Where a rules.json path's first two segments collide with an existing array key, store its example under a flat sibling key using the literal dotted prefix as the key name -- as done for 'education.highest' below -- instead of nesting inside the array."
+    ]
+  },
+  "personal": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "middleName": "",
+    "namePrefix": "Mr.",
+    "nameSuffix": "",
+    "fullName": "John Doe",
+    "preferredName": "John",
+    "pronouns": "he/him",
+    "email": "john.doe@example.com",
+    "phoneAreaCode": "+1",
+    "phone": "+1 555 123 4567",
+    "dateOfBirth": "1998-05-15",
+    "nationalId": "999-99-9999",
+    "cnicNumber": "",
+    "passportNumber": "",
+    "desiredPosition": "Software Engineer",
+    "mobilePhone": "+1 555 987 6543",
+    "otherQualifications": "Certified Scrum Master",
+    "languages": ["English", "Spanish"],
+    "nationalIdType": "National ID",
+    "summary": "Experienced software engineer specializing in building high-quality web applications and scalable system architectures."
+  },
+  "family": {
+    "fatherName": "Father Name",
+    "motherName": "Mother Name"
+  },
+  "address": {
+    "street": "123 Main Street",
+    "line2": "",
+    "city": "Springfield",
+    "state": "Illinois",
+    "postalCode": "62701",
+    "country": "United States",
+    "county": ""
+  },
+  "links": {
+    "linkedin": "https://linkedin.com/in/johndoe",
+    "github": "https://github.com/johndoe",
+    "portfolio": "https://johndoe.example.com",
+    "twitter": ""
+  },
+  "workAuthorization": {
+    "authorizedInUS": true,
+    "requiresSponsorship": false,
+    "visaType": "",
+    "willingToRelocate": true,
+    "willingToTravel": true
+  },
+  "compensation": {
+    "currentSalary": "",
+    "desiredSalary": ""
+  },
+  "availability": {
+    "startDate": "",
+    "noticePeriod": ""
+  },
+  "source": {
+    "howDidYouHear": "LinkedIn",
+    "referredByName": ""
+  },
+  "legal": {
+    "isOver18": true,
+    "criminalHistory": "No",
+    "nonCompeteAgreement": "No",
+    "backgroundCheckConsent": true,
+    "certifyInformation": true,
+    "eSignature": "John Doe"
+  },
+  "education": [
+    {
+      "school": "State University",
+      "degree": "Bachelor of Science in Computer Science",
+      "fieldOfStudy": "Computer Science",
+      "minor": "Mathematics",
+      "startDate": "2016-09",
+      "endDate": "2020-05",
+      "isCurrent": false,
+      "gpa": "3.8",
+      "honors": "Cum Laude"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Tech Solutions Inc.",
+      "title": "Software Developer",
+      "location": "Springfield, IL",
+      "employmentType": "Full-time",
+      "startDate": "2020-06",
+      "endDate": "",
+      "isCurrent": true,
+      "description": "Developed and maintained corporate web applications, designed RESTful APIs, and automated test coverages.",
+      "reasonForLeaving": "",
+      "supervisorName": "Jane Smith"
+    }
+  ],
+  "references": [
+    {
+      "name": "Reference Contact",
+      "relationship": "Supervisor",
+      "company": "Tech Solutions Inc.",
+      "title": "Engineering Lead",
+      "email": "reference@example.com",
+      "phone": "+1 555 456 7890"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project Alpha",
+      "role": "Creator & Lead Developer",
+      "description": "An open-source library for optimizing web performance and client-side caching.",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Node.js"
+      ],
+      "url": "https://github.com/johndoe/project-alpha"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Certified Cloud Practitioner",
+      "issuingOrganization": "Amazon Web Services",
+      "issueDate": "2022-01",
+      "expirationDate": "2025-01",
+      "credentialId": "AWS-12345"
+    }
+  ],
+  "skills": {
+    "programmingLanguages": [
+      "TypeScript",
+      "JavaScript",
+      "Python",
+      "C#",
+      "C++",
+      "Rust"
+    ],
+    "machineLearningAndAI": [
+      "Natural Language Processing",
+      "Fuzzy Scorer Matching",
+      "Transformers"
+    ],
+    "markupAndScripting": [
+      "HTML",
+      "CSS",
+      "Bash",
+      "Powershell"
+    ],
+    "hardware": [
+      "ARM",
+      "x86"
+    ],
+    "architectureAndParadigms": [
+      "Clean Architecture",
+      "OOP",
+      "Bipartite Graph Matching"
+    ],
+    "toolsAndIDEs": [
+      "Git",
+      "Docker",
+      "VS Code",
+      "Vite",
+      "esbuild"
+    ]
+  },
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Native or bilingual proficiency"
+    },
+    {
+      "language": "Spanish",
+      "proficiency": "Professional working proficiency"
+    }
+  ],
+  "awardsAndAchievements": [
+    {
+      "title": "Outstanding Graduate Award",
+      "organization": "State University",
+      "date": "2020-05",
+      "description": "Awarded for exceptional academic performance and contributions to the student community."
+    }
+  ],
+  "coursework": [
+    "Software Design & Architecture",
+    "Data Structures & Algorithms",
+    "Database Systems",
+    "Operating Systems",
+    "Computer Networks"
+  ],
+  "documents": {
+    "documents.resume": {
+      "name": "resume.pdf",
+      "type": "application/pdf",
+      "size": 12345,
+      "lastModified": 1625000000000
+    },
+    "documents.cv": {
+      "name": "cv.pdf",
+      "type": "application/pdf",
+      "size": 12345,
+      "lastModified": 1625000000000
+    },
+    "documents.coverLetterText": "My cover letter content...",
+    "documents.coverLetter": {
+      "name": "cover_letter.pdf",
+      "type": "application/pdf",
+      "size": 54321,
+      "lastModified": 1625000000000
+    },
+    "documents.photo": {
+      "name": "photo.jpg",
+      "type": "image/jpeg",
+      "size": 15000,
+      "lastModified": 1625000000000
+    },
+    "documents.passport": {
+      "name": "passport.pdf",
+      "type": "application/pdf",
+      "size": 25000,
+      "lastModified": 1625000000000
+    },
+    "documents.cnic": {
+      "name": "cnic.pdf",
+      "type": "application/pdf",
+      "size": 18000,
+      "lastModified": 1625000000000
+    },
+    "documents.driversLicense": {
+      "name": "license.pdf",
+      "type": "application/pdf",
+      "size": 22000,
+      "lastModified": 1625000000000
+    },
+    "documents.transcript": {
+      "name": "transcript.pdf",
+      "type": "application/pdf",
+      "size": 35000,
+      "lastModified": 1625000000000
+    },
+    "documents.workSample": {
+      "name": "portfolio.pdf",
+      "type": "application/pdf",
+      "size": 42000,
+      "lastModified": 1625000000000
+    },
+    "documents.sop": {
+      "name": "statement_of_purpose.pdf",
+      "type": "application/pdf",
+      "size": 28000,
+      "lastModified": 1625000000000
+    },
+    "documents.researchProposal": {
+      "name": "research_proposal.pdf",
+      "type": "application/pdf",
+      "size": 32000,
+      "lastModified": 1625000000000
+    },
+    "documents.recommendationLetter": {
+      "name": "recommendation_letter.pdf",
+      "type": "application/pdf",
+      "size": 15000,
+      "lastModified": 1625000000000
+    },
+    "documents.financialStatement": {
+      "name": "financial_statement.pdf",
+      "type": "application/pdf",
+      "size": 20000,
+      "lastModified": 1625000000000
+    }
+  },
+  "eeo": {
+    "gender": "Male",
+    "race": "White",
+    "hispanicOrLatino": "No",
+    "veteranStatus": "No",
+    "disabilityStatus": "No",
+    "sexualOrientation": "Heterosexual"
+  },
+  "academics": {
+    "classRank": "5th / 100",
+    "greVerbal": "155",
+    "greQuant": "162",
+    "greWriting": "4.0",
+    "greTotal": "317",
+    "toeflTotal": "105",
+    "ieltsBand": "7.5",
+    "satTotal": "1420",
+    "actTotal": "31",
+    "researchInterests": "Software Architectures, Cloud Computing, Distributed Databases",
+    "proposedAdvisor": "Dr. Alan Turing",
+    "fundingRequired": true,
+    "annualHouseholdIncome": "60000",
+    "applicationTrack": "General Track",
+    "recommendedEmbassy": "",
+    "applicationProgram": "General",
+    "degreeProgram": "Master's Degree",
+    "desiredFieldOfStudy": "Computer Science",
+    "koreanCitizenshipApplicant": "No",
+    "koreanCitizenshipParent": "No",
+    "topikLevel": "",
+    "topikTestHeld": "",
+    "topikTestDate": "",
+    "highSchoolName": "Springfield High School",
+    "highSchoolLocation": "Springfield, IL",
+    "highSchoolGraduationYear": "2016",
+    "bachelorsThesisTitle": "Optimizing Browser Extension performance through Client-Side Caching",
+    "bachelorsPublications": "Automated Form Filling Methodologies (2019)",
+    "mastersUniversityName": "",
+    "mastersLocation": "",
+    "mastersMajor": "",
+    "mastersGraduationDate": "",
+    "mastersThesisTitle": "",
+    "mastersPublications": "",
+    "doctoralUniversityName": "",
+    "doctoralLocation": "",
+    "doctoralMajor": "",
+    "doctoralGraduationDate": "",
+    "doctoralDissertationTitle": "",
+    "doctoralPublications": "",
+    "cgpaScale": "3.80 / 4.00",
+    "scorePercentile": "92.00 / 100",
+    "personalStatement": "Your personal statement goes here. Introduce yourself, explain your academic motivations, accomplishments, relevant background experiences, and your research/career vision.",
+    "studyPlan": "Your study plan goes here. Outline details of your plan of study, language acquisition goals, prospective courses of interest, and your timeline.",
+    "futurePlanAfterStudy": "Your plans after graduating from the program. Describe how you intend to utilize your degree in academic R&D or corporate software engineering sectors."
+  },
+  "optIns": {
+    "sensitiveEeo": true,
+    "autoFillCritical": true,
+    "sensitiveFinancials": true,
+    "sensitiveCompensation": true,
+    "sensitiveMedical": true
+  },
+  "education.highest": {
+    "school": "State University",
+    "degree": "Bachelor of Science in Computer Science",
+    "fieldOfStudy": "Computer Science"
+  }
+}

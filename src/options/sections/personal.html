@@ -1,0 +1,90 @@
+<h2 class="section-title">Personal Information</h2>
+<div class="card grid-2">
+  <div class="form-group">
+    <label for="personal-firstName">First Name</label>
+    <input type="text" id="personal-firstName" required placeholder="John">
+  </div>
+  <div class="form-group">
+    <label for="personal-lastName">Last Name</label>
+    <input type="text" id="personal-lastName" required placeholder="Doe">
+  </div>
+  <div class="form-group">
+    <label for="personal-middleName">Middle Name</label>
+    <input type="text" id="personal-middleName" placeholder="William">
+  </div>
+  <div class="form-group">
+    <label for="personal-namePrefix">Prefix / Salutation</label>
+    <input type="text" id="personal-namePrefix" placeholder="Mr., Ms., Dr.">
+  </div>
+  <div class="form-group">
+    <label for="personal-email">Email Address</label>
+    <input type="email" id="personal-email" required placeholder="john.doe@example.com">
+  </div>
+  <div class="form-group">
+    <label for="personal-phone">Phone Number (with country code)</label>
+    <div style="display: flex; gap: 8px;">
+      <input type="text" id="personal-phoneAreaCode" placeholder="+92" style="width: 80px;">
+      <input type="tel" id="personal-phone" placeholder="3001234567" style="flex: 1;">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="personal-dateOfBirth">Date of Birth</label>
+    <input type="date" id="personal-dateOfBirth">
+  </div>
+  <div class="form-group">
+    <label for="personal-nationalId">National ID (CNIC for Pakistan)</label>
+    <input type="text" id="personal-nationalId" placeholder="35201-1234567-1">
+  </div>
+  <div class="form-group">
+    <label for="personal-cnicNumber">CNIC Number (Numbers Only)</label>
+    <input type="text" id="personal-cnicNumber" placeholder="3520112345671">
+  </div>
+  <div class="form-group">
+    <label for="personal-passportNumber">Passport Number</label>
+    <input type="text" id="personal-passportNumber" placeholder="AB1234567">
+  </div>
+  <div class="form-group">
+    <label for="personal-desiredPosition">Desired Position / Title</label>
+    <input type="text" id="personal-desiredPosition" placeholder="Software Engineer">
+  </div>
+</div>
+
+<h3 class="subsection-title">Contact &amp; Location Details</h3>
+<div class="card grid-2">
+  <div class="form-group" style="grid-column: span 2;">
+    <label for="address-street">Street Address</label>
+    <input type="text" id="address-street" placeholder="123 Main St, Apt 4B">
+  </div>
+  <div class="form-group">
+    <label for="address-city">City</label>
+    <input type="text" id="address-city" placeholder="Lahore">
+  </div>
+  <div class="form-group">
+    <label for="address-state">State / Province</label>
+    <input type="text" id="address-state" placeholder="Punjab">
+  </div>
+  <div class="form-group">
+    <label for="address-postalCode">ZIP / Postal Code</label>
+    <input type="text" id="address-postalCode" placeholder="54000">
+  </div>
+  <div class="form-group">
+    <label for="address-country">Country</label>
+    <input type="text" id="address-country" placeholder="Pakistan">
+  </div>
+</div>
+
+<h3 class="subsection-title">Work Authorization &amp; Sponsorship</h3>
+<div class="card grid-2">
+  <div class="form-group checkbox-group" style="grid-column: span 2;">
+    <input type="checkbox" id="work-authorized">
+    <label for="work-authorized">Legally authorized to work in the target country</label>
+  </div>
+  <div class="form-group checkbox-group" style="grid-column: span 2;">
+    <input type="checkbox" id="work-sponsorship">
+    <label for="work-sponsorship">Will require visa sponsorship now or in the future</label>
+  </div>
+  <div class="form-group">
+    <label for="work-visaType">Current Visa Type (if applicable)</label>
+    <input type="text" id="work-visaType" placeholder="F-1 STEM OPT, H-1B, etc.">
+  </div>
+</div>

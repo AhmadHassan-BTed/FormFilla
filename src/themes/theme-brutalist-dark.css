@@ -1,0 +1,46 @@
+:root {
+  --bg-color: #07080C;
+  --svg-icon-color: #FFFFFF;
+  --sidebar-bg: #07080C;
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --border-color: rgba(255, 255, 255, 0.12);
+  --input-bg: rgba(0, 0, 0, 0.4);
+  --text-primary: #FFFFFF;
+  --text-secondary: #AAAAAA;
+  --accent-purple: #FFFFFF;
+  --accent-indigo: #FFFFFF;
+
+  /* Component overrides */
+  --save-btn-bg: #FFFFFF;
+  --save-btn-text: #07080C;
+  --nav-active-bg: rgba(255, 255, 255, 0.12);
+  --nav-active-border: rgba(255, 255, 255, 0.25);
+  --nav-active-text: #FFFFFF;
+  --brand-text-bg: none;
+  --brand-text-color: #FFFFFF;
+  --brand-logo-fill: #FFFFFF;
+  --brand-logo-filter: brightness(0) invert(1);
+  --focus-ring: rgba(255, 255, 255, 0.2);
+  --file-btn-bg: rgba(255, 255, 255, 0.05);
+  --file-btn-color: var(--text-primary);
+  --file-btn-border: rgba(255, 255, 255, 0.15);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.3);
+  --scrollbar-track: rgba(0, 0, 0, 0.2);
+  --save-btn-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --save-btn-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.45);
+
+  /* Popup overrides */
+  --primary-accent: #FFFFFF;
+  --primary-hover: #E5E7EB;
+  --brand-text-bg: none;
+  --brand-text-color: #FFFFFF;
+  --brand-logo-fill: #FFFFFF;
+  --brand-logo-filter: brightness(0) invert(1);
+  --btn-primary-bg: #FFFFFF;
+  --btn-primary-text: #07080C;
+  --btn-primary-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  --btn-primary-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.45);
+  --icon-btn-bg: rgba(255, 255, 255, 0.1);
+  --icon-btn-color: var(--text-primary);
+  --result-item-bg: rgba(255, 255, 255, 0.03);
+}

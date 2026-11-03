@@ -1,0 +1,2969 @@
+{
+  "__meta__": {
+    "instructions": [
+      "AI INSTRUCTION SET FOR EXTENDING DICTIONARY RULES:",
+      "1. KEY FORMAT: The rule key must match the JSON path in the candidate profile schema (e.g. 'documents.passport', 'personal.firstName').",
+      "2. TIERING: Specify 'sensitivityTier' as 'standard', 'sensitive', or 'critical'. Critical inputs (e.g. SSN) will trigger verification overlays.",
+      "3. ELEMENT TYPE SCAFFOLD: Use 'allowedTypes' to constrain inputs by standard HTML type tags (e.g. ['file'] for file widgets, ['email'] for email fields).",
+      "4. TARGET MATCHES: Provide descriptive match lists. Use 'exactPhrases' for literal string checks (lowercase) and 'regexPatterns' for case-insensitive regular expression strings.",
+      "5. REGEX COMPATIBILITY: Provide clean regex strings. Avoid enclosing characters (like /^pattern$/i). Backslashes must be double-escaped (e.g. '\\s' becomes '\\\\s').",
+      "6. COHESION: Do not create overlapping or duplicate rule keys. Ensure every rule remains completely decoupled and independent.",
+      "7. OPT-IN GATING: For sensitive fields that should be gated behind a dedicated user-facing privacy toggle in addition to sensitivityTier, add 'requiresOptIn': true and 'optInKey': '<preferenceKey>' (e.g. 'sensitiveEeo', 'sensitiveCompensation'). Fields sharing an optInKey are toggled together in settings."
+    ]
+  },
+  "personal.firstName": {
+    "exactPhrases": [
+      "first name",
+      "given name",
+      "forename",
+      "legal first name",
+      "first/given name"
+    ],
+    "regexPatterns": [
+      "first\\s*name",
+      "given\\s*name",
+      "^forename",
+      "^fname\\b",
+      "legal\\s*first\\s*name"
+    ],
+    "autocompleteTokens": [
+      "given-name",
+      "fname"
+    ]
+  },
+  "personal.lastName": {
+    "exactPhrases": [
+      "last name",
+      "family name",
+      "surname",
+      "legal last name",
+      "last/family name"
+    ],
+    "regexPatterns": [
+      "last\\s*name",
+      "family\\s*name",
+      "^surname",
+      "^lname\\b",
+      "legal\\s*last\\s*name"
+    ],
+    "autocompleteTokens": [
+      "family-name",
+      "lname"
+    ]
+  },
+  "personal.middleName": {
+    "exactPhrases": [
+      "middle name",
+      "middle initial"
+    ],
+    "regexPatterns": [
+      "middle\\s*name",
+      "middle\\s*initial",
+      "^mname\\b",
+      "^mi\\b"
+    ],
+    "autocompleteTokens": [
+      "additional-name"
+    ]
+  },
+  "personal.namePrefix": {
+    "allowedTypes": [
+      "text",
+      "select"
+    ],
+    "exactPhrases": [
+      "prefix",
+      "salutation",
+      "name prefix",
+      "title (mr/mrs/ms/dr)"
+    ],
+    "regexPatterns": [
+      "\\bprefix\\b",
+      "salutation"
+    ],
+    "autocompleteTokens": [
+      "honorific-prefix"
+    ]
+  },
+  "personal.nameSuffix": {
+    "allowedTypes": [
+      "text",
+      "select"
+    ],
+    "exactPhrases": [
+      "suffix",
+      "name suffix",
+      "jr/sr/iii"
+    ],
+    "regexPatterns": [
+      "\\bsuffix\\b"
+    ],
+    "autocompleteTokens": [
+      "honorific-suffix"
+    ]
+  },
+  "personal.fullName": {
+    "exactPhrases": [
+      "full name",
+      "your name",
+      "applicant name",
+      "candidate name",
+      "name"
+    ],
+    "regexPatterns": [
+      "^full\\s*name",
+      "^your\\s*name",
+      "^applicant\\s*name",
+      "^candidate\\s*name",
+      "^name$"
+    ],
+    "autocompleteTokens": [
+      "name"
+    ]
+  },
+  "personal.preferredName": {
+    "exactPhrases": [
+      "preferred name",
+      "nickname",
+      "goes by",
+      "preferred first name"
+    ],
+    "regexPatterns": [
+      "preferred\\s*name",
+      "nick\\s*name",
+      "goes\\s*by"
+    ],
+    "autocompleteTokens": [
+      "nickname"
+    ]
+  },
+  "personal.pronouns": {
+    "exactPhrases": [
+      "pronouns",
+      "preferred pronouns",
+      "gender pronouns"
+    ],
+    "regexPatterns": [
+      "pronouns"
+    ]
+  },
+  "personal.dateOfBirth": {
+    "sensitivityTier": "sensitive",
+    "allowedTypes": [
+      "date",
+      "text"
+    ],
+    "exactPhrases": [
+      "date of birth",
+      "birth date",
+      "dob",
+      "birthday"
+    ],
+    "regexPatterns": [
+      "date\\s*of\\s*birth",
+      "birth\\s*date",
+      "^dob\\b",
+      "birthday"
+    ],
+    "autocompleteTokens": [
+      "bday"
+    ]
+  },
+  "personal.email": {
+    "allowedTypes": [
+      "email",
+      "text"
+    ],
+    "exactPhrases": [
+      "email",
+      "email address",
+      "e-mail",
+      "e-mail address",
+      "your email"
+    ],
+    "regexPatterns": [
+      "e[\\-\\s]?mail"
+    ],
+    "autocompleteTokens": [
+      "email"
+    ]
+  },
+  "personal.desiredPosition": {
+    "sensitivityTier": "standard",
+    "exactPhrases": [
+      "applying for position",
+      "position applied for",
+      "desired position",
+      "target position",
+      "position you are applying for",
+      "position"
+    ],
+    "regexPatterns": [
+      "applying\\s*for\\s*position",
+      "desired\\s*position",
+      "position\\s*applied",
+      "target\\s*position"
+    ]
+  },
+  "personal.phoneAreaCode": {
+    "sensitivityTier": "standard",
+    "exactPhrases": [
+      "area code",
+      "country code",
+      "dial code",
+      "phone code",
+      "areacode"
+    ],
+    "regexPatterns": [
+      "area\\s*code",
+      "country\\s*code",
+      "dial\\s*code",
+      "phone\\s*code",
+      "areacode"
+    ]
+  },
+  "personal.phone": {
+    "allowedTypes": [
+      "tel",
+      "text"
+    ],
+    "exactPhrases": [
+      "phone",
+      "phone number",
+      "mobile",
+      "mobile number",
+      "cell",
+      "cell phone",
+      "telephone",
+      "contact number",
+      "primary phone"
+    ],
+    "regexPatterns": [
+      "phone",
+      "mobile",
+      "\\btel\\b",
+      "telephone",
+      "contact\\s*number"
+    ],
+    "autocompleteTokens": [
+      "tel",
+      "phone"
+    ]
+  },
+  "personal.mobilePhone": {
+    "allowedTypes": [
+      "tel",
+      "text"
+    ],
+    "exactPhrases": [
+      "mobile phone",
+      "mobile",
+      "mobile number",
+      "cell phone",
+      "cell",
+      "cell number",
+      "alternate phone",
+      "alternative phone"
+    ],
+    "regexPatterns": [
+      "mobile",
+      "cell",
+      "alt\\s*phone",
+      "alternative\\s*phone"
+    ]
+  },
+  "personal.summary": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "summary",
+      "about you",
+      "about yourself",
+      "personal statement",
+      "introduce yourself",
+      "bio",
+      "biography",
+      "professional summary"
+    ],
+    "regexPatterns": [
+      "summary",
+      "about\\s*(me|you|yourself)",
+      "personal\\s*statement",
+      "\\bbio(graphy)?\\b"
+    ]
+  },
+  "personal.otherQualifications": {
+    "allowedTags": [
+      "TEXTAREA",
+      "INPUT"
+    ],
+    "exactPhrases": [
+      "other qualifications",
+      "qualifications",
+      "professional qualifications",
+      "additional qualifications",
+      "other qualification"
+    ],
+    "regexPatterns": [
+      "other\\s*qualification",
+      "professional\\s*qualification",
+      "additional\\s*qualification"
+    ]
+  },
+  "personal.languages": {
+    "exactPhrases": [
+      "languages",
+      "foreign languages",
+      "languages spoken",
+      "languages list",
+      "language",
+      "language list"
+    ],
+    "regexPatterns": [
+      "language",
+      "languages"
+    ]
+  },
+  "personal.nationalId": {
+    "sensitivityTier": "critical",
+    "exactPhrases": [
+      "national id",
+      "social security number",
+      "ssn",
+      "national identification",
+      "national identity number",
+      "national insurance number",
+      "tax identification number",
+      "id number",
+      "identification number",
+      "cnic",
+      "cnic number"
+    ],
+    "regexPatterns": [
+      "\\bssn\\b",
+      "social\\s*security",
+      "national\\s*id\\b",
+      "national\\s*identification",
+      "national\\s*insurance",
+      "tax\\s*id",
+      "id\\s*number",
+      "identification\\s*number",
+      "cnic"
+    ]
+  },
+  "personal.nationalIdType": {
+    "sensitivityTier": "critical",
+    "exactPhrases": [
+      "id type",
+      "identification type",
+      "national id type",
+      "identity type"
+    ],
+    "regexPatterns": [
+      "id\\s*type",
+      "identification\\s*type"
+    ]
+  },
+  "personal.passportNumber": {
+    "sensitivityTier": "critical",
+    "allowedTypes": [
+      "text"
+    ],
+    "exactPhrases": [
+      "passport number",
+      "passport no"
+    ],
+    "regexPatterns": [
+      "passport\\s*(number|no\\.?)"
+    ]
+  },
+  "personal.cnicNumber": {
+    "sensitivityTier": "critical",
+    "allowedTypes": [
+      "text"
+    ],
+    "exactPhrases": [
+      "cnic number",
+      "cnic no",
+      "national identity card number"
+    ],
+    "regexPatterns": [
+      "cnic\\s*(number|no\\.?)"
+    ]
+  },
+  "address.street": {
+    "exactPhrases": [
+      "street address",
+      "address line 1",
+      "address",
+      "home address",
+      "mailing address",
+      "current address"
+    ],
+    "regexPatterns": [
+      "street",
+      "address\\s*line\\s*1",
+      "^addr\\b",
+      "home\\s*address",
+      "mailing\\s*address"
+    ],
+    "autocompleteTokens": [
+      "address-line1",
+      "street-address"
+    ]
+  },
+  "address.line2": {
+    "exactPhrases": [
+      "address line 2",
+      "apt",
+      "apartment",
+      "suite",
+      "unit",
+      "apt/suite"
+    ],
+    "regexPatterns": [
+      "address\\s*line\\s*2",
+      "\\bapt\\b",
+      "apartment",
+      "\\bsuite\\b",
+      "\\bunit\\b"
+    ],
+    "autocompleteTokens": [
+      "address-line2"
+    ]
+  },
+  "address.city": {
+    "exactPhrases": [
+      "city",
+      "town",
+      "city/town"
+    ],
+    "regexPatterns": [
+      "\\bcity\\b",
+      "\\btown\\b"
+    ],
+    "autocompleteTokens": [
+      "address-level2"
+    ]
+  },
+  "address.state": {
+    "exactPhrases": [
+      "state",
+      "province",
+      "region",
+      "state/province"
+    ],
+    "regexPatterns": [
+      "\\bstate\\b",
+      "province",
+      "\\bregion\\b"
+    ],
+    "autocompleteTokens": [
+      "address-level1"
+    ]
+  },
+  "address.postalCode": {
+    "exactPhrases": [
+      "zip",
+      "zip code",
+      "postal code",
+      "postcode",
+      "zip postal code"
+    ],
+    "regexPatterns": [
+      "\\bzip\\b",
+      "postal",
+      "postcode"
+    ],
+    "autocompleteTokens": [
+      "postal-code"
+    ]
+  },
+  "address.county": {
+    "exactPhrases": [
+      "county"
+    ],
+    "regexPatterns": [
+      "\\bcounty\\b"
+    ]
+  },
+  "address.country": {
+    "exactPhrases": [
+      "country",
+      "nation",
+      "country/region"
+    ],
+    "regexPatterns": [
+      "\\bcountry\\b",
+      "\\bnation\\b"
+    ],
+    "autocompleteTokens": [
+      "country",
+      "country-name"
+    ]
+  },
+  "links.linkedin": {
+    "exactPhrases": [
+      "linkedin",
+      "linkedin profile",
+      "linkedin url",
+      "linkedin profile url"
+    ],
+    "regexPatterns": [
+      "linkedin"
+    ]
+  },
+  "links.github": {
+    "exactPhrases": [
+      "github",
+      "github profile",
+      "github url"
+    ],
+    "regexPatterns": [
+      "github"
+    ]
+  },
+  "links.portfolio": {
+    "exactPhrases": [
+      "portfolio",
+      "portfolio website",
+      "website",
+      "personal website",
+      "portfolio url",
+      "portfolio link"
+    ],
+    "regexPatterns": [
+      "portfolio",
+      "website"
+    ],
+    "autocompleteTokens": [
+      "url"
+    ]
+  },
+  "links.twitter": {
+    "exactPhrases": [
+      "twitter",
+      "twitter/x",
+      "twitter handle",
+      "x profile"
+    ],
+    "regexPatterns": [
+      "twitter",
+      "\\bx\\s*(profile|handle)\\b"
+    ]
+  },
+  "workAuthorization.requiresSponsorship": {
+    "allowedTypes": [
+      "radio",
+      "checkbox",
+      "select"
+    ],
+    "exactPhrases": [
+      "require sponsorship",
+      "will you now or in the future require visa sponsorship",
+      "require visa sponsorship",
+      "need sponsorship"
+    ],
+    "regexPatterns": [
+      "sponsorship",
+      "\\bsponsor\\b",
+      "require\\s*visa"
+    ]
+  },
+  "workAuthorization.authorizedInUS": {
+    "allowedTypes": [
+      "radio",
+      "checkbox",
+      "select"
+    ],
+    "exactPhrases": [
+      "legally authorized to work",
+      "authorized to work in the us",
+      "authorized to work in the united states",
+      "eligible to work"
+    ],
+    "regexPatterns": [
+      "authorized\\s*to\\s*work",
+      "legally\\s*(authorized|eligible)",
+      "eligible\\s*to\\s*work"
+    ]
+  },
+  "workAuthorization.visaType": {
+    "allowedTypes": [
+      "text",
+      "select"
+    ],
+    "exactPhrases": [
+      "visa status",
+      "visa type",
+      "current visa status",
+      "type of visa"
+    ],
+    "regexPatterns": [
+      "visa\\s*status",
+      "visa\\s*type",
+      "type\\s*of\\s*visa"
+    ]
+  },
+  "workAuthorization.willingToRelocate": {
+    "allowedTypes": [
+      "radio",
+      "checkbox",
+      "select"
+    ],
+    "exactPhrases": [
+      "willing to relocate",
+      "open to relocation",
+      "relocation"
+    ],
+    "regexPatterns": [
+      "relocat"
+    ]
+  },
+  "workAuthorization.willingToTravel": {
+    "allowedTypes": [
+      "radio",
+      "checkbox",
+      "select"
+    ],
+    "exactPhrases": [
+      "willing to travel",
+      "able to travel",
+      "travel required"
+    ],
+    "regexPatterns": [
+      "willing\\s*to\\s*travel",
+      "able\\s*to\\s*travel"
+    ]
+  },
+  "compensation.currentSalary": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveCompensation",
+    "allowedTypes": [
+      "text",
+      "number"
+    ],
+    "exactPhrases": [
+      "current salary",
+      "current compensation",
+      "current pay"
+    ],
+    "regexPatterns": [
+      "current\\s*salary",
+      "current\\s*compensation",
+      "current\\s*pay"
+    ]
+  },
+  "compensation.desiredSalary": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveCompensation",
+    "allowedTypes": [
+      "text",
+      "number"
+    ],
+    "exactPhrases": [
+      "desired salary",
+      "salary expectations",
+      "expected salary",
+      "salary requirement",
+      "compensation expectations",
+      "desired compensation"
+    ],
+    "regexPatterns": [
+      "desired\\s*salary",
+      "salary\\s*expect",
+      "expected\\s*salary",
+      "salary\\s*requirement",
+      "compensation\\s*expect"
+    ]
+  },
+  "availability.startDate": {
+    "allowedTypes": [
+      "date",
+      "text"
+    ],
+    "exactPhrases": [
+      "earliest start date",
+      "available start date",
+      "when can you start",
+      "date available",
+      "availability date"
+    ],
+    "regexPatterns": [
+      "earliest\\s*start",
+      "available\\s*start",
+      "when\\s*can\\s*you\\s*start",
+      "date\\s*available",
+      "availability\\s*date"
+    ],
+    "rejectIfMatches": [
+      "dob",
+      "birth"
+    ]
+  },
+  "availability.noticePeriod": {
+    "allowedTypes": [
+      "text",
+      "select"
+    ],
+    "exactPhrases": [
+      "notice period",
+      "how much notice",
+      "weeks notice",
+      "notice required"
+    ],
+    "regexPatterns": [
+      "notice\\s*period",
+      "notice\\s*required",
+      "weeks?\\s*notice"
+    ]
+  },
+  "source.howDidYouHear": {
+    "allowedTypes": [
+      "select",
+      "text",
+      "radio"
+    ],
+    "exactPhrases": [
+      "how did you hear about us",
+      "how did you hear about this position",
+      "referral source"
+    ],
+    "regexPatterns": [
+      "how\\s*did\\s*you\\s*hear",
+      "referral\\s*source"
+    ]
+  },
+  "source.referredByName": {
+    "allowedTypes": [
+      "text"
+    ],
+    "exactPhrases": [
+      "referred by",
+      "employee referral",
+      "referral name",
+      "who referred you"
+    ],
+    "regexPatterns": [
+      "referred\\s*by",
+      "employee\\s*referral",
+      "who\\s*referred"
+    ]
+  },
+  "legal.isOver18": {
+    "allowedTypes": [
+      "radio",
+      "checkbox",
+      "select"
+    ],
+    "exactPhrases": [
+      "are you 18 years of age or older",
+      "are you at least 18 years old",
+      "18 years or older",
+      "are you over 18"
+    ],
+    "regexPatterns": [
+      "18\\s*years",
+      "age\\s*verification"
+    ]
+  },
+  "legal.criminalHistory": {
+    "sensitivityTier": "critical",
+    "allowedTypes": [
+      "radio",
+      "select"
+    ],
+    "exactPhrases": [
+      "have you ever been convicted of a felony",
+      "have you ever been convicted of a crime",
+      "criminal history",
+      "criminal record",
+      "convicted of a felony"
+    ],
+    "regexPatterns": [
+      "convicted",
+      "criminal\\s*(history|record)",
+      "felony"
+    ]
+  },
+  "legal.nonCompeteAgreement": {
+    "sensitivityTier": "critical",
+    "allowedTypes": [
+      "radio",
+      "checkbox",
+      "select"
+    ],
+    "exactPhrases": [
+      "non-compete agreement",
+      "bound by a non-compete",
+      "non-compete",
+      "noncompete agreement"
+    ],
+    "regexPatterns": [
+      "non[\\-\\s]?compete"
+    ]
+  },
+  "legal.backgroundCheckConsent": {
+    "sensitivityTier": "critical",
+    "allowedTypes": [
+      "checkbox",
+      "radio"
+    ],
+    "exactPhrases": [
+      "consent to background check",
+      "background check authorization",
+      "i authorize a background check",
+      "background check consent"
+    ],
+    "regexPatterns": [
+      "background\\s*check"
+    ]
+  },
+  "legal.certifyInformation": {
+    "sensitivityTier": "critical",
+    "allowedTypes": [
+      "checkbox"
+    ],
+    "exactPhrases": [
+      "i certify that the information",
+      "i certify that the above information is true",
+      "certify that the information provided is accurate"
+    ],
+    "regexPatterns": [
+      "certify\\s*that",
+      "information\\s*(provided|above)\\s*is\\s*(true|accurate|correct)"
+    ]
+  },
+  "legal.eSignature": {
+    "sensitivityTier": "critical",
+    "allowedTypes": [
+      "text"
+    ],
+    "exactPhrases": [
+      "signature",
+      "type your full name to sign",
+      "digital signature",
+      "electronic signature"
+    ],
+    "regexPatterns": [
+      "signature",
+      "sign\\s*(here|below)",
+      "type\\s*your\\s*(full\\s*)?name\\s*to\\s*sign"
+    ]
+  },
+  "education[].school": {
+    "exactPhrases": [
+      "school",
+      "university",
+      "college",
+      "institution",
+      "school name",
+      "name of institution"
+    ],
+    "regexPatterns": [
+      "school",
+      "university",
+      "college",
+      "institution"
+    ]
+  },
+  "education[].degree": {
+    "exactPhrases": [
+      "degree",
+      "qualification",
+      "level of education",
+      "degree type",
+      "degree/diploma"
+    ],
+    "regexPatterns": [
+      "degree",
+      "qualification"
+    ]
+  },
+  "education[].fieldOfStudy": {
+    "exactPhrases": [
+      "field of study",
+      "major",
+      "discipline",
+      "subject",
+      "area of study",
+      "concentration"
+    ],
+    "regexPatterns": [
+      "major",
+      "field\\s*of\\s*study",
+      "discipline",
+      "specialization",
+      "concentration"
+    ]
+  },
+  "education[].minor": {
+    "exactPhrases": [
+      "minor",
+      "minor field of study"
+    ],
+    "regexPatterns": [
+      "\\bminor\\b"
+    ]
+  },
+  "education[].startDate": {
+    "exactPhrases": [
+      "start date",
+      "from date",
+      "started"
+    ],
+    "regexPatterns": [
+      "start\\s*date",
+      "^from\\b",
+      "^start\\b"
+    ]
+  },
+  "education[].endDate": {
+    "exactPhrases": [
+      "end date",
+      "to date",
+      "graduation date",
+      "graduated",
+      "expected graduation"
+    ],
+    "regexPatterns": [
+      "end\\s*date",
+      "^to\\b",
+      "grad"
+    ]
+  },
+  "education[].startMonth": {
+    "exactPhrases": [
+      "start month",
+      "from month",
+      "education start month",
+      "education from month"
+    ],
+    "regexPatterns": [
+      "start\\s*month",
+      "from\\s*month"
+    ]
+  },
+  "education[].startYear": {
+    "exactPhrases": [
+      "start year",
+      "from year",
+      "education start year",
+      "education from year"
+    ],
+    "regexPatterns": [
+      "start\\s*year",
+      "from\\s*year"
+    ]
+  },
+  "education[].endMonth": {
+    "exactPhrases": [
+      "end month",
+      "to month",
+      "education end month",
+      "education to month"
+    ],
+    "regexPatterns": [
+      "end\\s*month",
+      "to\\s*month"
+    ]
+  },
+  "education[].endYear": {
+    "exactPhrases": [
+      "end year",
+      "to year",
+      "graduation year",
+      "education end year",
+      "education to year"
+    ],
+    "regexPatterns": [
+      "end\\s*year",
+      "to\\s*year",
+      "grad"
+    ]
+  },
+  "education[].isCurrent": {
+    "allowedTypes": [
+      "checkbox"
+    ],
+    "exactPhrases": [
+      "currently enrolled",
+      "i currently attend",
+      "current student",
+      "i am currently enrolled here"
+    ],
+    "regexPatterns": [
+      "currently\\s*enrolled",
+      "current\\s*student"
+    ]
+  },
+  "education[].gpa": {
+    "exactPhrases": [
+      "gpa",
+      "grade point average",
+      "grades"
+    ],
+    "regexPatterns": [
+      "\\bgpa\\b",
+      "grade\\s*point"
+    ]
+  },
+  "education[].honors": {
+    "exactPhrases": [
+      "honors",
+      "honours",
+      "awards",
+      "academic honors",
+      "distinctions"
+    ],
+    "regexPatterns": [
+      "honou?rs",
+      "distinction"
+    ]
+  },
+  "education.highest.school": {
+    "exactPhrases": [
+      "highest school",
+      "highest university",
+      "highest level school"
+    ],
+    "regexPatterns": [
+      "highest\\s*school",
+      "highest\\s*university"
+    ]
+  },
+  "education.highest.degree": {
+    "exactPhrases": [
+      "highest degree",
+      "highest qualification",
+      "highest level of education",
+      "highest educational degree awarded",
+      "highest degree awarded",
+      "education degree level",
+      "degree level",
+      "please upload the educational document(s) while submitting your online application"
+    ],
+    "regexPatterns": [
+      "highest\\s*degree",
+      "highest\\s*qualification",
+      "level\\s*of\\s*education",
+      "degree\\s*level",
+      "upload\\s*educational\\s*document"
+    ]
+  },
+  "education.highest.fieldOfStudy": {
+    "exactPhrases": [
+      "highest degree field of study",
+      "field of study for highest degree"
+    ],
+    "regexPatterns": [
+      "highest.*field\\s*of\\s*study",
+      "field\\s*of\\s*study.*highest"
+    ]
+  },
+  "experience[].company": {
+    "exactPhrases": [
+      "company",
+      "employer",
+      "organization",
+      "company name",
+      "employer name"
+    ],
+    "regexPatterns": [
+      "company",
+      "employer",
+      "organization"
+    ]
+  },
+  "experience[].title": {
+    "allowedTags": [
+      "INPUT"
+    ],
+    "exactPhrases": [
+      "title",
+      "job title",
+      "role",
+      "position",
+      "position title",
+      "experience job title"
+    ],
+    "regexPatterns": [
+      "\\btitle\\b",
+      "\\brole\\b",
+      "position"
+    ]
+  },
+  "experience[].location": {
+    "exactPhrases": [
+      "location",
+      "city",
+      "job location",
+      "work location"
+    ],
+    "regexPatterns": [
+      "location"
+    ]
+  },
+  "experience[].employmentType": {
+    "allowedTypes": [
+      "select",
+      "radio"
+    ],
+    "exactPhrases": [
+      "employment type",
+      "job type",
+      "type of employment"
+    ],
+    "regexPatterns": [
+      "employment\\s*type",
+      "job\\s*type"
+    ]
+  },
+  "experience[].startDate": {
+    "exactPhrases": [
+      "start date",
+      "from date",
+      "started"
+    ],
+    "regexPatterns": [
+      "start\\s*date",
+      "^from\\b",
+      "^start\\b"
+    ]
+  },
+  "experience[].endDate": {
+    "exactPhrases": [
+      "end date",
+      "to date"
+    ],
+    "regexPatterns": [
+      "end\\s*date",
+      "^to\\b"
+    ]
+  },
+  "experience[].startMonth": {
+    "exactPhrases": [
+      "start month",
+      "from month",
+      "experience start month",
+      "experience from month"
+    ],
+    "regexPatterns": [
+      "start\\s*month",
+      "from\\s*month"
+    ]
+  },
+  "experience[].startYear": {
+    "exactPhrases": [
+      "start year",
+      "from year",
+      "experience start year",
+      "experience from year"
+    ],
+    "regexPatterns": [
+      "start\\s*year",
+      "from\\s*year"
+    ]
+  },
+  "experience[].endMonth": {
+    "exactPhrases": [
+      "end month",
+      "to month",
+      "experience end month",
+      "experience to month"
+    ],
+    "regexPatterns": [
+      "end\\s*month",
+      "to\\s*month"
+    ]
+  },
+  "experience[].endYear": {
+    "exactPhrases": [
+      "end year",
+      "to year",
+      "experience end year",
+      "experience to year"
+    ],
+    "regexPatterns": [
+      "end\\s*year",
+      "to\\s*year"
+    ]
+  },
+  "experience[].isCurrent": {
+    "allowedTypes": [
+      "checkbox"
+    ],
+    "exactPhrases": [
+      "i currently work here",
+      "current position",
+      "currently employed here",
+      "this is my current job"
+    ],
+    "regexPatterns": [
+      "currently\\s*work",
+      "current\\s*(position|role|job)"
+    ]
+  },
+  "experience[].description": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "description",
+      "duties",
+      "responsibilities",
+      "summary of experience",
+      "key responsibilities",
+      "job description"
+    ],
+    "regexPatterns": [
+      "description",
+      "duties",
+      "responsibilities"
+    ]
+  },
+  "experience[].reasonForLeaving": {
+    "exactPhrases": [
+      "reason for leaving",
+      "why did you leave"
+    ],
+    "regexPatterns": [
+      "reason\\s*for\\s*leaving",
+      "why\\s*did\\s*you\\s*leave"
+    ]
+  },
+  "experience[].supervisorName": {
+    "exactPhrases": [
+      "supervisor name",
+      "supervisor",
+      "manager name",
+      "reporting manager"
+    ],
+    "regexPatterns": [
+      "supervisor",
+      "manager\\s*name"
+    ]
+  },
+  "experience[].phone": {
+    "allowedTypes": [
+      "tel",
+      "text"
+    ],
+    "exactPhrases": [
+      "experience phone",
+      "employer phone",
+      "company phone",
+      "supervisor phone"
+    ],
+    "regexPatterns": [
+      "experience\\s*phone",
+      "employer\\s*phone",
+      "company\\s*phone",
+      "supervisor\\s*phone"
+    ]
+  },
+  "experience[].startingSalary": {
+    "exactPhrases": [
+      "starting salary",
+      "experience starting salary"
+    ],
+    "regexPatterns": [
+      "starting\\s*salary"
+    ]
+  },
+  "experience[].endingSalary": {
+    "exactPhrases": [
+      "ending salary",
+      "experience ending salary"
+    ],
+    "regexPatterns": [
+      "ending\\s*salary"
+    ]
+  },
+  "experience[].salaryCurrency": {
+    "exactPhrases": [
+      "currency",
+      "salary currency",
+      "experience currency"
+    ],
+    "regexPatterns": [
+      "currency",
+      "salary\\s*currency"
+    ]
+  },
+  "references[].name": {
+    "sensitivityTier": "sensitive",
+    "exactPhrases": [
+      "reference name",
+      "references name",
+      "contact name",
+      "ref name",
+      "full name of reference"
+    ],
+    "regexPatterns": [
+      "references?\\s*name",
+      "ref\\s*name"
+    ]
+  },
+  "references[].relationship": {
+    "sensitivityTier": "sensitive",
+    "exactPhrases": [
+      "relationship",
+      "how do you know this person",
+      "relationship to you",
+      "references relationship",
+      "references relation",
+      "references type",
+      "reference type"
+    ],
+    "regexPatterns": [
+      "relationship",
+      "relation",
+      "references?\\s*(relation|type)"
+    ]
+  },
+  "references[].company": {
+    "sensitivityTier": "sensitive",
+    "exactPhrases": [
+      "reference company",
+      "references company",
+      "ref company"
+    ],
+    "regexPatterns": [
+      "references?\\s*company",
+      "ref\\s*company"
+    ]
+  },
+  "references[].title": {
+    "sensitivityTier": "sensitive",
+    "exactPhrases": [
+      "reference title",
+      "references title",
+      "ref title",
+      "occupation",
+      "position",
+      "occupation position",
+      "reference occupation",
+      "references occupation",
+      "reference position",
+      "references position"
+    ],
+    "regexPatterns": [
+      "references?\\s*title",
+      "ref\\s*title",
+      "occupation",
+      "position"
+    ]
+  },
+  "references[].email": {
+    "allowedTypes": [
+      "email",
+      "text"
+    ],
+    "sensitivityTier": "sensitive",
+    "exactPhrases": [
+      "reference email",
+      "references email",
+      "ref email"
+    ],
+    "regexPatterns": [
+      "references?\\s*email",
+      "ref\\s*email"
+    ]
+  },
+  "references[].phone": {
+    "allowedTypes": [
+      "tel",
+      "text"
+    ],
+    "sensitivityTier": "sensitive",
+    "exactPhrases": [
+      "reference phone",
+      "references phone",
+      "ref phone"
+    ],
+    "regexPatterns": [
+      "references?\\s*phone",
+      "ref\\s*phone"
+    ]
+  },
+  "family.fatherName": {
+    "sensitivityTier": "sensitive",
+    "exactPhrases": [
+      "father name",
+      "fathers name",
+      "father's name",
+      "father",
+      "name of father",
+      "father/spouse",
+      "father spouse",
+      "spouse name",
+      "family reference name",
+      "family reference"
+    ],
+    "regexPatterns": [
+      "father",
+      "father\\s*spouse",
+      "family\\s*reference"
+    ]
+  },
+  "family.motherName": {
+    "sensitivityTier": "sensitive",
+    "exactPhrases": [
+      "mother name",
+      "mothers name",
+      "mother's name",
+      "mother",
+      "name of mother"
+    ],
+    "regexPatterns": [
+      "mother"
+    ]
+  },
+  "documents.resume": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "resume",
+      "cv",
+      "curriculum vitae",
+      "upload resume",
+      "upload cv",
+      "attach resume",
+      "resume/cv"
+    ],
+    "regexPatterns": [
+      "resume",
+      "\\bcv\\b",
+      "curriculum"
+    ]
+  },
+  "documents.cv": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "cv",
+      "curriculum vitae",
+      "upload cv"
+    ],
+    "regexPatterns": [
+      "\\bcv\\b",
+      "curriculum"
+    ]
+  },
+  "documents.coverLetter": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "cover letter",
+      "upload cover letter",
+      "upload letter",
+      "add a cover letter"
+    ],
+    "regexPatterns": [
+      "cover\\s*letter",
+      "\\bletter\\b"
+    ]
+  },
+  "documents.coverLetterText": {
+    "sensitivityTier": "standard",
+    "allowedTags": [
+      "TEXTAREA",
+      "INPUT"
+    ],
+    "allowedTypes": [
+      "text"
+    ],
+    "exactPhrases": [
+      "cover letter",
+      "cover letter text",
+      "write cover letter",
+      "your cover letter",
+      "message"
+    ],
+    "regexPatterns": [
+      "cover\\s*letter",
+      "message"
+    ]
+  },
+  "documents.photo": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "photo",
+      "photograph",
+      "headshot",
+      "picture",
+      "upload photo",
+      "upload photograph",
+      "upload picture",
+      "profile photo"
+    ],
+    "regexPatterns": [
+      "photo",
+      "headshot",
+      "picture",
+      "image"
+    ]
+  },
+  "documents.passport": {
+    "allowedTypes": [
+      "file"
+    ],
+    "sensitivityTier": "critical",
+    "exactPhrases": [
+      "passport",
+      "upload passport",
+      "passport photo",
+      "passport copy",
+      "passport page",
+      "passport bio page"
+    ],
+    "regexPatterns": [
+      "passport"
+    ]
+  },
+  "documents.cnic": {
+    "allowedTypes": [
+      "file"
+    ],
+    "sensitivityTier": "critical",
+    "exactPhrases": [
+      "cnic",
+      "national identity card",
+      "national id card",
+      "cnic front",
+      "cnic back",
+      "upload cnic",
+      "cnic photo",
+      "cnic copy",
+      "government issued photo id",
+      "government issued id",
+      "photo id",
+      "government id",
+      "identity card"
+    ],
+    "regexPatterns": [
+      "cnic",
+      "national\\s*id\\s*card",
+      "government\\s*issued\\s*(photo\\s*)?id",
+      "photo\\s*id",
+      "government\\s*id"
+    ]
+  },
+  "documents.driversLicense": {
+    "allowedTypes": [
+      "file"
+    ],
+    "sensitivityTier": "critical",
+    "exactPhrases": [
+      "driver's license",
+      "drivers license",
+      "driving licence",
+      "upload driver's license"
+    ],
+    "regexPatterns": [
+      "driv(er|ing)'?s?\\s*licen[cs]e"
+    ]
+  },
+  "documents.transcript": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "transcript",
+      "academic transcript",
+      "upload transcript",
+      "official transcript"
+    ],
+    "regexPatterns": [
+      "transcript"
+    ]
+  },
+  "documents.workSample": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "work sample",
+      "writing sample",
+      "portfolio sample",
+      "upload work sample"
+    ],
+    "regexPatterns": [
+      "work\\s*sample",
+      "writing\\s*sample"
+    ]
+  },
+  "eeo.gender": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveEeo",
+    "exactPhrases": [
+      "gender",
+      "sex",
+      "gender identity"
+    ],
+    "regexPatterns": [
+      "gender",
+      "\\bsex\\b"
+    ]
+  },
+  "eeo.race": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveEeo",
+    "exactPhrases": [
+      "race",
+      "ethnicity",
+      "racial group"
+    ],
+    "regexPatterns": [
+      "\\brace\\b",
+      "ethnicity"
+    ]
+  },
+  "eeo.hispanicOrLatino": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveEeo",
+    "exactPhrases": [
+      "hispanic or latino",
+      "hispanic/latino",
+      "are you hispanic or latino"
+    ],
+    "regexPatterns": [
+      "hispanic",
+      "latino"
+    ]
+  },
+  "eeo.veteranStatus": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveEeo",
+    "exactPhrases": [
+      "veteran",
+      "veteran status",
+      "military service",
+      "protected veteran"
+    ],
+    "regexPatterns": [
+      "veteran",
+      "military"
+    ]
+  },
+  "eeo.disabilityStatus": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveEeo",
+    "exactPhrases": [
+      "disability",
+      "disability status",
+      "handicap",
+      "person with a disability"
+    ],
+    "regexPatterns": [
+      "disability",
+      "handicap"
+    ]
+  },
+  "eeo.sexualOrientation": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveEeo",
+    "exactPhrases": [
+      "sexual orientation",
+      "lgbtq"
+    ],
+    "regexPatterns": [
+      "sexual\\s*orientation",
+      "lgbtq"
+    ]
+  },
+  "certifications[].name": {
+    "exactPhrases": [
+      "certification name",
+      "certification",
+      "license name",
+      "credential name"
+    ],
+    "regexPatterns": [
+      "certificat",
+      "license\\s*name",
+      "credential"
+    ]
+  },
+  "certifications[].issuingOrganization": {
+    "exactPhrases": [
+      "issuing organization",
+      "issued by",
+      "certifying body"
+    ],
+    "regexPatterns": [
+      "issu(ing|ed)\\s*(organization|by)",
+      "certifying\\s*body"
+    ]
+  },
+  "certifications[].issueDate": {
+    "allowedTypes": [
+      "date",
+      "text"
+    ],
+    "exactPhrases": [
+      "issue date",
+      "date obtained",
+      "date issued"
+    ],
+    "regexPatterns": [
+      "issue\\s*date",
+      "date\\s*obtained",
+      "date\\s*issued"
+    ]
+  },
+  "certifications[].expirationDate": {
+    "allowedTypes": [
+      "date",
+      "text"
+    ],
+    "exactPhrases": [
+      "expiration date",
+      "expiry date",
+      "valid until"
+    ],
+    "regexPatterns": [
+      "expir(ation|y)\\s*date",
+      "valid\\s*until"
+    ]
+  },
+  "certifications[].credentialId": {
+    "exactPhrases": [
+      "credential id",
+      "license number",
+      "certificate number"
+    ],
+    "regexPatterns": [
+      "credential\\s*id",
+      "license\\s*number",
+      "certificate\\s*number"
+    ]
+  },
+  "languages[].language": {
+    "exactPhrases": [
+      "language",
+      "language spoken"
+    ],
+    "regexPatterns": [
+      "\\blanguage\\b"
+    ]
+  },
+  "languages[].proficiency": {
+    "exactPhrases": [
+      "proficiency",
+      "fluency level",
+      "proficiency level",
+      "fluency"
+    ],
+    "regexPatterns": [
+      "proficiency",
+      "fluency"
+    ]
+  },
+  "academics.classRank": {
+    "exactPhrases": [
+      "class rank",
+      "academic rank",
+      "percentile",
+      "standing",
+      "academic standing"
+    ],
+    "regexPatterns": [
+      "class\\s*rank",
+      "academic\\s*rank",
+      "percentile",
+      "standing"
+    ]
+  },
+  "academics.greVerbal": {
+    "exactPhrases": [
+      "gre verbal",
+      "gre verbal score",
+      "verbal score",
+      "gre verbal reasoning"
+    ],
+    "regexPatterns": [
+      "gre\\s*verbal",
+      "verbal\\s*score",
+      "verbal\\s*reasoning"
+    ]
+  },
+  "academics.greQuant": {
+    "exactPhrases": [
+      "gre quant",
+      "gre quantitative",
+      "gre quantitative score",
+      "quantitative score",
+      "gre quantitative reasoning"
+    ],
+    "regexPatterns": [
+      "gre\\s*quant",
+      "quantitative\\s*score",
+      "quantitative\\s*reasoning"
+    ]
+  },
+  "academics.greWriting": {
+    "exactPhrases": [
+      "gre writing",
+      "gre analytical writing",
+      "analytical writing",
+      "gre writing score",
+      "gre awa"
+    ],
+    "regexPatterns": [
+      "gre\\s*writing",
+      "analytical\\s*writing",
+      "gre\\s*awa",
+      "awa\\s*score"
+    ]
+  },
+  "academics.greTotal": {
+    "exactPhrases": [
+      "gre total",
+      "gre score",
+      "gre total score",
+      "cumulative gre"
+    ],
+    "regexPatterns": [
+      "gre\\s*(total|score)",
+      "cumulative\\s*gre"
+    ]
+  },
+  "academics.toeflTotal": {
+    "exactPhrases": [
+      "toefl total",
+      "toefl score",
+      "toefl total score",
+      "toefl ibt"
+    ],
+    "regexPatterns": [
+      "toefl"
+    ]
+  },
+  "academics.ieltsBand": {
+    "exactPhrases": [
+      "ielts band",
+      "ielts score",
+      "ielts band score",
+      "ielts total"
+    ],
+    "regexPatterns": [
+      "ielts"
+    ]
+  },
+  "academics.satTotal": {
+    "exactPhrases": [
+      "sat score",
+      "sat total",
+      "sat total score"
+    ],
+    "regexPatterns": [
+      "sat\\s*(score|total)"
+    ]
+  },
+  "academics.actTotal": {
+    "exactPhrases": [
+      "act score",
+      "act total",
+      "act total score"
+    ],
+    "regexPatterns": [
+      "act\\s*(score|total)"
+    ]
+  },
+  "academics.researchInterests": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "research interests",
+      "statement of research",
+      "proposed research area",
+      "area of research",
+      "research topic"
+    ],
+    "regexPatterns": [
+      "research\\s*(interest|topic|area|statement)"
+    ]
+  },
+  "academics.proposedAdvisor": {
+    "exactPhrases": [
+      "proposed advisor",
+      "proposed supervisor",
+      "intended advisor",
+      "academic advisor",
+      "supervisor name",
+      "advising professor"
+    ],
+    "regexPatterns": [
+      "proposed\\s*(advisor|supervisor)",
+      "intended\\s*advisor",
+      "academic\\s*advisor"
+    ]
+  },
+  "academics.fundingRequired": {
+    "allowedTypes": [
+      "checkbox",
+      "radio"
+    ],
+    "exactPhrases": [
+      "do you require funding",
+      "funding required",
+      "applying for financial aid",
+      "requesting scholarship support"
+    ],
+    "regexPatterns": [
+      "require\\s*funding",
+      "financial\\s*aid",
+      "scholarship\\s*support"
+    ]
+  },
+  "academics.annualHouseholdIncome": {
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveFinancials",
+    "exactPhrases": [
+      "annual household income",
+      "family income",
+      "household income",
+      "annual family income",
+      "gross household income"
+    ],
+    "regexPatterns": [
+      "household\\s*income",
+      "family\\s*income"
+    ]
+  },
+  "documents.sop": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "statement of purpose",
+      "sop",
+      "personal statement",
+      "upload statement of purpose",
+      "upload sop"
+    ],
+    "regexPatterns": [
+      "statement\\s*of\\s*purpose",
+      "\\bsop\\b",
+      "personal\\s*statement"
+    ]
+  },
+  "documents.researchProposal": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "research proposal",
+      "study plan",
+      "proposal document",
+      "upload research proposal",
+      "upload study plan"
+    ],
+    "regexPatterns": [
+      "research\\s*proposal",
+      "study\\s*plan"
+    ]
+  },
+  "documents.recommendationLetter": {
+    "allowedTypes": [
+      "file"
+    ],
+    "exactPhrases": [
+      "recommendation letter",
+      "letter of recommendation",
+      "reference letter",
+      "lor",
+      "upload reference letter"
+    ],
+    "regexPatterns": [
+      "recommendation\\s*letter",
+      "letter\\s*of\\s*recommendation",
+      "\\blor\\b",
+      "reference\\s*letter"
+    ]
+  },
+  "documents.financialStatement": {
+    "allowedTypes": [
+      "file"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveFinancials",
+    "exactPhrases": [
+      "financial statement",
+      "proof of income",
+      "bank statement",
+      "financial support documents",
+      "upload proof of income"
+    ],
+    "regexPatterns": [
+      "financial\\s*statement",
+      "proof\\s*of\\s*income",
+      "bank\\s*statement"
+    ]
+  },
+  "academics.applicationTrack": {
+    "exactPhrases": [
+      "application track",
+      "track",
+      "apply track",
+      "gks track",
+      "embassy track",
+      "university track"
+    ],
+    "regexPatterns": [
+      "application\\s*track",
+      "track"
+    ]
+  },
+  "academics.recommendedEmbassy": {
+    "exactPhrases": [
+      "recommended embassy",
+      "embassy",
+      "embassy name",
+      "institution recommended"
+    ],
+    "regexPatterns": [
+      "embassy"
+    ]
+  },
+  "academics.applicationProgram": {
+    "exactPhrases": [
+      "application program",
+      "program",
+      "apply program",
+      "general program"
+    ],
+    "regexPatterns": [
+      "program"
+    ]
+  },
+  "academics.degreeProgram": {
+    "exactPhrases": [
+      "degree program to apply",
+      "degree program",
+      "applying degree",
+      "masters degree",
+      "doctoral degree"
+    ],
+    "regexPatterns": [
+      "degree\\s*program"
+    ]
+  },
+  "academics.desiredFieldOfStudy": {
+    "exactPhrases": [
+      "desired field of study",
+      "field of study",
+      "division",
+      "major field",
+      "desired field"
+    ],
+    "regexPatterns": [
+      "field\\s*of\\s*study",
+      "division"
+    ]
+  },
+  "academics.koreanCitizenshipApplicant": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "exactPhrases": [
+      "korean citizenship- applicant",
+      "korean citizenship applicant",
+      "applicant korean citizenship",
+      "do you hold korean citizenship"
+    ],
+    "regexPatterns": [
+      "korean\\s*citizenship.*applicant",
+      "applicant.*korean\\s*citizenship"
+    ]
+  },
+  "academics.koreanCitizenshipParent": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "exactPhrases": [
+      "korean citizenship- parent",
+      "korean citizenship parent",
+      "parent korean citizenship",
+      "do your parents hold korean citizenship"
+    ],
+    "regexPatterns": [
+      "korean\\s*citizenship.*parent",
+      "parent.*korean\\s*citizenship"
+    ]
+  },
+  "academics.topikLevel": {
+    "exactPhrases": [
+      "topik level",
+      "topik grade",
+      "topik proficiency"
+    ],
+    "regexPatterns": [
+      "topik\\s*level",
+      "topik\\s*grade"
+    ]
+  },
+  "academics.topikTestHeld": {
+    "exactPhrases": [
+      "topik test held",
+      "topik held",
+      "topik round"
+    ],
+    "regexPatterns": [
+      "topik\\s*test\\s*held",
+      "topik\\s*held"
+    ]
+  },
+  "academics.topikTestDate": {
+    "exactPhrases": [
+      "topik test date",
+      "topik date",
+      "date of topik"
+    ],
+    "regexPatterns": [
+      "topik\\s*test\\s*date",
+      "topik\\s*date"
+    ]
+  },
+  "academics.highSchoolName": {
+    "exactPhrases": [
+      "high school name",
+      "high school",
+      "secondary school name",
+      "school name"
+    ],
+    "regexPatterns": [
+      "high\\s*school\\s*name",
+      "high\\s*school"
+    ]
+  },
+  "academics.highSchoolLocation": {
+    "exactPhrases": [
+      "high school location",
+      "high school country",
+      "location of high school"
+    ],
+    "regexPatterns": [
+      "high\\s*school\\s*location",
+      "high\\s*school\\s*country"
+    ]
+  },
+  "academics.highSchoolGraduationYear": {
+    "exactPhrases": [
+      "high school year of graduation",
+      "high school graduation year",
+      "graduation year",
+      "year of graduation"
+    ],
+    "regexPatterns": [
+      "high\\s*school\\s*graduation\\s*year",
+      "year\\s*of\\s*graduation"
+    ]
+  },
+  "academics.bachelorsThesisTitle": {
+    "exactPhrases": [
+      "degree thesis title",
+      "thesis title",
+      "bachelor thesis title",
+      "undergraduate thesis"
+    ],
+    "regexPatterns": [
+      "thesis\\s*title",
+      "bachelor.*thesis"
+    ]
+  },
+  "academics.bachelorsPublications": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "published books & research papers",
+      "published papers",
+      "bachelor publications",
+      "list of publications"
+    ],
+    "regexPatterns": [
+      "published\\s*(books|papers|publications)"
+    ]
+  },
+  "academics.mastersUniversityName": {
+    "exactPhrases": [
+      "master university name",
+      "master school name",
+      "master institution"
+    ],
+    "regexPatterns": [
+      "master.*university",
+      "master.*school"
+    ]
+  },
+  "academics.mastersLocation": {
+    "exactPhrases": [
+      "master location",
+      "master country"
+    ],
+    "regexPatterns": [
+      "master.*location",
+      "master.*country"
+    ]
+  },
+  "academics.mastersMajor": {
+    "exactPhrases": [
+      "master major",
+      "master degree major",
+      "master field of study"
+    ],
+    "regexPatterns": [
+      "master.*major",
+      "master.*field"
+    ]
+  },
+  "academics.mastersGraduationDate": {
+    "exactPhrases": [
+      "master graduation date",
+      "master graduation",
+      "master degree awarded"
+    ],
+    "regexPatterns": [
+      "master.*graduation",
+      "master.*awarded"
+    ]
+  },
+  "academics.mastersThesisTitle": {
+    "exactPhrases": [
+      "master thesis title",
+      "masters degree thesis title"
+    ],
+    "regexPatterns": [
+      "master.*thesis"
+    ]
+  },
+  "academics.mastersPublications": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "master publications",
+      "master published papers"
+    ],
+    "regexPatterns": [
+      "master.*publi"
+    ]
+  },
+  "academics.doctoralUniversityName": {
+    "exactPhrases": [
+      "doctoral university name",
+      "doctoral school name",
+      "phd university"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*university"
+    ]
+  },
+  "academics.doctoralLocation": {
+    "exactPhrases": [
+      "doctoral location",
+      "doctoral country"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*location"
+    ]
+  },
+  "academics.doctoralMajor": {
+    "exactPhrases": [
+      "doctoral major",
+      "phd major"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*major"
+    ]
+  },
+  "academics.doctoralGraduationDate": {
+    "exactPhrases": [
+      "doctoral graduation date",
+      "phd graduation"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*graduation"
+    ]
+  },
+  "academics.doctoralDissertationTitle": {
+    "exactPhrases": [
+      "dissertation title",
+      "doctoral dissertation title"
+    ],
+    "regexPatterns": [
+      "dissertation.*title"
+    ]
+  },
+  "academics.doctoralPublications": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "doctoral publications",
+      "phd published papers"
+    ],
+    "regexPatterns": [
+      "(doctoral|phd).*publi"
+    ]
+  },
+  "academics.cgpaScale": {
+    "exactPhrases": [
+      "cgpa indicated on your original transcript",
+      "converted cgpa",
+      "cgpa scale"
+    ],
+    "regexPatterns": [
+      "cgpa\\s*(indicated|scale|converted)"
+    ]
+  },
+  "academics.scorePercentile": {
+    "exactPhrases": [
+      "score percentile",
+      "percentile score",
+      "percentile",
+      "grade percentile"
+    ],
+    "regexPatterns": [
+      "score\\s*percentile",
+      "percentile"
+    ]
+  },
+  "academics.personalStatement": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "personal statement",
+      "statement of purpose",
+      "essay",
+      "introduce yourself",
+      "motivation letter"
+    ],
+    "regexPatterns": [
+      "personal\\s*statement",
+      "introduce\\s*yourself",
+      "motivation\\s*letter"
+    ]
+  },
+  "academics.studyPlan": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "study plan",
+      "goal of study",
+      "research proposal plan"
+    ],
+    "regexPatterns": [
+      "study\\s*plan",
+      "goal\\s*of\\s*study"
+    ]
+  },
+  "academics.futurePlanAfterStudy": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "future plan after study",
+      "future plan",
+      "plan after graduation",
+      "plans after study"
+    ],
+    "regexPatterns": [
+      "future\\s*plan",
+      "plan\\s*after"
+    ]
+  },
+  "academics.medicalInfectious": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "infectious disease",
+      "tuberculosis"
+    ],
+    "regexPatterns": [
+      "infectious",
+      "tuberculosis"
+    ]
+  },
+  "academics.medicalAllergies": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "allergies",
+      "allergic"
+    ],
+    "regexPatterns": [
+      "allerg(y|ies|ic)"
+    ]
+  },
+  "academics.medicalHypertension": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "hyper tension",
+      "hypertension",
+      "high blood pressure"
+    ],
+    "regexPatterns": [
+      "hypertension",
+      "blood\\s*pressure"
+    ]
+  },
+  "academics.medicalDiabetes": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "diabetes",
+      "diabetic"
+    ],
+    "regexPatterns": [
+      "diabet"
+    ]
+  },
+  "academics.medicalHepatitis": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "hepatitis",
+      "type of hepatitis"
+    ],
+    "regexPatterns": [
+      "hepatitis"
+    ]
+  },
+  "academics.medicalMental": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "depression",
+      "anxiety",
+      "mental or mood disorder"
+    ],
+    "regexPatterns": [
+      "depression",
+      "anxiety",
+      "mental\\s*or\\s*mood"
+    ]
+  },
+  "academics.medicalAlcohol": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "addicted to alcohol",
+      "alcoholism",
+      "alcohol abuse"
+    ],
+    "regexPatterns": [
+      "alcohol"
+    ]
+  },
+  "academics.medicalNarcotics": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "abused any narcotic",
+      "narcotics",
+      "drug abuse"
+    ],
+    "regexPatterns": [
+      "narcotic",
+      "drug\\s*abuse"
+    ]
+  },
+  "academics.medicalHospitalized": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "hospitalized",
+      "hospitalization"
+    ],
+    "regexPatterns": [
+      "hospitalized",
+      "hospitalization"
+    ]
+  },
+  "academics.medicalSeriousInjury": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "serious injury",
+      "ailment or sickness"
+    ],
+    "regexPatterns": [
+      "serious\\s*injury",
+      "ailment",
+      "sickness"
+    ]
+  },
+  "academics.medicalVisualHearing": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "visual or hearing impairment",
+      "impairment"
+    ],
+    "regexPatterns": [
+      "visual\\s*or\\s*hearing",
+      "impairment"
+    ]
+  },
+  "academics.medicalPhysicalDisability": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "physical disabilities",
+      "physical disability"
+    ],
+    "regexPatterns": [
+      "physical\\s*disabilit"
+    ]
+  },
+  "academics.medicalCognitiveDisability": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "cognitive/mental disabilities",
+      "cognitive disability"
+    ],
+    "regexPatterns": [
+      "cognitive\\s*disabilit"
+    ]
+  },
+  "academics.medicalPrescribedMedication": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "prescribed medication",
+      "taking medication"
+    ],
+    "regexPatterns": [
+      "prescribed\\s*medication",
+      "taking\\s*medication"
+    ]
+  },
+  "academics.medicalSpecialDiet": {
+    "allowedTypes": [
+      "radio",
+      "select",
+      "checkbox"
+    ],
+    "sensitivityTier": "sensitive",
+    "requiresOptIn": true,
+    "optInKey": "sensitiveMedical",
+    "exactPhrases": [
+      "special diet"
+    ],
+    "regexPatterns": [
+      "special\\s*diet"
+    ]
+  },
+  "skills": {
+    "allowedTags": [
+      "INPUT",
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "skills",
+      "technical skills",
+      "expertise",
+      "technologies",
+      "list of skills",
+      "core competencies"
+    ],
+    "regexPatterns": [
+      "skills",
+      "technical\\s*skills",
+      "expertise",
+      "competencies"
+    ]
+  },
+  "coursework": {
+    "allowedTags": [
+      "INPUT",
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "coursework",
+      "relevant coursework",
+      "relevant courses",
+      "subjects",
+      "major courses"
+    ],
+    "regexPatterns": [
+      "coursework",
+      "relevant\\s*courses"
+    ]
+  },
+  "projects[].name": {
+    "exactPhrases": [
+      "project name",
+      "project title",
+      "title of project",
+      "name of project"
+    ],
+    "regexPatterns": [
+      "project\\s*(name|title)"
+    ]
+  },
+  "projects[].role": {
+    "exactPhrases": [
+      "project role",
+      "your role",
+      "role in project",
+      "position in project"
+    ],
+    "regexPatterns": [
+      "project\\s*role",
+      "role\\s*in\\s*project"
+    ]
+  },
+  "projects[].description": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "project description",
+      "description of project",
+      "project details"
+    ],
+    "regexPatterns": [
+      "project\\s*description",
+      "description\\s*of\\s*project"
+    ]
+  },
+  "projects[].url": {
+    "exactPhrases": [
+      "project url",
+      "project link",
+      "github link",
+      "project repository",
+      "project website"
+    ],
+    "regexPatterns": [
+      "project\\s*(url|link)",
+      "github\\s*link"
+    ]
+  },
+  "awardsAndAchievements[].title": {
+    "exactPhrases": [
+      "award title",
+      "award name",
+      "honor title",
+      "achievement title",
+      "award or honor"
+    ],
+    "regexPatterns": [
+      "award\\s*(title|name)",
+      "achievement\\s*title"
+    ]
+  },
+  "awardsAndAchievements[].organization": {
+    "exactPhrases": [
+      "issuing organization",
+      "award issuer",
+      "awarding body",
+      "issuer",
+      "organization"
+    ],
+    "regexPatterns": [
+      "issuing\\s*organization",
+      "awarding\\s*body"
+    ]
+  },
+  "awardsAndAchievements[].date": {
+    "exactPhrases": [
+      "date awarded",
+      "award date",
+      "achievement date",
+      "date of award"
+    ],
+    "regexPatterns": [
+      "date\\s*awarded",
+      "award\\s*date"
+    ]
+  },
+  "awardsAndAchievements[].description": {
+    "allowedTags": [
+      "TEXTAREA"
+    ],
+    "exactPhrases": [
+      "award description",
+      "achievement description",
+      "award details"
+    ],
+    "regexPatterns": [
+      "award\\s*description",
+      "achievement\\s*description"
+    ]
+  },
+  "skills.programmingLanguages": {
+    "exactPhrases": [
+      "programming languages",
+      "languages known",
+      "coding languages",
+      "programming languages known"
+    ],
+    "regexPatterns": [
+      "programming\\s*languages",
+      "coding\\s*languages"
+    ]
+  },
+  "skills.machineLearningAndAI": {
+    "exactPhrases": [
+      "machine learning",
+      "ai skills",
+      "ml skills",
+      "artificial intelligence skills",
+      "ai/ml skills"
+    ],
+    "regexPatterns": [
+      "machine\\s*learning",
+      "\\bai\\s*skills\\b",
+      "\\bml\\s*skills\\b",
+      "ai\\s*/\\s*ml"
+    ]
+  },
+  "skills.markupAndScripting": {
+    "exactPhrases": [
+      "markup and scripting",
+      "scripting languages",
+      "markup languages"
+    ],
+    "regexPatterns": [
+      "scripting\\s*languages",
+      "markup\\s*languages"
+    ]
+  },
+  "skills.hardware": {
+    "exactPhrases": [
+      "hardware skills",
+      "hardware experience",
+      "embedded/hardware",
+      "hardware & embedded systems"
+    ],
+    "regexPatterns": [
+      "hardware\\s*(skills|experience)",
+      "embedded\\s*systems"
+    ]
+  },
+  "skills.architectureAndParadigms": {
+    "exactPhrases": [
+      "architecture and paradigms",
+      "design paradigms",
+      "software architecture skills",
+      "architectural paradigms"
+    ],
+    "regexPatterns": [
+      "architecture.*paradigms",
+      "design\\s*paradigms"
+    ]
+  },
+  "skills.toolsAndIDEs": {
+    "exactPhrases": [
+      "tools and technologies",
+      "tools & ides",
+      "development tools",
+      "software tools",
+      "tools and ides"
+    ],
+    "regexPatterns": [
+      "tools\\s*(and|&)\\s*(ides|technologies)",
+      "development\\s*tools"
+    ]
+  },
+  "projects[].technologies": {
+    "exactPhrases": [
+      "technologies used",
+      "tech stack",
+      "tools & technologies",
+      "technologies"
+    ],
+    "regexPatterns": [
+      "technolog",
+      "tech\\s*stack"
+    ]
+  },
+  "__arrayShapeSignatures__": {
+    "education": [
+      "school",
+      "degree",
+      "major",
+      "date",
+      "gpa",
+      "university",
+      "college",
+      "field of study",
+      "minor",
+      "education",
+      "qualification"
+    ],
+    "experience": [
+      "company",
+      "title",
+      "location",
+      "date",
+      "description",
+      "employer",
+      "job title",
+      "supervisor",
+      "experience",
+      "work",
+      "employment",
+      "salary",
+      "duration",
+      "history"
+    ],
+    "references": [
+      "name",
+      "relationship",
+      "company",
+      "email",
+      "phone",
+      "relation",
+      "reference",
+      "references"
+    ],
+    "certifications": [
+      "certification",
+      "license",
+      "credential",
+      "issued",
+      "expiration"
+    ],
+    "languages": [
+      "language",
+      "fluency",
+      "proficiency",
+      "spoken"
+    ],
+    "projects": [
+      "project",
+      "name",
+      "role",
+      "description",
+      "url",
+      "github",
+      "stack"
+    ],
+    "awardsAndAchievements": [
+      "award",
+      "achievement",
+      "honor",
+      "title",
+      "organization",
+      "issuer",
+      "date",
+      "description"
+    ]
+  }
+}
