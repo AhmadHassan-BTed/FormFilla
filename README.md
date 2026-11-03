@@ -5,7 +5,8 @@
 <h1 align="center">FormFilla</h1>
 
 <p align="center">
-  <strong>The open-source, local-first form autofill engine for modern job applications, scholarships, and admissions.</strong>
+  <strong>Ingenious Local-First Form Filler</strong><br />
+  <em>Deterministic, zero-network autofill powered by bipartite graph matching.</em>
 </p>
 
 <p align="center">
