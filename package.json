@@ -2,6 +2,7 @@
   "name": "formfilla",
   "version": "0.1.2",
   "description": "Fills job application forms from local JSON profile data. No AI, local-first.",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.js",

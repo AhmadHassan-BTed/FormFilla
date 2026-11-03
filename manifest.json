@@ -16,7 +16,6 @@
     "activeTab"
   ],
   "host_permissions": [
-    "https://api.github.com/*",
     "https://*.googleapis.com/*",
     "https://*.firebaseio.com/*"
   ],

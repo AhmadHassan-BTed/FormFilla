@@ -1,5 +1,3 @@
-import { getSupportState } from './github-support.js';
-
 export type FeedbackKind = 'bug' | 'feature';
 
 export interface FeedbackDraft {
@@ -56,10 +54,10 @@ export function buildNewIssueUrl(draft: FeedbackDraft): string {
 }
 
 /**
- * Simple helper to expose activation state in feedback page (if needed).
+ * Helper to expose activation state in feedback page.
+ * FormFilla is fully unlocked.
  */
 export async function getActivationFlagForFeedback(): Promise<{ activated: boolean }> {
-  const state = await getSupportState();
-  return { activated: !!state.supportCompleted };
+  return { activated: true };
 }
 

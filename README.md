@@ -1,17 +1,21 @@
 <p align="center">
   <img src="docs/assets/small_promo_tile_hd.png" alt="FormFilla promo tile" style="width:100%;max-width:440px;height:auto;" />
+</p>
 
 <h1 align="center">FormFilla</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/License-Proprietary%20Browser%20Extension-red.svg" alt="License: Proprietary Browser Extension"/>
-  <img src="https://img.shields.io/badge/Distribution-Closed%20Source-orange.svg" alt="Distribution: Closed Source"/>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"/></a>
   <img src="https://img.shields.io/badge/Deployment-Chrome%20Extension-blue.svg" alt="Deployment: Chrome Extension"/>
+  <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Language-TypeScript-blue.svg" alt="TypeScript"/></a>
+  <img src="https://img.shields.io/badge/Engine-Zero--AI-green.svg" alt="Zero AI" />
+  <img src="https://img.shields.io/badge/Logic-Kuhn--Munkres-purple.svg" alt="Kuhn-Munkres" />
+  <img src="https://img.shields.io/badge/Architecture-Local--First-teal.svg" alt="Local First" />
+  <img src="https://img.shields.io/badge/Privacy-100%25-brightgreen.svg" alt="Privacy" />
 </p>
 
 <p align="center">
   <strong>A local-first, privacy-respecting form engine designed to restore candidate dignity and speed in the modern job hunt.</strong>
-  > **Architecture Note:** *The core extraction engine and DOM manipulation logic for FormFilla are closed-source. This repository serves as the public documentation, issue tracker routing, and release hub for the compiled browser extension.*
 </p>
 
 <hr />
@@ -75,28 +79,29 @@ sequenceDiagram
 
 ---
 
-## Features & Gates
+## Features
 
-- **Zero Network Requests:** Data is stored locally using `chrome.storage.local` and IndexedDB. There are no tracking scripts or server APIs.
+- **Zero Network Requests:** Data is stored locally using `chrome.storage.local` and IndexedDB. There are no tracking scripts, artificial gates, or required remote APIs.
 - **Repeated Block Fingerprinting:** Correctly groups and indexes repeated lists (e.g. multiple jobs or degrees) by checking element layouts.
 - **Unified File Transfers:** Simulates drag-and-drop operations using synthetic `DataTransfer` streams to upload local resumes and cover letters.
 - **Sensitivity Gating:**
-  - **Standard (Green/Amber):** Fills details instantly and highlights them for quick visual checking.
-  - **EEO Protections (Opt-in):** Disables equal-opportunity fields unless they are explicitly enabled in the settings panel.
-  - **Critical Items (Needs Confirm):** Fields like Social Security Numbers are never auto-filled. Instead, a floating golden badge appears, requiring a manual click to confirm injection.
+  - **High Confidence:** Automated insertion without prompt.
+  - **Review Warning:** Visual styling indicators applied to fields needing validation.
+  - **Needs Action:** Explicit confirmation dialogs before modifying sensitive items.
 
 ---
 
-## Directory Structure (Private Repository)
-
-_Note: The following represents the internal architecture of the closed-source FormFilla Repository._
+## Directory Structure
 
 ```
 FormFilla/
-├── docs/                  # Documentation (guides, changelog, roadmap, etc.)
-│   ├── assets/            # Documentation images and previews
-│   └── infra/             # Infrastructure documentation
-├── infra/                 # Infrastructure & deployment configs
+├── .github/               # CI/CD Workflows & Issue templates
+├── docs/                  # Architecture, changelog, and developer specifications
+│   ├── assets/            # Store and documentation promo imagery
+│   └── implementation-plan.md
+├── formfactory/           # Benchmark fixtures
+├── icons/                 # Extension icons (16, 32, 48, 128)
+├── infra/                 # Infrastructure configurations
 │   └── docker/            # Docker Compose & Dockerfile
 ├── scripts/               # Build & utility scripts
 │   ├── build.js           # esbuild bundler configuration
@@ -106,7 +111,7 @@ FormFilla/
 │   ├── assets/            # Static assets (logos, SVGs)
 │   ├── background/        # Service Worker bootstrapping
 │   │   └── service-worker.ts
-│   ├── content/           # Core runtime engine (closed-source)
+│   ├── content/           # Core runtime engine
 │   │   ├── adapters/      # Site-specific platform adapters (Workday, Lever, Greenhouse)
 │   │   │   ├── adapter.interface.ts
 │   │   │   ├── generic.ts
@@ -134,14 +139,15 @@ FormFilla/
 │   │   │   ├── normalizer.ts
 │   │   │   └── scorer.ts
 │   │   └── ui/            # Highlighters and badge widgets
-│   │       └── review-highlighter.ts
+│   │       ├── review-highlighter.ts
+│   │       └── target-mapper.ts
 │   ├── options/           # Dashboard settings panel (HTML/CSS/TS)
-│   │   ├── activation-status.ts
 │   │   ├── options.css
 │   │   ├── options.html
 │   │   ├── options.ts
+│   │   ├── sections/      # Modular options panels
 │   │   └── theme-loader.js
-│   ├── popup/             # Action panel (HTML/CSS/TS)
+│   ├── popup/             # Action popup (HTML/CSS/TS)
 │   │   ├── popup.css
 │   │   ├── popup.html
 │   │   ├── popup.ts
@@ -160,10 +166,9 @@ FormFilla/
 │   │   ├── messaging/
 │   │   │   └── messages.ts
 │   │   ├── storage/
-│   │   │   ├── activation-status.ts
 │   │   │   ├── feedback.ts
 │   │   │   ├── files-storage.ts
-│   │   │   ├── github-support.ts
+│   │   │   ├── learned-store.ts
 │   │   │   ├── mapping-storage.ts
 │   │   │   ├── profile-storage.ts
 │   │   │   └── storage-client.ts
@@ -174,20 +179,64 @@ FormFilla/
 │       ├── theme-brutalist-light.css
 │       ├── theme-dark.css
 │       └── theme-light.css
-├── icons/                 # Extension icons (16, 32, 48, 128)
 ├── store_assets/          # Chrome Web Store promotional assets
-├── tests/                 # JSDOM unit test runner suites
+├── tests/                 # Unit and integration test suites
 │   ├── fixtures/
+│   ├── airline.test.ts
+│   ├── city_state.test.ts
+│   ├── decode_mhtml.test.ts
+│   ├── phone_fill.test.ts
 │   └── scorer.test.ts
 ├── .editorconfig          # Editor configuration
 ├── .env.example           # Environment variable template
 ├── .gitattributes         # Git attributes
 ├── .gitignore             # Git ignore rules
-├── LICENSE                # Proprietary License
+├── LICENSE                # MIT License
 ├── manifest.json          # Extension manifest (MV3)
 ├── package.json           # Node dependencies & scripts
 ├── tsconfig.json          # TypeScript configuration
 └── vitest.config.ts       # Test runner configuration
+```
+
+---
+
+## Setup & Development
+
+### 1. Installation
+
+Install project dependencies and build the extension:
+
+```bash
+# Clone the repository
+git clone https://github.com/AhmadHassan-BTed/FormFilla.git
+cd FormFilla
+
+# Install local dependencies
+npm install
+
+# Build unpacked files
+npm run build
+```
+
+### 2. Loading the Extension in Chrome
+
+1. Navigate to `chrome://extensions/` in Google Chrome.
+2. Toggle **Developer mode** in the top-right corner.
+3. Click **Load unpacked** in the top-left corner.
+4. Select the `dist/` directory inside this repository.
+
+### 3. Testing
+
+Run unit and integration tests:
+
+```bash
+npm run test
+```
+
+To run watch mode during development:
+
+```bash
+npm run test:watch
 ```
 
 ---
@@ -209,11 +258,13 @@ _Every JSON configuration contains an embedded `__meta__` prompt. You can supply
 
 ---
 
-## Installation
+## Installation via Chrome Web Store
 
 FormFilla is officially distributed through the Chrome Web Store to ensure you always receive the latest, secure updates directly to your browser.
 
 **[Install FormFilla from the Chrome Web Store](https://chromewebstore.google.com/detail/ghdmoobkedimgbgohodgmjmnldfmkcja?utm_source=item-share-cb)**
+
+---
 
 ## Roadmap
 
@@ -234,4 +285,4 @@ If you encounter an issue or have a feature idea for FormFilla, please submit it
 
 ## License
 
-The documentation and public assets in this repository are available for viewing, but the FormFilla software itself is Proprietary and closed-source.
+This project is licensed under the [MIT License](LICENSE).
