@@ -1,66 +1,108 @@
 <p align="center">
-  <img src="docs/assets/small_promo_tile_hd.png" alt="FormFilla promo tile" style="width:100%;max-width:440px;height:auto;" />
+  <img src="docs/assets/small_promo_tile_hd.png" alt="FormFilla promo tile" style="width:100%;max-width:480px;height:auto;border-radius:12px;" />
 </p>
 
 <h1 align="center">FormFilla</h1>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"/></a>
-  <img src="https://img.shields.io/badge/Deployment-Chrome%20Extension-blue.svg" alt="Deployment: Chrome Extension"/>
-  <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Language-TypeScript-blue.svg" alt="TypeScript"/></a>
-  <img src="https://img.shields.io/badge/Engine-Zero--AI-green.svg" alt="Zero AI" />
-  <img src="https://img.shields.io/badge/Logic-Kuhn--Munkres-purple.svg" alt="Kuhn-Munkres" />
-  <img src="https://img.shields.io/badge/Architecture-Local--First-teal.svg" alt="Local First" />
-  <img src="https://img.shields.io/badge/Privacy-100%25-brightgreen.svg" alt="Privacy" />
+  <strong>The open-source, local-first form autofill engine for modern job applications, scholarships, and admissions.</strong>
 </p>
 
 <p align="center">
-  <strong>A local-first, privacy-respecting form engine designed to restore candidate dignity and speed in the modern job hunt.</strong>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-3b82f6.svg?style=flat-square" alt="License: MIT"/></a>
+  <a href="https://chromewebstore.google.com/detail/ghdmoobkedimgbgohodgmjmnldfmkcja?utm_source=item-share-cb"><img src="https://img.shields.io/badge/Chrome%20Web%20Store-Published-4f46e5.svg?style=flat-square&logo=googlechrome&logoColor=white" alt="Chrome Web Store"/></a>
+  <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/TypeScript-5.4-3178c6.svg?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"/></a>
+  <a href="#kuhn-munkres-hungarian-matching-engine"><img src="https://img.shields.io/badge/Engine-Zero--AI-10b981.svg?style=flat-square" alt="Zero AI"/></a>
+  <a href="#kuhn-munkres-hungarian-matching-engine"><img src="https://img.shields.io/badge/Solver-Kuhn--Munkres-8b5cf6.svg?style=flat-square" alt="Kuhn-Munkres"/></a>
+  <a href="#the-philosophy"><img src="https://img.shields.io/badge/Privacy-100%25%20On--Device-059669.svg?style=flat-square" alt="Privacy"/></a>
+</p>
+
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/ghdmoobkedimgbgohodgmjmnldfmkcja?utm_source=item-share-cb"><b>Install from Chrome Web Store</b></a> •
+  <a href="#key-features"><b>Key Features</b></a> •
+  <a href="#technical-architecture"><b>Architecture</b></a> •
+  <a href="#setup--development"><b>Quickstart</b></a> •
+  <a href="#ai-driven-dictionary-expansion"><b>Extending Rules</b></a> •
+  <a href="https://github.com/AhmadHassan-BTed/FormFilla/issues"><b>Issues & Feedback</b></a>
 </p>
 
 <hr />
 
 ## The Philosophy
 
-Job hunting is exhausting, repetitive, and increasingly dehumanizing. Candidates spend hours copy-pasting their professional profiles into applicant tracking systems (ATS) that often parse records inaccurately.
+Job hunting in the modern era is exhausting and repetitive. Candidates spend hours copying and pasting identical professional records into applicant tracking systems (ATS) like Workday, Greenhouse, and Lever—systems whose built-in resume parsers frequently misalign dates, drop job titles, and scramble contact details.
 
-FormFilla was created by **Ahmad Hassan (B-Ted)** to reclaim candidate time. Built as a local-first browser extension, it processes all data in memory, ensuring that personal details (such as contact information, references, and resumes) never leave the local environment.
+**FormFilla was created to restore candidate dignity and reclaim time.**
+
+Unlike cloud-based or LLM-driven autofill plugins that transmit your personal credentials, resume texts, and references to third-party AI endpoints, FormFilla is **100% local-first and deterministic**. Everything runs directly inside your browser in sub-100ms. Your sensitive career data never leaves your computer.
+
+---
+
+## Key Features
+
+- ⚡ **Zero-AI & Sub-100ms Speed**  
+  Uses deterministic bipartite optimization and regex heuristics instead of costly, slow, and hallucination-prone LLM API calls. No rate limits, no subscriptions, and zero cloud dependencies.
+
+- 🧠 **Globally Optimal Matching (Kuhn-Munkres)**  
+  Solves field-to-value assignment as a **Maximum Weight Bipartite Matching** problem. Rather than using naive greedy heuristics, it optimizes confidence scores across the entire form at once.
+
+- 🛡️ **100% Private & Local-First**  
+  All profile details, credentials, and uploaded files are stored strictly on-device via `chrome.storage.local` and IndexedDB. Zero network requests, zero telemetry.
+
+- 🔄 **Framework-Safe DOM Writing**  
+  Bypasses React, Vue, and Angular virtual DOM synthetic event wrappers by calling native HTML prototype setters and bubbling real `input` and `change` events.
+
+- 📑 **Dynamic Repeated Block Detection**  
+  Intelligently fingerprints and matches repetitive application sections, correctly mapping multi-card lists such as work experiences, degrees, certifications, references, and language proficiencies.
+
+- 📁 **Automated File Transfers**  
+  Simulates drag-and-drop operations using synthetic `DataTransfer` streams to attach your local resumes, CVs, cover letters, and transcripts directly to file inputs.
+
+- 🎯 **Interactive Field Learner**  
+  Encounter an obscure or bespoke form field? Open the interactive target mapper to click and teach FormFilla new field patterns right on the active page.
+
+- 🎨 **Multi-Theme Support**  
+  Designed for aesthetics and ergonomics, featuring **Light**, **Dark**, **Brutalist Light**, and **Brutalist Dark** palettes.
 
 ---
 
 ## Technical Architecture
 
-FormFilla runs a structured analysis and injection pipeline inside the browser. It avoids fragile heuristics by utilizing classical bipartite graph matching.
+FormFilla executes a robust three-stage pipeline to analyze and populate complex application forms:
+
+```
+Active DOM  ──►  1. Scanner & Normalizer  ──►  2. Hungarian Solver  ──►  3. Framework Setter  ──►  Filled Form
+```
 
 ### 1. Element Scanning & Normalization
 
-The system recursively scans the active DOM (including same-origin frame nodes) to locate target inputs. Elements undergo signal normalization (tokenization, case conversions, and abbreviation expansions) before scoring.
+Recursively traverses active DOM subtrees (including same-origin iframe roots) to detect inputs, selects, textareas, and comboboxes. Raw signals (labels, placeholders, IDs, names, ARIA attributes) are tokenized and normalized against abbreviation dictionaries.
 
 ```mermaid
 flowchart TD
-    DOM[Active DOM Subtree] --> Scan[Scanner: Find Inputs, Selects, & Textareas]
-    Scan --> Blocks[Repeated Block Detector: Identify School/Work Cards]
-    Blocks --> Extract[Signal Extractor: Read Label, Placeholder, ID, Name]
-    Extract --> Normalizer[Normalizer: Tokenize & Expand Abbreviations]
-    Normalizer --> Tokens[Normalized Tokens]
+    DOM["Active DOM Subtree"] --> Scan["Scanner: Inputs, Selects, & Textareas"]
+    Scan --> Blocks["Repeated Block Detector: Identify School & Work Cards"]
+    Blocks --> Extract["Signal Extractor: Read Label, Placeholder, ID, Name"]
+    Extract --> Normalizer["Normalizer: Tokenize & Expand Abbreviations"]
+    Normalizer --> Tokens["Normalized Field Tokens"]
 ```
 
-### 2. Kuhn-Munkres (Hungarian) Scoring Engine
+### 2. Kuhn-Munkres Bipartite Matching
 
-Rather than using a greedy best-match strategy (which often leads to field misalignments), FormFilla models form filling as a **Maximum Weight Bipartite Matching** problem. The Kuhn-Munkres algorithm solves this globally, maximizing the overall score confidence across the form.
+Models the pairing between scanned form inputs and candidate profile fields as a weighted bipartite graph. FormFilla builds a global cost matrix and executes the Kuhn-Munkres (Hungarian) algorithm to guarantee the mathematically optimal assignment.
 
 ```mermaid
 flowchart TD
-    Tokens[Normalized Field Tokens] --> Scorer[Signal Scorer: Fuzzy Sim + Regex]
-    Profile[Candidate Profile JSON] --> Scorer
-    Scorer --> CostMatrix[Build Cost Matrix: 100 - Score]
-    CostMatrix --> Hungarian[Hungarian Minimization Algorithm]
-    Hungarian --> GlobalMatching[Globally Optimal Field-to-Key Mapping]
+    Tokens["Normalized Field Tokens"] --> Scorer["Signal Scorer: Fuzzy Sim + Regex Signatures"]
+    Profile["Candidate Profile JSON"] --> Scorer
+    Scorer --> CostMatrix["Build Cost Matrix: 100 - Score"]
+    CostMatrix --> Hungarian["Hungarian Minimization Algorithm"]
+    Hungarian --> GlobalMatching["Globally Optimal Field-to-Key Mapping"]
 ```
 
 ### 3. Framework-Safe DOM Writing
 
-Standard value assignment fails on websites built with modern frameworks (React, Vue, Angular) because virtual DOM trees override standard property setters. FormFilla retrieves the browser's native property setter descriptors and dispatches bubbling events to trigger state updates.
+Standard `.value = ...` mutations fail on modern reactive web apps (React, Vue, Angular) because virtual DOM wrappers ignore raw property writes. FormFilla extracts browser-native property descriptors and dispatches bubbling lifecycle events.
 
 ```mermaid
 sequenceDiagram
@@ -69,220 +111,133 @@ sequenceDiagram
     participant F as Web Framework (React/Vue/JS)
 
     E->>D: Resolve Value Assignment
-    E->>D: Call native prototype setter (bypass wrapper)
+    E->>D: Invoke Native Prototype Setter (bypass wrapper)
     D-->>F: Update element value
-    E->>D: Dispatch event: 'input' (bubbling: true)
-    E->>D: Dispatch event: 'change' (bubbling: true)
-    F-->>F: Sync internal state store
+    E->>D: Dispatch event: 'input' (bubbles: true)
+    E->>D: Dispatch event: 'change' (bubbles: true)
+    F-->>F: Synchronize reactive state store
     Note over D,F: Element highlighted green/amber for review
 ```
 
 ---
 
-## Features
-
-- **Zero Network Requests:** Data is stored locally using `chrome.storage.local` and IndexedDB. There are no tracking scripts, artificial gates, or required remote APIs.
-- **Repeated Block Fingerprinting:** Correctly groups and indexes repeated lists (e.g. multiple jobs or degrees) by checking element layouts.
-- **Unified File Transfers:** Simulates drag-and-drop operations using synthetic `DataTransfer` streams to upload local resumes and cover letters.
-- **Sensitivity Gating:**
-  - **High Confidence:** Automated insertion without prompt.
-  - **Review Warning:** Visual styling indicators applied to fields needing validation.
-  - **Needs Action:** Explicit confirmation dialogs before modifying sensitive items.
-
----
-
-## Directory Structure
+## Repository Structure
 
 ```
 FormFilla/
-├── .github/               # CI/CD Workflows & Issue templates
-├── docs/                  # Architecture, changelog, and developer specifications
-│   ├── assets/            # Store and documentation promo imagery
-│   └── implementation-plan.md
-├── formfactory/           # Benchmark fixtures
-├── icons/                 # Extension icons (16, 32, 48, 128)
-├── infra/                 # Infrastructure configurations
-│   └── docker/            # Docker Compose & Dockerfile
-├── scripts/               # Build & utility scripts
-│   ├── build.js           # esbuild bundler configuration
-│   ├── generate-icons.ps1 # Icon generation script
-│   └── setup.bat          # Windows setup script
-├── src/
-│   ├── assets/            # Static assets (logos, SVGs)
-│   ├── background/        # Service Worker bootstrapping
-│   │   └── service-worker.ts
-│   ├── content/           # Core runtime engine
-│   │   ├── adapters/      # Site-specific platform adapters (Workday, Lever, Greenhouse)
-│   │   │   ├── adapter.interface.ts
-│   │   │   ├── generic.ts
-│   │   │   ├── greenhouse.ts
-│   │   │   ├── lever.ts
-│   │   │   └── workday.ts
-│   │   ├── core/          # Orchestrator and logic bootstrappers
-│   │   │   ├── orchestrator.ts
-│   │   │   └── value-path.ts
-│   │   ├── dom/           # DOM traversal and observers
-│   │   │   ├── field-scanner.ts
-│   │   │   ├── mutation-watcher.ts
-│   │   │   ├── repeated-block.ts
-│   │   │   └── signal-extractor.ts
-│   │   ├── fill/          # Value injectors and event simulation
-│   │   │   ├── combobox-adapter.ts
-│   │   │   ├── date-filler.ts
-│   │   │   ├── file-filler.ts
-│   │   │   ├── native-setter.ts
-│   │   │   ├── radio-checkbox-filler.ts
-│   │   │   └── select-filler.ts
-│   │   ├── matching/      # Scoring & matching algorithms
-│   │   │   ├── assignment.ts
-│   │   │   ├── fuzzy.ts
-│   │   │   ├── normalizer.ts
-│   │   │   └── scorer.ts
-│   │   └── ui/            # Highlighters and badge widgets
-│   │       ├── review-highlighter.ts
-│   │       └── target-mapper.ts
-│   ├── options/           # Dashboard settings panel (HTML/CSS/TS)
-│   │   ├── options.css
-│   │   ├── options.html
-│   │   ├── options.ts
-│   │   ├── sections/      # Modular options panels
-│   │   └── theme-loader.js
-│   ├── popup/             # Action popup (HTML/CSS/TS)
-│   │   ├── popup.css
-│   │   ├── popup.html
-│   │   ├── popup.ts
-│   │   └── theme-loader.js
-│   ├── shared/            # Common drivers, configs, and types
-│   │   ├── config/
-│   │   │   └── config.ts
-│   │   ├── constants/
-│   │   │   ├── abbreviations.json
-│   │   │   ├── constants.ts
-│   │   │   └── degrees.json
-│   │   ├── dictionary/
-│   │   │   ├── profile-template.json
-│   │   │   ├── rules.json
-│   │   │   └── rules.ts
-│   │   ├── messaging/
-│   │   │   └── messages.ts
-│   │   ├── storage/
-│   │   │   ├── feedback.ts
-│   │   │   ├── files-storage.ts
-│   │   │   ├── learned-store.ts
-│   │   │   ├── mapping-storage.ts
-│   │   │   ├── profile-storage.ts
-│   │   │   └── storage-client.ts
-│   │   └── types/
-│   │       └── index.ts
-│   └── themes/            # CSS theme files
-│       ├── theme-brutalist-dark.css
-│       ├── theme-brutalist-light.css
-│       ├── theme-dark.css
-│       └── theme-light.css
-├── store_assets/          # Chrome Web Store promotional assets
-├── tests/                 # Unit and integration test suites
-│   ├── fixtures/
-│   ├── airline.test.ts
-│   ├── city_state.test.ts
-│   ├── decode_mhtml.test.ts
-│   ├── phone_fill.test.ts
-│   └── scorer.test.ts
-├── .editorconfig          # Editor configuration
-├── .env.example           # Environment variable template
-├── .gitattributes         # Git attributes
-├── .gitignore             # Git ignore rules
+├── src/                   # Extension source code
+│   ├── background/        # Service Worker & offline lifecycle
+│   ├── content/           # Scanners, Kuhn-Munkres matcher, platform adapters & DOM setters
+│   ├── options/           # Dashboard settings panel & profile management
+│   ├── popup/             # Extension toolbar popup interface
+│   ├── shared/            # Matching dictionaries, schemas, types & storage client
+│   └── themes/            # Built-in CSS themes (Light, Dark, Brutalist)
+├── tests/                 # Vitest test runner suites & HTML form fixtures
+├── store_assets/          # Chrome Web Store graphics, banners, and screenshots
+├── scripts/               # esbuild bundling, packaging, and icon build utilities
+├── docs/                  # Architecture specifications and documentation
+├── icons/                 # Extension icons (16, 32, 48, 128px)
+├── manifest.json          # Chrome Manifest V3 configuration
 ├── LICENSE                # MIT License
-├── manifest.json          # Extension manifest (MV3)
-├── package.json           # Node dependencies & scripts
-├── tsconfig.json          # TypeScript configuration
-└── vitest.config.ts       # Test runner configuration
+└── package.json           # Node dependencies and build scripts
 ```
 
 ---
 
 ## Setup & Development
 
-### 1. Installation
+### Prerequisites
 
-Install project dependencies and build the extension:
+- **Node.js** (v20.0 or later recommended)
+- **npm** (v10 or later)
+- Google Chrome or any Chromium-compatible browser (Brave, Edge, Arc)
+
+### 1. Clone & Install Dependencies
 
 ```bash
-# Clone the repository
 git clone https://github.com/AhmadHassan-BTed/FormFilla.git
 cd FormFilla
-
-# Install local dependencies
 npm install
-
-# Build unpacked files
-npm run build
 ```
 
-### 2. Loading the Extension in Chrome
+### 2. Build the Extension
 
-1. Navigate to `chrome://extensions/` in Google Chrome.
-2. Toggle **Developer mode** in the top-right corner.
+Compile the TypeScript code and static assets into the `dist/` directory:
+
+```bash
+# Single build
+npm run build
+
+# Watch mode for real-time development
+npm run watch
+```
+
+### 3. Load Unpacked in Chrome
+
+1. Open Google Chrome and navigate to `chrome://extensions/`.
+2. Enable **Developer mode** via the toggle switch in the upper-right corner.
 3. Click **Load unpacked** in the top-left corner.
 4. Select the `dist/` directory inside this repository.
+5. FormFilla is now active in your browser toolbar!
 
-### 3. Testing
+### 4. Running Tests
 
-Run unit and integration tests:
+Run the Vitest unit and integration test suite:
 
 ```bash
 npm run test
 ```
 
-To run watch mode during development:
+---
 
-```bash
-npm run test:watch
-```
+## AI-Driven Dictionary Expansion
+
+FormFilla’s matching logic is completely decoupled from its code through four externalized JSON dictionaries. You can easily expand matching accuracy for specialized portals, regional formats, or regional application styles:
+
+| File | Purpose | How to Extend |
+| :--- | :--- | :--- |
+| **[`rules.json`](src/shared/dictionary/rules.json)** | Field Selectors & Signatures | Add new target keys, `exactPhrases`, and `regexPatterns` for custom portal inputs. |
+| **[`profile-template.json`](src/shared/dictionary/profile-template.json)** | Profile Schema Layout | Define user-facing fields and defaults matching any newly introduced rules. |
+| **[`abbreviations.json`](src/shared/constants/abbreviations.json)** | Acronym Normalization | Map domain acronyms (e.g. `exp` → `experience`, `inst` → `institution`). |
+| **[`degrees.json`](src/shared/constants/degrees.json)** | Education Ranking Matrix | Define degree equivalence tiers for international and regional qualifications. |
+
+> **Pro Tip:** Each dictionary contains an embedded `__meta__` prompt. You can supply these JSON files directly to any AI model (Gemini, Claude, GPT) with sample forms to generate accurate new mapping entries!
 
 ---
 
-## AI-Driven Dictionary Expansion (Enhancing Performance)
+## Platform Support
 
-FormFilla's matching engine relies entirely on externalized JSON databases rather than hardcoded logic. To scale up field matching accuracy and support custom career portals, developers and independent AI models can directly expand these 4 dictionary files. Expanding these files directly increases the coverage and intelligence of the matching solver:
+FormFilla contains dedicated platform adapters and generic fallback handling for:
 
-1. **[rules.json](src/shared/dictionary/rules.json) (Field Selectors & Signatures):**
-   Defines document guidelines, repeated blocks, and input selectors. Expanding its `exactPhrases` and `regexPatterns` allows FormFilla to map highly customized inputs.
-2. **[profile-template.json](src/shared/dictionary/profile-template.json) (Profile Schema Layout):**
-   Defines the export template schema. Expand this to align with new fields in `rules.json` to allow user pre-configurations.
-3. **[abbreviations.json](src/shared/constants/abbreviations.json) (Acronym maps):**
-   Maps common input acronyms (e.g. `emp` -> `employer`). Expanding this prevents tokenization failures on short names.
-4. **[degrees.json](src/shared/constants/degrees.json) (Education Rank Matrix):**
-   Compares and ranks degrees. Expand this to add local or international variations.
-
-_Every JSON configuration contains an embedded `__meta__` prompt. You can supply these files directly to AI models to securely expand FormFilla's capacity without editing code._
+- **Workday** (complex multi-step forms, radio groups, comboboxes)
+- **Greenhouse** (file attachments, dynamic question rows)
+- **Lever** (custom textarea fields, URL sections)
+- **Taleo & Taleo Enterprise**
+- **Scholarship & Admissions Portals** (Commonwealth, South Asian & GKS applications)
+- **Generic HTML5 / Custom ATS forms**
 
 ---
 
 ## Installation via Chrome Web Store
 
-FormFilla is officially distributed through the Chrome Web Store to ensure you always receive the latest, secure updates directly to your browser.
+If you prefer installing pre-packaged releases with automated updates, install FormFilla directly from the Google Chrome Web Store:
 
-**[Install FormFilla from the Chrome Web Store](https://chromewebstore.google.com/detail/ghdmoobkedimgbgohodgmjmnldfmkcja?utm_source=item-share-cb)**
-
----
-
-## Roadmap
-
-- **Q3 2026:** Custom field selection overrides saved to local storage.
-- **Q4 2026:** Platform adapters for Taleo, Workable, and Breezy HR.
-- **Q1 2027:** Encrypted profile backup exports using client-side AES-GCM.
+👉 **[Install FormFilla from the Chrome Web Store](https://chromewebstore.google.com/detail/ghdmoobkedimgbgohodgmjmnldfmkcja?utm_source=item-share-cb)**
 
 ---
 
-## Bugs & Feature Requests
+## Contributing & Bug Reports
 
-We manage all feedback, bugs, and feature requests centrally to maintain a clean workflow.
+Contributions, issues, and feature suggestions are warmly welcomed!
 
-If you encounter an issue or have a feature idea for FormFilla, please submit it to our central board:
-**[Open the Central Issue Tracker](https://github.com/AhmadHassan-BTed/FormFilla/issues)**
+- Found a form where autofill didn't match cleanly?
+- Have an idea for a platform adapter or custom dictionary rules?
+
+Please open an issue on our central tracker:  
+👉 **[Open an Issue or Suggestion](https://github.com/AhmadHassan-BTed/FormFilla/issues)**
 
 ---
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the **[MIT License](LICENSE)** © 2026 Ahmad Hassan (B-Ted). Free to use, modify, and distribute.
